@@ -412,11 +412,29 @@ section.feat{padding:84px 0 0}
 .src-out{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .src,.out{border-radius:18px;padding:14px;font-size:.9rem;min-height:132px}
 .src{background:var(--bg);font-family:var(--mono);font-size:.82rem;white-space:pre;color:var(--muted);line-height:1.6;overflow:hidden;border:1px solid var(--line)}
-.out{--c-bg:var(--slate-mid);--c-ink:var(--cream);background:var(--c-bg);color:var(--c-ink)}
+.out{--c-bg:var(--slate-mid);--c-ink:var(--cream);background:var(--c-bg);color:var(--c-ink);border:1px solid var(--line)}
+.out h2{font-family:var(--display);font-size:1.15rem;margin-bottom:8px;font-weight:700}
+.out ul, .md-list, .nd-preview-scroll ul{list-style:none;padding:0;margin:0 0 8px 0}
+.out li, .md-list li, .nd-preview-scroll li{
+  list-style:none;display:flex;align-items:flex-start;gap:8px;margin-bottom:5px;
+  padding-left:calc(var(--d,0)*18px);font-size:.92rem;line-height:1.5;
+}
+.m3-bullet{
+  width:14px;height:14px;flex:none;fill:var(--accent);margin-top:3.5px;
+  transition:transform .2s var(--spring);
+}
+.m3-bullet.cookie{fill:var(--accent)}
+.m3-bullet.sunny{fill:var(--tertiary)}
+.m3-bullet.clover{fill:var(--mauve)}
+
 .lvls{display:flex;gap:8px;flex-wrap:wrap}
-.lvl{display:flex;align-items:center;gap:8px;background:var(--bg);padding:6px 14px 6px 10px;border-radius:999px;font-size:.88rem;border:1px solid var(--line)}
-.lvl .bl{width:.95em;height:.95em;color:var(--accent);opacity:1;background:var(--accent);animation:spin 14s linear infinite}
+.lvl{display:flex;align-items:center;gap:8px;background:var(--bg);padding:6px 14px 6px 10px;border-radius:999px;font-size:.88rem;border:1px solid var(--line);font-weight:500}
+.lvl .m3-bullet{margin-top:0;width:15px;height:15px}
+.lvl:nth-child(1) .m3-bullet{animation:spin 14s linear infinite}
+.lvl:nth-child(2) .m3-bullet{animation:spin 9s linear infinite}
+.lvl:nth-child(3) .m3-bullet{animation:spin 12s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
+
 
 .swatches{display:flex;gap:10px;margin-bottom:18px}
 .swatches .color-dot{width:32px;height:32px}
@@ -726,17 +744,35 @@ body.focus-mode .panel{z-index:42;transform:scale(1.035);box-shadow:0 50px 100px
     - test midnight glow</div>
               <div class="out md">
                 <h2>Shell Tweaks</h2>
-                <ul>
-                  <li style="--d:0"><span class="bl"></span><span>wallpaper setup</span></li>
-                  <li style="--d:1"><span class="bl d1"></span><span><b>pond</b> live shader</span></li>
-                  <li style="--d:2"><span class="bl d2"></span><span>test midnight glow</span></li>
+                <ul class="md-list">
+                  <li style="--d:0">
+                    <svg class="m3-bullet cookie" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-2.12.88 3 3 0 0 0-4.24 0 3 3 0 0 0-2.76 3.24 3 3 0 0 0-1.76 3.88 3 3 0 0 0 .88 4.24 3 3 0 0 0 0 4.24 3 3 0 0 0 3.24 2.76 3 3 0 0 0 3.88 1.76 3 3 0 0 0 4.24-.88 3 3 0 0 0 4.24 0 3 3 0 0 0 2.76-3.24 3 3 0 0 0 1.76-3.88 3 3 0 0 0-.88-4.24 3 3 0 0 0 0-4.24 3 3 0 0 0-3.24-2.76 3 3 0 0 0-3.88-1.76A3 3 0 0 0 12 2z"/></svg>
+                    <span>wallpaper setup</span>
+                  </li>
+                  <li style="--d:1">
+                    <svg class="m3-bullet sunny" viewBox="0 0 24 24"><path d="M12 2l1.6 3.6 3.9-1-1 3.9 3.6 1.6-2.6 3 2.6 3-3.6 1.6 1 3.9-3.9-1L12 22l-1.6-3.6-3.9 1 1-3.9-3.6-1.6 2.6-3-2.6-3 3.6-1.6-1-3.9 3.9 1z"/></svg>
+                    <span><b>pond</b> live shader</span>
+                  </li>
+                  <li style="--d:2">
+                    <svg class="m3-bullet clover" viewBox="0 0 24 24"><path d="M12 2.5a3.5 3.5 0 0 0-3.5 3.5c0 1.25.66 2.34 1.64 2.96A3.49 3.49 0 0 0 3.5 12C3.5 13.93 5.07 15.5 7 15.5c1.25 0 2.34-.66 2.96-1.64.62.98 1.71 1.64 2.96 1.64 1.93 0 3.5-1.57 3.5-3.5 0-1.25-.66-2.34-1.64-2.96.98-.62 1.64-1.71 1.64-2.96 0-1.93-1.57-3.5-3.5-3.5zm-5 6.5a3.5 3.5 0 0 0-3.5 3.5C3.5 17.43 5.07 19 7 19c1.25 0 2.34-.66 2.96-1.64.62.98 1.71 1.64 2.96 1.64 1.93 0 3.5-1.57 3.5-3.5 0-1.25-.66-2.34-1.64-2.96A3.49 3.49 0 0 0 12 12c0-1.93-1.57-3.5-3.5-3.5-1.25 0-2.34.66-2.96 1.64-.62-.98-1.71-1.64-2.96-1.64z"/></svg>
+                    <span>test midnight glow</span>
+                  </li>
                 </ul>
               </div>
             </div>
             <div class="lvls" aria-hidden="true">
-              <span class="lvl"><span class="bl"></span>Level 1 · Cookie</span>
-              <span class="lvl"><span class="bl d1"></span>Level 2 · Sunny</span>
-              <span class="lvl"><span class="bl d2"></span>Level 3 · Flower</span>
+              <span class="lvl">
+                <svg class="m3-bullet cookie" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-2.12.88 3 3 0 0 0-4.24 0 3 3 0 0 0-2.76 3.24 3 3 0 0 0-1.76 3.88 3 3 0 0 0 .88 4.24 3 3 0 0 0 0 4.24 3 3 0 0 0 3.24 2.76 3 3 0 0 0 3.88 1.76 3 3 0 0 0 4.24-.88 3 3 0 0 0 4.24 0 3 3 0 0 0 2.76-3.24 3 3 0 0 0 1.76-3.88 3 3 0 0 0-.88-4.24 3 3 0 0 0 0-4.24 3 3 0 0 0-3.24-2.76 3 3 0 0 0-3.88-1.76A3 3 0 0 0 12 2z"/></svg>
+                Level 1 · Cookie
+              </span>
+              <span class="lvl">
+                <svg class="m3-bullet sunny" viewBox="0 0 24 24"><path d="M12 2l1.6 3.6 3.9-1-1 3.9 3.6 1.6-2.6 3 2.6 3-3.6 1.6 1 3.9-3.9-1L12 22l-1.6-3.6-3.9 1 1-3.9-3.6-1.6 2.6-3-2.6-3 3.6-1.6-1-3.9 3.9 1z"/></svg>
+                Level 2 · Sunny
+              </span>
+              <span class="lvl">
+                <svg class="m3-bullet clover" viewBox="0 0 24 24"><path d="M12 2.5a3.5 3.5 0 0 0-3.5 3.5c0 1.25.66 2.34 1.64 2.96A3.49 3.49 0 0 0 3.5 12C3.5 13.93 5.07 15.5 7 15.5c1.25 0 2.34-.66 2.96-1.64.62.98 1.71 1.64 2.96 1.64 1.93 0 3.5-1.57 3.5-3.5 0-1.25-.66-2.34-1.64-2.96.98-.62 1.64-1.71 1.64-2.96 0-1.93-1.57-3.5-3.5-3.5zm-5 6.5a3.5 3.5 0 0 0-3.5 3.5C3.5 17.43 5.07 19 7 19c1.25 0 2.34-.66 2.96-1.64.62.98 1.71 1.64 2.96 1.64 1.93 0 3.5-1.57 3.5-3.5 0-1.25-.66-2.34-1.64-2.96A3.49 3.49 0 0 0 12 12c0-1.93-1.57-3.5-3.5-3.5-1.25 0-2.34.66-2.96 1.64-.62-.98-1.71-1.64-2.96-1.64z"/></svg>
+                Level 3 · Clover
+              </span>
             </div>
           </div>
         </div>
@@ -879,6 +915,12 @@ function inlineMd(s){
     .replace(/~~([^~]+)~~/g, '<del>$1</del>');
 }
 
+const M3_BULLET_SVGS = [
+  `<svg class="m3-bullet cookie" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-2.12.88 3 3 0 0 0-4.24 0 3 3 0 0 0-2.76 3.24 3 3 0 0 0-1.76 3.88 3 3 0 0 0 .88 4.24 3 3 0 0 0 0 4.24 3 3 0 0 0 3.24 2.76 3 3 0 0 0 3.88 1.76 3 3 0 0 0 4.24-.88 3 3 0 0 0 4.24 0 3 3 0 0 0 2.76-3.24 3 3 0 0 0 1.76-3.88 3 3 0 0 0-.88-4.24 3 3 0 0 0 0-4.24 3 3 0 0 0-3.24-2.76 3 3 0 0 0-3.88-1.76A3 3 0 0 0 12 2z"/></svg>`,
+  `<svg class="m3-bullet sunny" viewBox="0 0 24 24"><path d="M12 2l1.6 3.6 3.9-1-1 3.9 3.6 1.6-2.6 3 2.6 3-3.6 1.6 1 3.9-3.9-1L12 22l-1.6-3.6-3.9 1 1-3.9-3.6-1.6 2.6-3-2.6-3 3.6-1.6-1-3.9 3.9 1z"/></svg>`,
+  `<svg class="m3-bullet clover" viewBox="0 0 24 24"><path d="M12 2.5a3.5 3.5 0 0 0-3.5 3.5c0 1.25.66 2.34 1.64 2.96A3.49 3.49 0 0 0 3.5 12C3.5 13.93 5.07 15.5 7 15.5c1.25 0 2.34-.66 2.96-1.64.62.98 1.71 1.64 2.96 1.64 1.93 0 3.5-1.57 3.5-3.5 0-1.25-.66-2.34-1.64-2.96.98-.62 1.64-1.71 1.64-2.96 0-1.93-1.57-3.5-3.5-3.5zm-5 6.5a3.5 3.5 0 0 0-3.5 3.5C3.5 17.43 5.07 19 7 19c1.25 0 2.34-.66 2.96-1.64.62.98 1.71 1.64 2.96 1.64 1.93 0 3.5-1.57 3.5-3.5 0-1.25-.66-2.34-1.64-2.96A3.49 3.49 0 0 0 12 12c0-1.93-1.57-3.5-3.5-3.5-1.25 0-2.34.66-2.96 1.64-.62-.98-1.71-1.64-2.96-1.64z"/></svg>`
+];
+
 function renderMarkdown(src){
   if(!src) return '';
   const lines = src.split('\n');
@@ -886,9 +928,10 @@ function renderMarkdown(src){
   for(const raw of lines){
     const li = raw.match(/^(\s*)[-*+]\s+(.*)$/);
     if(li){
-      if(!inUl){ out += '<ul>'; inUl = true; }
+      if(!inUl){ out += '<ul class="md-list">'; inUl = true; }
       const depth = Math.min(2, Math.floor(li[1].replace(/\t/g,'  ').length / 2));
-      out += `<li style="--d:${depth}"><span class="bl${depth ? ' d'+depth : ''}"></span><span>${inlineMd(li[2])}</span></li>`;
+      const bSvg = M3_BULLET_SVGS[depth % M3_BULLET_SVGS.length];
+      out += `<li style="--d:${depth}">${bSvg}<span>${inlineMd(li[2])}</span></li>`;
       continue;
     }
     if(inUl){ out += '</ul>'; inUl = false; }
