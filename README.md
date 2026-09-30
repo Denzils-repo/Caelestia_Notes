@@ -131,18 +131,6 @@ qsctl reload || killall quickshell && quickshell &
 
 ---
 
-## 🌐 Web Showcase
-
-This repository includes a standalone interactive showcase page (`index.html`) demonstrating the live Notes tab, Material 3 theme switching, animated to-do list, and color palettes directly in any modern browser.
-
-To preview locally:
-```bash
-python3 -m http.server 8080
-# Open http://localhost:8080 in your browser
-```
-
----
-
 ## ⌨️ Keyboard Shortcuts & Quick Tips
 
 | Action | Shortcut / Gesture |
