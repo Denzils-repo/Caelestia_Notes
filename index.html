@@ -7,6 +7,11 @@
 <meta name="description" content="A lightweight, local-first plugin for Caelestia Shell on Linux with repeating daily habits, rotating clover calendar picker, split trash, and zero-lag Markdown notebook in Material 3.">
 <link rel="icon" type="image/png" href="logo.png">
 
+<!-- Google Material Symbols Rounded font -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
 <style>
 :root{
   /* Caelestia M3 system color tokens */
@@ -43,7 +48,32 @@ a{color:inherit}
 :focus-visible{outline:2.5px solid var(--accent);outline-offset:3px;border-radius:8px}
 .wrap{width:min(1160px,100% - 40px);margin-inline:auto}
 
-/* Embedded Offline Material SVG Icon System */
+/* Material Symbols Rounded Typography Class */
+.material-symbols-rounded{
+  font-family:'Material Symbols Rounded',sans-serif;
+  font-weight:normal;
+  font-style:normal;
+  font-size:22px;
+  line-height:1;
+  letter-spacing:normal;
+  text-transform:none;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  white-space:nowrap;
+  word-wrap:normal;
+  direction:ltr;
+  -webkit-font-feature-settings:'liga';
+  -webkit-font-smoothing:antialiased;
+  vertical-align:middle;
+  user-select:none;
+}
+.material-symbols-rounded.sm{font-size:18px}
+.material-symbols-rounded.xs{font-size:15px}
+.material-symbols-rounded.lg{font-size:28px}
+.material-symbols-rounded.fill{font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24}
+
+/* Embedded High-Fidelity Vector SVG Icon Fallback */
 .icon{
   width:22px;height:22px;flex:none;fill:currentColor;display:inline-block;
   vertical-align:middle;transition:transform .25s var(--spring),color .2s;
@@ -179,7 +209,8 @@ h1{font-family:var(--display);font-weight:700;font-size:clamp(2.5rem,6.2vw,4.6re
    ========================================================================== */
 .embedded-dp{
   display:none;flex-direction:column;gap:8px;background:var(--surface);border-radius:18px;
-  padding:12px;border:1px solid var(--line);margin-top:6px;animation:fade .3s var(--ease);
+  padding:12px;border:1px solid var(--line);margin:8px auto 0;animation:fade .3s var(--ease);
+  width:100%;max-width:320px;
 }
 .embedded-dp.open{display:flex}
 @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
@@ -193,37 +224,40 @@ h1{font-family:var(--display);font-weight:700;font-size:clamp(2.5rem,6.2vw,4.6re
 .dp-nav-btn{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--btn-2);color:var(--muted);transition:background .2s,color .2s}
 .dp-nav-btn:hover{background:var(--btn-hover);color:var(--text)}
 
-.dp-weekdays-row{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:.72rem;font-weight:600;color:var(--muted);margin-top:4px}
+.dp-weekdays-row{
+  display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:.74rem;
+  font-weight:600;color:var(--muted);margin-top:4px;width:100%;max-width:280px;margin-inline:auto;
+}
 .dp-weekdays-row .weekend{color:var(--tertiary)}
 
-.dp-month-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-top:4px}
+.dp-month-grid{
+  display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin:6px auto 0;
+  width:100%;max-width:280px;
+}
 .dp-cell{
-  aspect-ratio:1;border-radius:50%;display:grid;place-items:center;font-size:.82rem;font-weight:500;
+  width:32px;height:32px;max-width:32px;max-height:32px;margin:auto;
+  border-radius:50%;display:grid;place-items:center;font-size:.82rem;font-weight:500;
   position:relative;cursor:pointer;color:var(--text);transition:background .2s,color .2s;
 }
 .dp-cell.other-month{opacity:.35}
 .dp-cell.weekend{color:var(--tertiary)}
-.dp-cell:hover:not(.empty){background:var(--btn-hover)}
+.dp-cell:hover:not(.other-month){background:var(--btn-hover)}
 
-/* Today Indicator: MaterialShape.Sunny star in m3primary (--cyan) */
+/* Today Indicator: Scalloped M3 Sunny Cookie in m3primary (--cyan) */
 .dp-cell.is-today .today-shape{
-  position:absolute;inset:2px;width:calc(100% - 4px);height:calc(100% - 4px);
-  fill:var(--accent);opacity:.9;pointer-events:none;z-index:1;
+  position:absolute;inset:1px;width:30px;height:30px;
+  fill:var(--accent);opacity:.95;pointer-events:none;z-index:1;
 }
 .dp-cell.is-today .day-num{position:relative;z-index:2;color:var(--on-accent);font-weight:700}
 
 /* Selected Date Indicator: Solid MaterialShape.Clover4Leaf in m3tertiary (--peach) with continuous slow rotation */
 .dp-cell.is-selected .clover-shape{
-  position:absolute;inset:2px;width:calc(100% - 4px);height:calc(100% - 4px);
+  position:absolute;inset:1px;width:30px;height:30px;
   fill:var(--tertiary);pointer-events:none;z-index:3;
   animation:clover-spin 10s linear infinite;
 }
 .dp-cell.is-selected .day-num{position:relative;z-index:4;color:var(--on-tertiary);font-weight:700}
 @keyframes clover-spin{to{transform:rotate(360deg)}}
-
-.dp-quick-chips{display:flex;gap:4px;margin-top:8px;padding-top:6px;border-top:1px solid var(--line)}
-.dp-chip{flex:1;padding:4px 0;border-radius:999px;font-size:.75rem;background:var(--btn-2);color:var(--muted);font-weight:600;text-align:center;transition:background .2s,color .2s}
-.dp-chip:hover{background:var(--btn-hover);color:var(--text)}
 
 /* ==========================================================================
    TASK ITEMS & SINUSOIDAL WAVY SCRATCH ANIMATION (WavyLine.qml)
@@ -490,8 +524,8 @@ body.focus-mode .panel{z-index:42;transform:scale(1.035);box-shadow:0 50px 100px
       <a class="link" href="#try">Try it</a>
       <a class="link" href="#features">Features</a>
       <a class="link" href="#theme">Theme</a>
-      <button class="icon-btn" id="themeBtn" aria-label="Switch theme" title="Switch theme"></button>
-      <a class="btn sm" href="https://github.com/Denzils-repo/Caelestia_Notes" target="_blank" rel="noopener" id="githubTopLink"></a>
+      <button class="icon-btn" id="themeBtn" aria-label="Switch theme" title="Switch theme"><svg class="icon sm" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg></button>
+      <a class="btn sm" href="https://github.com/Denzils-repo/Caelestia_Notes" target="_blank" rel="noopener" id="githubTopLink"><svg class="icon sm" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg> GitHub</a>
     </nav>
   </header>
 
@@ -501,8 +535,8 @@ body.focus-mode .panel{z-index:42;transform:scale(1.035);box-shadow:0 50px 100px
         <h1>Notes and to-dos, one tab away in your shell.</h1>
         <p class="lead">Caelestia Notes is a lightweight, local-first productivity plugin for Caelestia Shell on Linux. It brings daily habit tracking, an animated clover date picker, and pinnable, zero-lag Markdown notes into your Material 3 desktop.</p>
         <div class="actions">
-          <a class="btn" href="https://github.com/Denzils-repo/Caelestia_Notes" target="_blank" rel="noopener" id="githubHeroBtn"></a>
-          <a class="btn ghost" href="#try" id="tryHeroBtn"></a>
+          <a class="btn" href="https://github.com/Denzils-repo/Caelestia_Notes" target="_blank" rel="noopener" id="githubHeroBtn"><svg class="icon sm" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> Get it on GitHub</a>
+          <a class="btn ghost" href="#try" id="tryHeroBtn"><svg class="icon sm" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> Try interactive panel</a>
         </div>
       </div>
       <div class="mark" aria-hidden="true">
@@ -522,12 +556,12 @@ body.focus-mode .panel{z-index:42;transform:scale(1.035);box-shadow:0 50px 100px
       <div class="panel">
         <!-- Top Shell Tabs -->
         <div class="tabs" id="tabs">
-          <div class="tab" data-i="0" id="tab0">Dashboard</div>
-          <div class="tab" data-i="1" id="tab1">Media</div>
-          <div class="tab on" data-i="2" id="tab2">Notes</div>
-          <div class="tab" data-i="3" id="tab3">Performance</div>
-          <div class="tab" data-i="4" id="tab4">Weather</div>
-          <div class="tab" data-i="5" id="tab5">Hardware</div>
+          <div class="tab" data-i="0" id="tab0"><svg class="icon" viewBox="0 0 24 24"><path d="M3 3h7v7H3V3zm11 0h7v7h-7V3zm-11 11h7v7H3v-7zm11 0h7v7h-7v-7z"/></svg><span>Dashboard</span></div>
+          <div class="tab" data-i="1" id="tab1"><svg class="icon" viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg><span>Media</span></div>
+          <div class="tab on" data-i="2" id="tab2"><svg class="icon" viewBox="0 0 24 24"><path d="M3 10h11v2H3zm0-4h11v2H3zm0 8h7v2H3zm15.01-3.13l1.15-1.15c.39-.39 1.02-.39 1.41 0l1.15 1.15c.39.39.39 1.02 0 1.41l-1.15 1.15-2.56-2.56zm-1.06 1.06l-5.95 5.95V19h2.12l5.95-5.95-2.12-2.12z"/></svg><span>Notes</span></div>
+          <div class="tab" data-i="3" id="tab3"><svg class="icon" viewBox="0 0 24 24"><path d="M20.38 8.57l-1.23 1.85a8 8 0 0 1-.22 7.58H5.07A8 8 0 0 1 15.58 6.85l1.85-1.23A10 10 0 0 0 2 16h2a8 8 0 0 1 8-8c.41 0 .81.04 1.2.1l-1.8 2.7 1.66 1.11 3.52-5.28A9.97 9.97 0 0 0 20.38 8.57zM12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/></svg><span>Performance</span></div>
+          <div class="tab" data-i="4" id="tab4"><svg class="icon" viewBox="0 0 24 24"><path d="M19.35 10.04A7.49 7.49 0 0 0 12 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 0 0 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4 0-2.05 1.53-3.76 3.56-3.97l1.07-.11.5-.95A5.5 5.5 0 0 1 12 6c2.72 0 4.99 1.97 5.43 4.67l.32 1.94 1.93.2C20.9 12.94 22 13.86 22 15c0 1.65-1.35 3-3 3z"/></svg><span>Weather</span></div>
+          <div class="tab" data-i="5" id="tab5"><svg class="icon" viewBox="0 0 24 24"><path d="M15 9H9v6h6V9zm-2 4h-2v-2h2v2zm8-2V9h-2V7c0-1.1-.9-2-2-2h-2V3h-2v2h-2V3H9v2H7c-1.1 0-2 .9-2 2v2H3v2h2v2H3v2h2v2c0 1.1.9 2 2 2h2v2h2v-2h2v2h2v-2h2c1.1 0 2-.9 2-2v-2h2v-2h-2v-2h2zm-4 6H7V7h10v10z"/></svg><span>Hardware</span></div>
           <span class="tab-bar" id="tabBar"></span>
         </div>
 
@@ -545,9 +579,9 @@ body.focus-mode .panel{z-index:42;transform:scale(1.035);box-shadow:0 50px 100px
                 <h3>To-do</h3>
                 <span class="count" id="todoCountBadge">0 left</span>
                 <span class="sp"></span>
-                <button class="pbtn soft" id="todoSortBtn" title="Toggle Sort (Due Date / Chronological)"></button>
-                <button class="pbtn soft" id="trashToggleBtn" title="Split Trash Bin"></button>
-                <button class="pbtn" id="inlineAddToggleBtn" title="Add To-do"></button>
+                <button class="pbtn soft" id="todoSortBtn" title="Toggle Sort (Due Date / Chronological)"><svg class="icon" viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2zm-7 5h5v5h-5z"/></svg></button>
+                <button class="pbtn soft" id="trashToggleBtn" title="Split Trash Bin"><svg class="icon" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM8 9h8v10H8V9zm7.5-5l-1-1h-5l-1 1H5v2h14V4h-3.5z"/></svg></button>
+                <button class="pbtn" id="inlineAddToggleBtn" title="Add To-do"><svg class="icon" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button>
               </div>
 
               <!-- Inline Quick-Add Box (TodoPanel.qml) -->
@@ -558,37 +592,32 @@ body.focus-mode .panel{z-index:42;transform:scale(1.035);box-shadow:0 50px 100px
                   
                   <!-- Morphing Repeating Habit button: 26px circle -> pill with "Repeating" -->
                   <button type="button" class="morph-btn" id="repeatToggleBtn" title="Toggle Daily Repeating Habit">
-                    <span id="repeatIconHolder"></span>
+                    <span id="repeatIconHolder"><svg class="icon xs" viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg></span>
                     <span class="btn-label">Repeating</span>
                   </button>
 
                   <!-- Morphing Date button: 26px circle -> pill with date label -->
                   <button type="button" class="morph-btn" id="datePickerTriggerBtn" title="Pick Due Date">
-                    <span id="dateIconHolder"></span>
+                    <span id="dateIconHolder"><svg class="icon xs" viewBox="0 0 24 24"><path d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z"/></svg></span>
                     <span class="btn-label" id="dateBtnLabel">Date</span>
                   </button>
 
                   <!-- Commit button -->
-                  <button type="button" class="pbtn soft" id="commitTodoBtn" style="width:28px;height:28px;border-radius:50%" title="Add Task"></button>
+                  <button type="button" class="pbtn soft" id="commitTodoBtn" style="width:28px;height:28px;border-radius:50%" title="Add Task"><svg class="icon" style="width:16px;height:16px" viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5a.984.984 0 0 0-1.4 0 .984.984 0 0 0 0 1.4l4.19 4.19c.39.39 1.02.39 1.41 0L20.3 7.7a.984.984 0 0 0 0-1.4.984.984 0 0 0-1.4 0L9 16.2z"/></svg></button>
                 </div>
 
                 <!-- Embedded Calendar Date Picker (TodoDatePicker.qml) -->
                 <div class="embedded-dp" id="embeddedDatePicker">
                   <div class="dp-nav-row">
-                    <button type="button" class="dp-nav-btn" id="dpPrevMonth" title="Previous Month"></button>
+                    <button type="button" class="dp-nav-btn" id="dpPrevMonth" title="Previous Month"><svg class="icon xs" viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button>
                     <div class="dp-month-pill" id="dpMonthYearDisplay" title="Click to reset to Today">September 2026</div>
-                    <button type="button" class="dp-nav-btn" id="dpNextMonth" title="Next Month"></button>
-                    <button type="button" class="dp-nav-btn" id="dpCloseBtn" title="Close Calendar"></button>
+                    <button type="button" class="dp-nav-btn" id="dpNextMonth" title="Next Month"><svg class="icon xs" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
+                    <button type="button" class="dp-nav-btn" id="dpCloseBtn" title="Close Calendar"><svg class="icon xs" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
                   </div>
                   <div class="dp-weekdays-row">
-                    <span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span class="weekend">Sa</span><span class="weekend">Su</span>
+                    <span class="weekend">Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span class="weekend">Sat</span>
                   </div>
                   <div class="dp-month-grid" id="dpMonthGrid"></div>
-                  <div class="dp-quick-chips">
-                    <button type="button" class="dp-chip" id="dpChipToday">Today</button>
-                    <button type="button" class="dp-chip" id="dpChipTomorrow">Tomorrow</button>
-                    <button type="button" class="dp-chip" id="dpChipClear">Clear</button>
-                  </div>
                 </div>
               </div>
 
@@ -609,15 +638,15 @@ body.focus-mode .panel{z-index:42;transform:scale(1.035);box-shadow:0 50px 100px
                 <h3>Trash</h3>
                 <span class="count" id="trashCountBadge">0</span>
                 <span class="sp"></span>
-                <button class="pbtn soft" id="emptyTrashBtn" title="Empty All General Trash" style="display:none"></button>
-                <button class="pbtn" id="backFromTrashBtn" title="Back to Active To-dos"></button>
+                <button class="pbtn soft" id="emptyTrashBtn" title="Empty All General Trash" style="display:none"><svg class="icon" viewBox="0 0 24 24"><path d="M15 16h4v2h-4zm0-8h7v2h-7zm0 4h6v2h-6zM3 18c0 1.1.9 2 2 2h6c1.1 0 2-.9 2-2V8H3v10zm2-8h6v8H5v-8zm5-6H6L5 5H2v2h12V5h-3z"/></svg></button>
+                <button class="pbtn" id="backFromTrashBtn" title="Back to Active To-dos"><svg class="icon" viewBox="0 0 24 24"><path d="M22 7h-9v2h9V7zm0 8h-9v2h9v-2zM5.5 10.5L2 7l1.41-1.41L5.5 7.67l6.09-6.09L13 3l-7.5 7.5zm0 8L2 15l1.41-1.41L5.5 15.67l6.09-6.09L13 11l-7.5 7.5z"/></svg></button>
               </div>
 
               <div class="scroll">
                 <!-- Repeating Habits Resting Section -->
                 <div id="trashHabitsSection" style="display:none">
                   <div class="trash-sub-head habits">
-                    <span id="trashHabitsIcon"></span>
+                    <span id="trashHabitsIcon"><svg class="icon sm" viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg></span>
                     <span id="trashHabitsTitle">Repeating Habits (0)</span>
                   </div>
                   <ul class="todo-list" id="trashHabitsList"></ul>
@@ -628,14 +657,14 @@ body.focus-mode .panel{z-index:42;transform:scale(1.035);box-shadow:0 50px 100px
                 <!-- General Trashed Tasks Section -->
                 <div id="trashGeneralSection" style="display:none">
                   <div class="trash-sub-head general">
-                    <span id="trashGeneralIcon"></span>
+                    <span id="trashGeneralIcon"><svg class="icon sm" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM8 9h8v10H8V9zm7.5-5l-1-1h-5l-1 1H5v2h14V4h-3.5z"/></svg></span>
                     <span id="trashGeneralTitle">General (0)</span>
                   </div>
                   <ul class="todo-list" id="trashGeneralList"></ul>
                 </div>
 
                 <div class="empty-view" id="trashEmptyView" style="display:none">
-                  <div id="trashEmptyIcon"></div>
+                  <div id="trashEmptyIcon"><svg class="icon lg" viewBox="0 0 24 24"><path d="M15 4V2h3v2h2v2h-2v2h-3V6H9V4h6zm-2 15c0 1.1.9 2 2 2h6c1.1 0 2-.9 2-2v-9h-2v9h-6v-9h-2v9zm-4-4c0-3.31 2.69-6 6-6s6 2.69 6 6-2.69 6-6 6-6-2.69-6-6zm6-4c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm-.5 1.5v3l2.25 1.35.75-1.23-1.5-.9V12.5h-1.5z"/></svg></div>
                   <div style="font-weight:600;font-size:.95rem">Trash is empty</div>
                   <div style="font-size:.82rem;opacity:.7">No completed habits or deleted tasks</div>
                 </div>
@@ -652,18 +681,18 @@ body.focus-mode .panel{z-index:42;transform:scale(1.035);box-shadow:0 50px 100px
             <!-- List & Board Mode (NotesPanel.qml) -->
             <div class="notes-list-view" id="notesListView">
               <div class="pane-head">
-                <button class="pbtn soft" id="notesBackFilterBtn" style="display:none" title="Back to All Notes"></button>
+                <button class="pbtn soft" id="notesBackFilterBtn" style="display:none" title="Back to All Notes"><svg class="icon" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
                 <h3 id="notesPaneTitle">Notes</h3>
                 <span class="count" id="notesCountBadge">0</span>
                 <span class="sp"></span>
-                <button class="pbtn soft active" id="notesLayoutToggleBtn" title="Toggle Grid / List View"></button>
-                <button class="pbtn" id="createNoteBtn" title="Create New Note"></button>
+                <button class="pbtn soft active" id="notesLayoutToggleBtn" title="Toggle Grid / List View"><svg class="icon" viewBox="0 0 24 24"><path d="M3 3h7v7H3V3zm11 0h7v7h-7V3zm-11 11h7v7H3v-7zm11 0h7v7h-7v-7z"/></svg></button>
+                <button class="pbtn" id="createNoteBtn" title="Create New Note"><svg class="icon" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button>
               </div>
 
               <div class="scroll">
                 <!-- Empty Notes State -->
                 <div class="empty-view" id="notesEmptyView" style="display:none">
-                  <div id="notesEmptyIcon"></div>
+                  <div id="notesEmptyIcon"><svg class="icon lg" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h10l6-6V5c0-1.1-.9-2-2-2zm-5 16H5V5h14v9h-5v5zm-7-9h8v2H7v-2zm0-3h10v2H7V7z"/></svg></div>
                   <div style="font-weight:600;font-size:.95rem">No notes yet</div>
                   <div style="font-size:.82rem;opacity:.7">Click + to jot down thoughts, ideas, or reminders</div>
                 </div>
@@ -671,7 +700,7 @@ body.focus-mode .panel{z-index:42;transform:scale(1.035);box-shadow:0 50px 100px
                 <!-- Pinned Notes Section -->
                 <div id="pinnedNotesSection" style="display:none">
                   <div class="sec-title" id="pinnedSecTitle">
-                    <span id="pinnedSecIcon"></span> PINNED
+                    <span id="pinnedSecIcon"><svg class="icon xs" viewBox="0 0 24 24"><path d="M16 9V4l1 0c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1l1 0v5c0 1.66-1.34 3-3 3v2h5.97v7l1 1 1-1v-7H19v-2c-1.66 0-3-1.34-3-3z"/></svg></span> PINNED
                   </div>
                   <div class="notes-grid" id="pinnedNotesContainer"></div>
                 </div>
@@ -679,7 +708,7 @@ body.focus-mode .panel{z-index:42;transform:scale(1.035);box-shadow:0 50px 100px
                 <!-- Other Notes Section -->
                 <div id="otherNotesSection" style="display:none">
                   <div class="sec-title" id="otherSecTitle">
-                    <span id="otherSecIcon"></span> OTHERS
+                    <span id="otherSecIcon"><svg class="icon xs" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h10l6-6V5c0-1.1-.9-2-2-2zm-5 16H5V5h14v9h-5v5zm-7-9h8v2H7v-2zm0-3h10v2H7V7z"/></svg></span> OTHERS
                   </div>
                   <div class="notes-grid" id="otherNotesContainer"></div>
                 </div>
@@ -690,14 +719,14 @@ body.focus-mode .panel{z-index:42;transform:scale(1.035);box-shadow:0 50px 100px
             <div class="note-detail-view" id="noteDetailView">
               <div class="nd-header">
                 <div class="nd-left">
-                  <button class="pbtn soft" id="detailBackBtn" title="Back to Notes"></button>
+                  <button class="pbtn soft" id="detailBackBtn" title="Back to Notes"><svg class="icon" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
                   <input type="text" class="nd-title-input" id="detailTitleInput" placeholder="Title" maxlength="120">
                 </div>
                 <div class="nd-right">
                   <div class="nd-actions-row">
-                    <button class="pbtn soft" id="detailEditToggleBtn" title="Toggle View / Edit Mode"></button>
-                    <button class="pbtn soft" id="detailPinBtn" title="Toggle Pinned"></button>
-                    <button class="pbtn soft" id="detailDeleteBtn" title="Delete Note"></button>
+                    <button class="pbtn soft" id="detailEditToggleBtn" title="Toggle View / Edit Mode"><svg class="icon" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg></button>
+                    <button class="pbtn soft" id="detailPinBtn" title="Toggle Pinned"><svg class="icon" viewBox="0 0 24 24"><path d="M16 9V4l1 0c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1l1 0v5c0 1.66-1.34 3-3 3v2h5.97v7l1 1 1-1v-7H19v-2c-1.66 0-3-1.34-3-3z"/></svg></button>
+                    <button class="pbtn soft" id="detailDeleteBtn" title="Delete Note"><svg class="icon" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
                   </div>
                   <div class="nd-colors-row" id="detailColorsBar"></div>
                 </div>
@@ -1352,23 +1381,48 @@ function renderDatePicker(){
   const grid = $('#dpMonthGrid');
   grid.innerHTML = '';
 
-  const firstDay = new Date(dpYear, dpMonth, 1).getDay(); // 0 is Sunday
+  const firstDay = new Date(dpYear, dpMonth, 1).getDay(); // 0 is Sunday, 1 is Monday ... 6 is Saturday
   const daysInMonth = new Date(dpYear, dpMonth + 1, 0).getDate();
-  const startOffset = (firstDay + 6) % 7; // Monday start
+  const startOffset = firstDay; // Caelestia Shell locale: week starts on Sunday
 
-  // Offset from previous month
-  const prevMonthDays = new Date(dpYear, dpMonth, 0).getDate();
-  for(let i=startOffset-1; i>=0; i--){
-    const cell = document.createElement('div');
-    cell.className = 'dp-cell other-month';
-    cell.innerHTML = `<span class="day-num">${prevMonthDays - i}</span>`;
-    grid.appendChild(cell);
-  }
+  const prevMonthDate = new Date(dpYear, dpMonth, 0);
+  const prevMonthDays = prevMonthDate.getDate();
+  const prevMonthYear = prevMonthDate.getFullYear();
+  const prevMonthMonth = prevMonthDate.getMonth();
+
+  const nextMonthYear = dpMonth === 11 ? dpYear + 1 : dpYear;
+  const nextMonthMonth = dpMonth === 11 ? 0 : dpMonth + 1;
 
   const today = new Date();
   const todayStr = formatDate(today);
 
-  for(let d=1; d<=daysInMonth; d++){
+  // 1. Trailing days from previous month
+  for(let i = startOffset - 1; i >= 0; i--){
+    const dayNum = prevMonthDays - i;
+    const dObj = new Date(prevMonthYear, prevMonthMonth, dayNum);
+    const dateStr = formatDate(dObj);
+    const dayOfWeek = dObj.getDay();
+    const isSelected = selectedNewDue === dateStr;
+
+    const cell = document.createElement('div');
+    cell.className = 'dp-cell other-month' +
+      (isSelected ? ' is-selected' : '') +
+      (dayOfWeek === 0 || dayOfWeek === 6 ? ' weekend' : '');
+
+    let shapeHtml = isSelected ? CLOVER_SHAPE_SVG : '';
+    cell.innerHTML = `${shapeHtml}<span class="day-num">${dayNum}</span>`;
+
+    cell.onclick = () => {
+      selectedNewDue = (selectedNewDue === dateStr) ? '' : dateStr;
+      newTodoRepeating = false;
+      renderDatePicker();
+      updateQuickAddState();
+    };
+    grid.appendChild(cell);
+  }
+
+  // 2. Days of current month
+  for(let d = 1; d <= daysInMonth; d++){
     const cellDate = new Date(dpYear, dpMonth, d);
     const dateStr = formatDate(cellDate);
     const dayOfWeek = cellDate.getDay();
@@ -1383,10 +1437,10 @@ function renderDatePicker(){
 
     let shapeHtml = '';
     if(isSelected){
-      // Rotating 4-leaf clover in peach overrides sunny today shape!
+      // Rotating 4-leaf clover in peach overrides sunny today shape
       shapeHtml = CLOVER_SHAPE_SVG;
     } else if(isToday){
-      // Sunny shape in cyan
+      // Scalloped Sunny cookie in cyan
       shapeHtml = SUNNY_SHAPE_SVG;
     }
 
@@ -1394,7 +1448,7 @@ function renderDatePicker(){
 
     cell.onclick = () => {
       if(selectedNewDue === dateStr){
-        selectedNewDue = ''; // Toggle / deselect without closing
+        selectedNewDue = ''; // Deselect without closing
       } else {
         selectedNewDue = dateStr;
         newTodoRepeating = false;
@@ -1403,6 +1457,34 @@ function renderDatePicker(){
       updateQuickAddState();
     };
 
+    grid.appendChild(cell);
+  }
+
+  // 3. Leading days of next month to complete standard QML MonthGrid layout
+  const totalCells = startOffset + daysInMonth;
+  const targetTotal = totalCells > 35 ? 42 : 35;
+  const nextMonthCount = targetTotal - totalCells;
+
+  for(let d = 1; d <= nextMonthCount; d++){
+    const dObj = new Date(nextMonthYear, nextMonthMonth, d);
+    const dateStr = formatDate(dObj);
+    const dayOfWeek = dObj.getDay();
+    const isSelected = selectedNewDue === dateStr;
+
+    const cell = document.createElement('div');
+    cell.className = 'dp-cell other-month' +
+      (isSelected ? ' is-selected' : '') +
+      (dayOfWeek === 0 || dayOfWeek === 6 ? ' weekend' : '');
+
+    let shapeHtml = isSelected ? CLOVER_SHAPE_SVG : '';
+    cell.innerHTML = `${shapeHtml}<span class="day-num">${d}</span>`;
+
+    cell.onclick = () => {
+      selectedNewDue = (selectedNewDue === dateStr) ? '' : dateStr;
+      newTodoRepeating = false;
+      renderDatePicker();
+      updateQuickAddState();
+    };
     grid.appendChild(cell);
   }
 }
@@ -1424,26 +1506,6 @@ $('#dpMonthYearDisplay').onclick = () => {
 };
 $('#dpCloseBtn').onclick = () => {
   calendarPickerOpen = false;
-  updateQuickAddState();
-};
-
-$('#dpChipToday').onclick = () => {
-  selectedNewDue = formatDate(new Date());
-  newTodoRepeating = false;
-  renderDatePicker();
-  updateQuickAddState();
-};
-$('#dpChipTomorrow').onclick = () => {
-  const tom = new Date();
-  tom.setDate(tom.getDate() + 1);
-  selectedNewDue = formatDate(tom);
-  newTodoRepeating = false;
-  renderDatePicker();
-  updateQuickAddState();
-};
-$('#dpChipClear').onclick = () => {
-  selectedNewDue = '';
-  renderDatePicker();
   updateQuickAddState();
 };
 
@@ -1822,64 +1884,69 @@ $('#detailDeleteBtn').onclick = () => {
 /* ==========================================================================
    INITIALIZATION & FEATURE SAMPLES
    ========================================================================== */
+function setHtml(id, html){
+  const el = document.getElementById(id);
+  if(el) el.innerHTML = html;
+}
+
 function initAllStaticIcons(){
   // Header & Navigation
-  $('#themeBtn').innerHTML = icon('dark_mode','sm');
-  $('#githubTopLink').innerHTML = `${icon('star','sm')} GitHub`;
-  $('#githubHeroBtn').innerHTML = `${icon('download','sm')} Get it on GitHub`;
-  $('#tryHeroBtn').innerHTML = `${icon('play_arrow','sm')} Try interactive panel`;
-  $('#githubCtaBtn').innerHTML = `${icon('download','sm')} View on GitHub`;
+  setHtml('themeBtn', icon('dark_mode','sm'));
+  setHtml('githubTopLink', `${icon('star','sm')} GitHub`);
+  setHtml('githubHeroBtn', `${icon('download','sm')} Get it on GitHub`);
+  setHtml('tryHeroBtn', `${icon('play_arrow','sm')} Try interactive panel`);
+  setHtml('githubCtaBtn', `${icon('download','sm')} View on GitHub`);
 
   // Shell Tabs
-  $('#tab0').innerHTML = `${icon('grid_view')} Dashboard`;
-  $('#tab1').innerHTML = `${icon('music_note')} Media`;
-  $('#tab2').innerHTML = `${icon('edit_note')} Notes`;
-  $('#tab3').innerHTML = `${icon('speed')} Performance`;
-  $('#tab4').innerHTML = `${icon('partly_cloudy_day')} Weather`;
-  $('#tab5').innerHTML = `${icon('memory')} Hardware`;
+  setHtml('tab0', `${icon('grid_view')} <span>Dashboard</span>`);
+  setHtml('tab1', `${icon('music_note')} <span>Media</span>`);
+  setHtml('tab2', `${icon('edit_note')} <span>Notes</span>`);
+  setHtml('tab3', `${icon('speed')} <span>Performance</span>`);
+  setHtml('tab4', `${icon('partly_cloudy_day')} <span>Weather</span>`);
+  setHtml('tab5', `${icon('memory')} <span>Hardware</span>`);
 
   // To-do Pane Buttons
-  $('#todoSortBtn').innerHTML = icon('calendar_month');
-  $('#trashToggleBtn').innerHTML = icon('delete_outline');
-  $('#inlineAddToggleBtn').innerHTML = icon('add');
-  $('#commitTodoBtn').innerHTML = icon('check');
-  $('#repeatIconHolder').innerHTML = icon('repeat','xs');
-  $('#dateIconHolder').innerHTML = icon('calendar_today','xs');
+  setHtml('todoSortBtn', icon('calendar_month'));
+  setHtml('trashToggleBtn', icon('delete_outline'));
+  setHtml('inlineAddToggleBtn', icon('add'));
+  setHtml('commitTodoBtn', icon('check'));
+  setHtml('repeatIconHolder', icon('repeat','xs'));
+  setHtml('dateIconHolder', icon('calendar_today','xs'));
 
   // Calendar Picker Icons
-  $('#dpPrevMonth').innerHTML = icon('chevron_left','xs');
-  $('#dpNextMonth').innerHTML = icon('chevron_right','xs');
-  $('#dpCloseBtn').innerHTML = icon('close','xs');
+  setHtml('dpPrevMonth', icon('chevron_left','xs'));
+  setHtml('dpNextMonth', icon('chevron_right','xs'));
+  setHtml('dpCloseBtn', icon('close','xs'));
 
   // Trash Icons
-  $('#backFromTrashBtn').innerHTML = icon('checklist');
-  $('#emptyTrashBtn').innerHTML = icon('delete_sweep');
-  $('#trashHabitsIcon').innerHTML = icon('repeat','sm');
-  $('#trashGeneralIcon').innerHTML = icon('delete_outline','sm');
+  setHtml('backFromTrashBtn', icon('checklist'));
+  setHtml('emptyTrashBtn', icon('delete_sweep'));
+  setHtml('trashHabitsIcon', icon('repeat','sm'));
+  setHtml('trashGeneralIcon', icon('delete_outline','sm'));
 
   // Notes Pane Icons
-  $('#notesBackFilterBtn').innerHTML = icon('arrow_back');
-  $('#notesLayoutToggleBtn').innerHTML = icon('grid_view');
-  $('#createNoteBtn').innerHTML = icon('add');
-  $('#pinnedSecIcon').innerHTML = icon('push_pin','xs');
-  $('#otherSecIcon').innerHTML = icon('sticky_note_2','xs');
+  setHtml('notesBackFilterBtn', icon('arrow_back'));
+  setHtml('notesLayoutToggleBtn', icon('grid_view'));
+  setHtml('createNoteBtn', icon('add'));
+  setHtml('pinnedSecIcon', icon('push_pin','xs'));
+  setHtml('otherSecIcon', icon('sticky_note_2','xs'));
 
   // Detail View Icons
-  $('#detailBackBtn').innerHTML = icon('arrow_back');
-  $('#detailEditToggleBtn').innerHTML = icon('visibility');
-  $('#detailPinBtn').innerHTML = icon('push_pin');
-  $('#detailDeleteBtn').innerHTML = icon('delete');
+  setHtml('detailBackBtn', icon('arrow_back'));
+  setHtml('detailEditToggleBtn', icon('visibility'));
+  setHtml('detailPinBtn', icon('push_pin'));
+  setHtml('detailDeleteBtn', icon('delete'));
 
   // Empty View Icons
-  $('#todoEmptyIcon').innerHTML = icon('check_circle','lg');
-  $('#trashEmptyIcon').innerHTML = icon('auto_delete','lg');
-  $('#notesEmptyIcon').innerHTML = icon('sticky_note_2','lg');
+  setHtml('todoEmptyIcon', icon('check_circle','lg'));
+  setHtml('trashEmptyIcon', icon('auto_delete','lg'));
+  setHtml('notesEmptyIcon', icon('sticky_note_2','lg'));
 
   // Theme Segment Buttons
-  $('#segDark').innerHTML = `${icon('dark_mode','sm')} Dark`;
-  $('#segLight').innerHTML = `${icon('light_mode','sm')} Light`;
+  setHtml('segDark', `${icon('dark_mode','sm')} Dark`);
+  setHtml('segLight', `${icon('light_mode','sm')} Light`);
 
-  $('#samplePinIcon').innerHTML = icon('push_pin','sm');
+  setHtml('samplePinIcon', icon('push_pin','sm'));
 }
 
 /* Feature 1 Sample todos */
