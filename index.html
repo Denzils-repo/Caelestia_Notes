@@ -6,12 +6,10 @@
 <title>Caelestia Notes — To-Dos and Notes for Caelestia Shell</title>
 <meta name="description" content="A lightweight, local-first plugin for Caelestia Shell on Linux with repeating daily habits, rotating clover calendar picker, split trash, and zero-lag Markdown notebook in Material 3.">
 <link rel="icon" type="image/png" href="logo.png">
-<!-- Google Material Symbols Rounded font -->
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 
 <style>
 :root{
-  /* Caelestia M3-derived color palette */
+  /* Caelestia M3 system color tokens */
   --slate:#353C4B; --slate-deep:#2A303C; --slate-mid:#414A5C; --slate-soft:#4F596D;
   --cyan:#72E1E1; --cyan-deep:#2C6F76; --mist:#C4F0EE;
   --cream:#FBFBEF; --cream-deep:#EEEEDD;
@@ -45,28 +43,16 @@ a{color:inherit}
 :focus-visible{outline:2.5px solid var(--accent);outline-offset:3px;border-radius:8px}
 .wrap{width:min(1160px,100% - 40px);margin-inline:auto}
 
-/* Material Symbols class helper */
+/* Embedded Offline Material SVG Icon System */
 .icon{
-  font-family:'Material Symbols Rounded';
-  font-weight:normal;
-  font-style:normal;
-  font-size:22px;
-  line-height:1;
-  letter-spacing:normal;
-  text-transform:none;
-  display:inline-block;
-  white-space:nowrap;
-  word-wrap:normal;
-  direction:ltr;
-  -webkit-font-smoothing:antialiased;
-  font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;
+  width:22px;height:22px;flex:none;fill:currentColor;display:inline-block;
+  vertical-align:middle;transition:transform .25s var(--spring),color .2s;
 }
-.icon.fill{font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24}
-.icon.sm{font-size:17px}
-.icon.xs{font-size:14px}
-.icon.lg{font-size:28px}
+.icon.sm{width:18px;height:18px}
+.icon.xs{width:15px;height:15px}
+.icon.lg{width:28px;height:28px}
 
-/* header */
+/* Header */
 header{display:flex;align-items:center;justify-content:space-between;padding:22px 0;gap:16px}
 .brand{display:flex;align-items:center;gap:12px;text-decoration:none;font-family:var(--display);font-weight:700;font-size:1.15rem;letter-spacing:-.01em}
 .brand img{width:38px;height:38px;border-radius:11px;object-fit:cover}
@@ -82,7 +68,7 @@ nav a.link:hover{background:var(--btn-2);color:var(--text)}
 .btn.ghost{background:var(--btn-2);color:var(--text)}
 .btn.sm{padding:9px 18px;font-size:.95rem}
 
-/* hero */
+/* Hero */
 .hero{display:grid;grid-template-columns:1.35fr .65fr;gap:40px;align-items:center;padding:56px 0 48px}
 h1{font-family:var(--display);font-weight:700;font-size:clamp(2.5rem,6.2vw,4.6rem);line-height:1.02;letter-spacing:-.035em;max-width:14ch}
 .hero p.lead{margin:24px 0 32px;max-width:52ch;color:var(--muted);font-size:1.15rem}
@@ -95,202 +81,332 @@ h1{font-family:var(--display);font-weight:700;font-size:clamp(2.5rem,6.2vw,4.6re
 .spark.b{width:20px;height:20px;bottom:18%;left:-18px;animation-delay:1.6s}
 @keyframes twinkle{0%,100%{transform:scale(.7) rotate(0);opacity:.5}50%{transform:scale(1.1) rotate(45deg);opacity:1}}
 
-/* demo section */
+/* Master Panel Container */
 .demo-head{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:16px;flex-wrap:wrap}
 .demo-head h2{font-family:var(--display);font-size:1.6rem;letter-spacing:-.02em}
 .demo-head p{color:var(--muted);font-size:.95rem}
 
-/* master panel container */
 .panel{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:32px;padding:16px 20px 22px;box-shadow:0 40px 80px -40px rgba(0,0,0,.5);transition:background .5s var(--ease),transform .5s var(--ease),box-shadow .5s;overflow:hidden;animation:rise .9s var(--ease) backwards}
 @keyframes rise{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
 
-/* tab bar */
+/* Top Shell Tab Bar */
 .tabs{position:relative;display:flex;justify-content:space-between;gap:4px;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none;margin-bottom:16px}
 .tabs::-webkit-scrollbar{display:none}
-.tab{flex:1 0 auto;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 14px 10px;color:var(--muted);font-size:.85rem;font-weight:500;cursor:default;transition:color .2s}
+.tab{flex:1 0 auto;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 14px 10px;color:var(--muted);font-size:.85rem;font-weight:500;cursor:default;transition:color .2s}
 .tab.on{color:var(--accent)}
-.tab-bar{position:absolute;bottom:-1px;left:0;height:3px;border-radius:3px 3px 0 0;background:var(--accent);transition:transform .6s var(--ease),width .6s var(--ease)}
+.tab-bar{position:absolute;bottom:-1px;left:0;height:3px;border-radius:3px 3px 0 0;background:var(--accent);transition:transform .5s var(--ease),width .5s var(--ease)}
 
-/* split panes */
-.panes{display:grid;grid-template-columns:1fr 1.38fr;gap:18px;min-height:510px;position:relative}
-.pane{background:var(--bg);border-radius:24px;padding:18px;overflow:hidden;display:flex;flex-direction:column;min-height:0;transition:background .5s var(--ease);border:1px solid var(--line)}
-.pane-head{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+/* ==========================================================================
+   CAELESTIA SHELL SPLIT PANES (EXACT QML PROPORTIONS)
+   Normal: TodoPanel 40%, NotesPanel 60% (14px gap)
+   Date Picking: TodoPanel 58%, NotesPanel 42%
+   Note View/Edit Takeover: TodoPanel 0% (opacity 0), NotesPanel 100% (gap 0)
+   ========================================================================== */
+.panes{display:flex;gap:14px;min-height:510px;position:relative;overflow:hidden;transition:gap .42s var(--ease)}
+.panes.note-takeover{gap:0}
+
+/* Pane common styles */
+.pane{
+  background:var(--bg);border-radius:24px;padding:16px;display:flex;flex-direction:column;
+  min-height:0;transition:background .5s var(--ease),border-color .4s;border:1px solid var(--line);
+  position:relative;overflow:hidden;
+}
+
+/* To-Do Panel fluid sizing */
+#todoPane{
+  width:calc((100% - 14px) * 0.40);flex-shrink:0;
+  transition:width .42s var(--ease),opacity .35s ease,padding .42s var(--ease),border-color .42s;
+}
+.panes.date-picking #todoPane{
+  width:calc((100% - 14px) * 0.58);
+}
+.panes.note-takeover #todoPane{
+  width:0;opacity:0;padding:0;border:0;pointer-events:none;
+}
+
+/* Notes Panel fluid absorption */
+#notesPane{
+  flex:1 1 0;min-width:0;
+  transition:background .5s var(--ease);
+}
+
+/* Header inside panes */
+.pane-head{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-shrink:0}
 .pane-head h3{font-family:var(--display);font-size:1.25rem;letter-spacing:-.01em}
 .count{font-size:.78rem;color:var(--muted);background:var(--btn-2);padding:2px 10px;border-radius:999px;font-variant-numeric:tabular-nums;font-weight:600}
+.count.all-done{color:var(--accent)}
 .pane-head .sp{flex:1}
-.pbtn{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:var(--accent);color:var(--on-accent);transition:border-radius .25s var(--ease),transform .25s var(--spring)}
+
+.pbtn{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:var(--accent);color:var(--on-accent);transition:border-radius .25s var(--ease),transform .25s var(--spring),background .2s,color .2s}
 .pbtn.soft{background:var(--btn-2);color:var(--text)}
 .pbtn.soft:hover{background:var(--btn-hover)}
 .pbtn.soft.active{background:var(--accent);color:var(--on-accent)}
+.pbtn.danger{background:#E06D53;color:#fff}
 .pbtn:hover{border-radius:50%;transform:scale(1.05)}
-.scroll{flex:1;overflow-y:auto;min-height:0;scrollbar-width:thin;scrollbar-color:var(--line) transparent;margin-right:-6px;padding-right:6px}
 
-/* todo section */
-.todo-list{list-style:none;padding:0;display:flex;flex-direction:column;gap:4px}
-.todo{display:grid;grid-template-rows:1fr;transition:grid-template-rows .3s var(--ease),opacity .25s;animation:pop .35s var(--ease) both}
-.todo>div{overflow:hidden}
-.todo.leaving{grid-template-rows:0fr;opacity:0}
-@keyframes pop{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:none}}
-.todo label{display:flex;align-items:center;gap:12px;padding:9px 8px;cursor:pointer;border-radius:14px;transition:background .2s}
-.todo label:hover{background:var(--btn-2)}
-.todo input[type="checkbox"]{position:absolute;opacity:0;pointer-events:none}
+/* Scroll area */
+.scroll{flex:1;overflow-y:auto;min-height:0;scrollbar-width:thin;scrollbar-color:var(--line) transparent;margin-right:-4px;padding-right:4px}
 
-/* custom M3 spring checkbox */
-.box{flex:none;width:22px;height:22px;border-radius:7px;border:2px solid var(--muted);display:grid;place-items:center;transition:background .25s var(--ease),border-color .25s,border-radius .3s var(--spring),transform .3s var(--spring)}
-.box .check-mark{font-size:16px;color:var(--on-accent);opacity:0;transform:scale(0.5);transition:opacity .2s,transform .25s var(--spring)}
-.todo input:checked+.box{background:var(--accent);border-color:var(--accent);border-radius:50%;transform:scale(1.06)}
-.todo input:checked+.box .check-mark{opacity:1;transform:scale(1)}
-
-/* custom scratch-off strikethrough */
-.t-wrap{flex:1;min-width:0;position:relative}
-.t{display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:1rem;position:relative;transition:color .3s}
-.todo input:checked~.t-wrap .t{color:var(--muted)}
-.todo input:checked~.t-wrap .t::after{
-  content:"";position:absolute;left:0;top:54%;width:100%;height:2px;background:currentColor;border-radius:1px;
-  animation:scratch-line .35s var(--ease) forwards;
+/* ==========================================================================
+   TO-DO PANEL: INLINE QUICK-ADD BOX & MORPHING BUTTONS (TodoPanel.qml)
+   ========================================================================== */
+.inline-add-box{
+  background:var(--surface-2);border-radius:16px;padding:8px 10px;margin-bottom:10px;
+  border:1px solid var(--line);display:flex;flex-direction:column;gap:6px;
+  transition:height .4s var(--ease),padding .3s,opacity .3s;flex-shrink:0;
 }
-@keyframes scratch-line{from{width:0;opacity:.2}to{width:100%;opacity:.85}}
+.inline-add-row{display:flex;align-items:center;gap:8px;width:100%}
+.input-shape-icon{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--accent);flex:none;opacity:.85}
+.add-input{flex:1;background:none;border:0;color:var(--text);font:inherit;font-size:.95rem;outline:0}
+.add-input::placeholder{color:var(--muted)}
 
-/* pills */
-.pill{display:inline-flex;align-items:center;gap:5px;font-size:.75rem;padding:3px 9px;border-radius:999px;background:var(--btn-2);color:var(--muted);white-space:nowrap;flex:none;font-weight:500}
-.pill.today{background:color-mix(in srgb,var(--accent) 18%,transparent);color:var(--accent)}
-.pill.tomorrow{background:color-mix(in srgb,var(--tertiary) 20%,transparent);color:var(--tertiary)}
-.pill.habit{background:color-mix(in srgb,var(--accent) 22%,transparent);color:var(--accent);border:1px solid color-mix(in srgb,var(--accent) 35%,transparent)}
-.pill.custom{background:var(--btn-2);color:var(--muted)}
+/* Repeating habit morphing toggle: 26px circle -> pill with "Repeating" text */
+.morph-btn{
+  height:26px;border-radius:999px;border:1px solid rgba(251,251,239,.18);background:transparent;
+  display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:0 7px;
+  cursor:pointer;color:var(--muted);font-size:.78rem;font-weight:600;
+  transition:width .35s var(--ease),background .25s,color .25s,border-color .25s,opacity .25s;
+  white-space:nowrap;overflow:hidden;
+}
+.morph-btn:hover{background:var(--btn-2);color:var(--text)}
+.morph-btn.active{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.morph-btn.dimmed{opacity:.35;pointer-events:none}
+.morph-btn .btn-label{display:none}
+.morph-btn.expanded .btn-label{display:inline}
 
-/* quick adder box */
-.adder-box{display:flex;flex-direction:column;gap:10px;background:var(--surface-2);border-radius:18px;padding:12px 14px;margin-top:10px;border:1px solid var(--line)}
-.adder-row{display:flex;align-items:center;gap:10px}
-.adder-input{flex:1;background:transparent;border:0;color:var(--text);font:inherit;font-size:.95rem;outline:0}
-.adder-input::placeholder{color:var(--muted)}
-.adder-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+/* ==========================================================================
+   EMBEDDED CALENDAR DATE PICKER (TodoDatePicker.qml)
+   ========================================================================== */
+.embedded-dp{
+  display:none;flex-direction:column;gap:8px;background:var(--surface);border-radius:18px;
+  padding:12px;border:1px solid var(--line);margin-top:6px;animation:fade .3s var(--ease);
+}
+.embedded-dp.open{display:flex}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 
-/* mini pill toggles in adder */
-.toggle-pill{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:999px;background:var(--btn-2);color:var(--muted);font-size:.82rem;font-weight:500;transition:background .2s,color .2s}
-.toggle-pill:hover{background:var(--btn-hover);color:var(--text)}
-.toggle-pill.on{background:var(--accent);color:var(--on-accent)}
-.toggle-pill.on-tertiary{background:var(--tertiary);color:var(--on-tertiary)}
+.dp-nav-row{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.dp-month-pill{
+  flex:1;text-align:center;padding:5px 12px;border-radius:999px;font-family:var(--display);
+  font-weight:700;font-size:.92rem;color:var(--accent);cursor:pointer;transition:background .2s;
+}
+.dp-month-pill:hover{background:var(--btn-2)}
+.dp-nav-btn{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--btn-2);color:var(--muted);transition:background .2s,color .2s}
+.dp-nav-btn:hover{background:var(--btn-hover);color:var(--text)}
 
-/* todo date picker popup */
-.datepicker-popup{position:absolute;bottom:75px;left:20px;z-index:25;background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:16px;box-shadow:0 24px 50px -15px rgba(0,0,0,.6);width:290px;display:none;animation:pop .3s var(--ease)}
-.datepicker-popup.open{display:block}
-.dp-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.dp-month-title{font-family:var(--display);font-weight:700;font-size:1.05rem}
-.dp-nav{display:flex;gap:4px}
-.dp-nav button{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--btn-2)}
-.dp-nav button:hover{background:var(--btn-hover)}
-.dp-weekdays{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:.75rem;color:var(--muted);margin-bottom:6px;font-weight:600}
-.dp-days{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
-.dp-day{aspect-ratio:1;display:grid;place-items:center;border-radius:50%;font-size:.84rem;font-weight:500;position:relative;transition:background .2s,color .2s}
-.dp-day:not(.empty):hover{background:var(--btn-hover)}
-.dp-day.empty{pointer-events:none;opacity:.25}
-.dp-day.today{color:var(--accent);font-weight:700}
-.dp-day.today::after{content:"";position:absolute;bottom:3px;width:4px;height:4px;border-radius:50%;background:currentColor}
+.dp-weekdays-row{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:.72rem;font-weight:600;color:var(--muted);margin-top:4px}
+.dp-weekdays-row .weekend{color:var(--tertiary)}
 
-/* rotating clover indicator for selected date */
-.dp-day.selected{background:color-mix(in srgb,var(--tertiary) 20%,transparent);color:var(--tertiary);font-weight:700}
-.dp-day.selected .clover-svg{
+.dp-month-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-top:4px}
+.dp-cell{
+  aspect-ratio:1;border-radius:50%;display:grid;place-items:center;font-size:.82rem;font-weight:500;
+  position:relative;cursor:pointer;color:var(--text);transition:background .2s,color .2s;
+}
+.dp-cell.other-month{opacity:.35}
+.dp-cell.weekend{color:var(--tertiary)}
+.dp-cell:hover:not(.empty){background:var(--btn-hover)}
+
+/* Today Indicator: MaterialShape.Sunny star in m3primary (--cyan) */
+.dp-cell.is-today .today-shape{
   position:absolute;inset:2px;width:calc(100% - 4px);height:calc(100% - 4px);
-  fill:currentColor;animation:clover-spin 10s linear infinite;pointer-events:none;opacity:.35;
+  fill:var(--accent);opacity:.9;pointer-events:none;z-index:1;
 }
+.dp-cell.is-today .day-num{position:relative;z-index:2;color:var(--on-accent);font-weight:700}
+
+/* Selected Date Indicator: Solid MaterialShape.Clover4Leaf in m3tertiary (--peach) with continuous slow rotation */
+.dp-cell.is-selected .clover-shape{
+  position:absolute;inset:2px;width:calc(100% - 4px);height:calc(100% - 4px);
+  fill:var(--tertiary);pointer-events:none;z-index:3;
+  animation:clover-spin 10s linear infinite;
+}
+.dp-cell.is-selected .day-num{position:relative;z-index:4;color:var(--on-tertiary);font-weight:700}
 @keyframes clover-spin{to{transform:rotate(360deg)}}
 
-.dp-shortcuts{display:flex;gap:6px;margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}
-.dp-chip{flex:1;text-align:center;padding:5px 0;border-radius:999px;font-size:.78rem;background:var(--btn-2);color:var(--muted);font-weight:600}
+.dp-quick-chips{display:flex;gap:4px;margin-top:8px;padding-top:6px;border-top:1px solid var(--line)}
+.dp-chip{flex:1;padding:4px 0;border-radius:999px;font-size:.75rem;background:var(--btn-2);color:var(--muted);font-weight:600;text-align:center;transition:background .2s,color .2s}
 .dp-chip:hover{background:var(--btn-hover);color:var(--text)}
 
-/* split trash drawer */
-.trash-drawer{position:absolute;inset:0;background:var(--bg);z-index:20;border-radius:24px;padding:18px;display:none;flex-direction:column;gap:14px;animation:fade .25s var(--ease)}
-.trash-drawer.open{display:flex}
-.td-head{display:flex;align-items:center;justify-content:space-between;padding-bottom:10px;border-bottom:1px solid var(--line)}
-.td-split{display:grid;grid-template-columns:1fr 1fr;gap:14px;flex:1;min-height:0}
-.td-col{background:var(--surface);border-radius:18px;padding:12px;display:flex;flex-direction:column;min-height:0;border:1px solid var(--line)}
-.td-col h4{font-size:.88rem;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:6px}
-.td-list{list-style:none;padding:0;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:6px}
-.td-item{display:flex;align-items:center;justify-content:space-between;background:var(--surface-2);padding:7px 10px;border-radius:12px;font-size:.85rem;gap:8px}
-.td-item .sp{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.td-btn{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;background:var(--btn-2);color:var(--muted);transition:background .2s,color .2s}
-.td-btn:hover{background:var(--btn-hover);color:var(--text)}
-.td-reset-badge{font-size:.72rem;padding:2px 7px;border-radius:999px;background:color-mix(in srgb,var(--accent) 18%,transparent);color:var(--accent)}
-
-/* notes section */
-.notes-toolbar{display:flex;align-items:center;gap:8px;margin-bottom:12px}
-.search-box{flex:1;display:flex;align-items:center;gap:8px;background:var(--surface-2);border-radius:999px;padding:6px 14px;border:1px solid var(--line)}
-.search-box input{background:transparent;border:0;color:var(--text);font:inherit;font-size:.88rem;width:100%;outline:0}
-.search-box input::placeholder{color:var(--muted)}
-.tag-bar{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-bottom:12px;padding-bottom:2px}
-.tag-bar::-webkit-scrollbar{display:none}
-.tag-pill{flex:none;padding:4px 12px;border-radius:999px;font-size:.8rem;background:var(--btn-2);color:var(--muted);font-weight:500;transition:background .2s,color .2s}
-.tag-pill.active{background:var(--accent);color:var(--on-accent)}
-
-.notes-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
-.notes-grid.list{grid-template-columns:1fr}
-.sec-title{display:flex;align-items:center;gap:6px;font-size:.78rem;color:var(--muted);font-weight:600;margin:6px 0 8px;text-transform:uppercase;letter-spacing:.04em}
-
-/* note card */
-.note{
-  --c-bg:var(--slate-mid); --c-ink:var(--cream);
-  position:relative;text-align:left;background:var(--c-bg);color:var(--c-ink);
-  border-radius:18px;padding:12px 14px;height:124px;overflow:hidden;display:block;width:100%;
-  transition:transform .3s var(--spring),border-radius .3s var(--ease),box-shadow .3s;
-  cursor:pointer;border:1px solid rgba(255,255,255,.08);
+/* ==========================================================================
+   TASK ITEMS & SINUSOIDAL WAVY SCRATCH ANIMATION (WavyLine.qml)
+   ========================================================================== */
+.todo-list{list-style:none;padding:0;display:flex;flex-direction:column;gap:3px}
+.todo-row{
+  display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:12px;
+  position:relative;transition:background .2s,opacity .35s,height .45s var(--ease),margin .45s var(--ease);
+  overflow:hidden;height:38px;
 }
-.note:hover{transform:translateY(-3px);border-radius:24px;box-shadow:0 12px 24px -10px rgba(0,0,0,.4)}
-.note::after{content:"";position:absolute;inset:auto 0 0 0;height:30px;background:linear-gradient(transparent,var(--c-bg))}
-.note-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
-.note h4{font-family:var(--display);font-weight:700;font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:20px}
-.note .pin-btn{position:absolute;top:10px;right:10px;width:24px;height:24px;display:grid;place-items:center;border-radius:50%;opacity:.55;transition:opacity .2s,transform .25s var(--spring)}
-.note .pin-btn:hover{opacity:1;transform:rotate(-15deg) scale(1.1)}
-.note .pin-btn.on{opacity:1}
-.note .note-body{font-size:.85rem;opacity:.88;line-height:1.45}
+.todo-row:hover{background:rgba(251,251,239,.04)}
+.todo-row.resting{opacity:.7}
 
-/* 7 M3 note color schemes */
-.c-slate{--c-bg:var(--slate-mid);--c-ink:var(--cream)}
-.c-cyan{--c-bg:var(--cyan);--c-ink:#1E2530}
-.c-cream{--c-bg:var(--cream);--c-ink:var(--slate)}
-.c-teal{--c-bg:var(--cyan-deep);--c-ink:var(--cream)}
-.c-peach{--c-bg:var(--peach);--c-ink:#331D14}
-.c-mauve{--c-bg:var(--mauve);--c-ink:#2D1A30}
-.c-mint{--c-bg:var(--mint);--c-ink:#132E23}
+/* Checkbox morphing into M3 Cookie/Clover/Sunny shape with checkmark */
+.m3-check-btn{
+  width:22px;height:22px;display:grid;place-items:center;background:none;border:0;
+  cursor:pointer;position:relative;flex:none;transition:transform .2s var(--spring);
+}
+.m3-check-btn:hover{transform:scale(1.08)}
+.m3-check-btn:active{transform:scale(.88)}
 
-/* markdown rendering & algorithmic morphing bullets */
-.md h1,.md h2,.md h3{font-family:var(--display);font-weight:700;margin:0 0 4px}
-.md h1{font-size:1.15em}.md h2{font-size:1.05em}.md h3{font-size:1em}
-.md p{margin:0 0 4px}
-.md ul{list-style:none;padding:0;margin:0}
-.md li{display:flex;gap:.55em;align-items:baseline;padding-left:calc(var(--d,0)*1.3em);margin-bottom:2px}
-.bl{flex:none;width:.65em;height:.65em;background:currentColor;opacity:.9;translate:0 .06em;-webkit-mask:var(--s0) center/contain no-repeat;mask:var(--s0) center/contain no-repeat}
+.m3-check-shape{
+  width:18px;height:18px;border-radius:5px;border:1.5px solid var(--muted);
+  display:grid;place-items:center;transition:border-radius .3s var(--spring),background .25s,border-color .25s;
+}
+.m3-check-btn:hover .m3-check-shape{border-color:var(--accent)}
+.todo-row.checked .m3-check-shape{
+  background:var(--accent);border-color:var(--accent);border-radius:50%;
+}
+.m3-check-shape .icon{width:13px;height:13px;fill:var(--on-accent);opacity:0;transform:scale(.4);transition:opacity .2s,transform .25s var(--spring)}
+.todo-row.checked .m3-check-shape .icon{opacity:1;transform:scale(1)}
+
+/* Text container with Wavy Canvas Scratch-Off */
+.todo-label-wrap{flex:1;min-width:0;position:relative;cursor:pointer;overflow:hidden}
+.todo-text{font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;transition:color .3s,opacity .3s}
+.todo-row.checked .todo-text{color:var(--muted);opacity:.6}
+
+.wavy-canvas{
+  position:absolute;left:0;top:50%;transform:translateY(-50%);height:14px;
+  pointer-events:none;display:none;z-index:5;
+}
+
+/* Pills */
+.pill{display:inline-flex;align-items:center;gap:4px;font-size:.72rem;padding:2px 8px;border-radius:999px;font-weight:600;white-space:nowrap;flex:none}
+.pill.habit{background:color-mix(in srgb,var(--tertiary) 22%,transparent);color:var(--tertiary)}
+.pill.today{background:color-mix(in srgb,var(--tertiary) 20%,transparent);color:var(--tertiary)}
+.pill.tomorrow{background:color-mix(in srgb,var(--mauve) 22%,transparent);color:var(--mauve)}
+.pill.overdue{background:#E06D53;color:#fff}
+.pill.date-custom{background:var(--btn-2);color:var(--muted)}
+.pill.resetting{background:color-mix(in srgb,var(--mauve) 20%,transparent);color:var(--mauve)}
+
+/* Fixed-slot action button on hover */
+.row-act-btn{
+  width:28px;height:28px;border-radius:8px;display:grid;place-items:center;background:none;
+  color:var(--muted);opacity:0;transition:opacity .2s,background .2s,color .2s;flex:none;
+}
+.todo-row:hover .row-act-btn{opacity:1}
+.row-act-btn:hover{background:var(--btn-2);color:var(--text)}
+
+/* Empty state */
+.empty-view{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 0;gap:8px;color:var(--muted);text-align:center}
+.empty-view .icon{width:42px;height:42px;fill:var(--accent);opacity:.75}
+
+/* ==========================================================================
+   SPLIT TRASH VIEW (TodoPanel.qml)
+   ========================================================================== */
+.trash-view{display:none;flex-direction:column;gap:12px;flex:1;min-height:0}
+.trash-view.open{display:flex}
+.trash-sub-head{display:flex;align-items:center;gap:6px;font-size:.82rem;font-weight:600;margin:4px 0 2px}
+.trash-sub-head.habits{color:var(--tertiary)}
+.trash-sub-head.general{color:var(--muted)}
+.trash-divider{height:1px;background:var(--line);opacity:.4;margin:6px 0}
+
+/* ==========================================================================
+   NOTES BOARD (NotesPanel.qml)
+   ========================================================================== */
+.notes-list-view{display:flex;flex-direction:column;flex:1;min-height:0}
+.notes-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.notes-grid.list-mode{grid-template-columns:1fr}
+
+.sec-title{display:flex;align-items:center;gap:6px;font-size:.75rem;color:var(--muted);font-weight:700;margin:6px 0 8px;letter-spacing:.04em}
+
+/* Note Card Item (NoteCardItem.qml) */
+.note-card{
+  position:relative;text-align:left;border-radius:16px;padding:12px 14px;
+  cursor:pointer;border:1px solid var(--line);background:var(--surface-2);
+  transition:transform .3s var(--spring),border-color .25s,box-shadow .25s;
+  overflow:hidden;display:flex;flex-direction:column;gap:4px;
+}
+.note-card.grid-mode{height:118px}
+.note-card.list-mode{height:70px}
+.note-card:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 12px 24px -10px rgba(0,0,0,.4)}
+.note-card .nc-head{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.note-card h4{font-family:var(--display);font-weight:700;font-size:.98rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.note-card .nc-body{font-size:.82rem;color:var(--muted);line-height:1.45;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-box-orient:vertical}
+.note-card.grid-mode .nc-body{-webkit-line-clamp:3}
+.note-card.list-mode .nc-body{-webkit-line-clamp:1}
+
+/* Note Stack Card (NoteStackCard.qml) */
+.stack-card-wrap{position:relative;cursor:pointer}
+.stack-layer{
+  position:absolute;inset:0;border-radius:16px;border:1px solid var(--line);
+  background:var(--surface-3);transition:transform .3s var(--spring);
+}
+.stack-layer.b2{transform:translate(8px,-6px);opacity:.45}
+.stack-layer.b1{transform:translate(4px,-3px);opacity:.75}
+.stack-card-wrap:hover .stack-layer.b2{transform:translate(12px,-9px)}
+.stack-card-wrap:hover .stack-layer.b1{transform:translate(6px,-5px)}
+.stack-front{position:relative;z-index:3}
+.stack-badge{
+  position:absolute;bottom:8px;right:10px;background:var(--accent);color:var(--on-accent);
+  padding:2px 8px;border-radius:999px;font-size:.72rem;font-weight:700;
+}
+
+/* 5 Caelestia M3 Note Colors */
+.note-card.c-primary{background:color-mix(in srgb,var(--accent) 22%,var(--surface-2));border-color:color-mix(in srgb,var(--accent) 45%,transparent)}
+.note-card.c-secondary{background:color-mix(in srgb,var(--mauve) 22%,var(--surface-2));border-color:color-mix(in srgb,var(--mauve) 45%,transparent)}
+.note-card.c-tertiary{background:color-mix(in srgb,var(--tertiary) 22%,var(--surface-2));border-color:color-mix(in srgb,var(--tertiary) 45%,transparent)}
+.note-card.c-pink{background:color-mix(in srgb,#E06D53 22%,var(--surface-2));border-color:color-mix(in srgb,#E06D53 45%,transparent)}
+
+/* ==========================================================================
+   NOTE DETAIL TAKEOVER VIEW (NoteDetailView.qml)
+   ========================================================================== */
+.note-detail-view{display:none;flex-direction:column;gap:12px;flex:1;min-height:0;animation:fade .35s var(--ease)}
+.note-detail-view.open{display:flex}
+
+.nd-header{display:flex;align-items:start;justify-content:space-between;gap:12px;flex-shrink:0}
+.nd-left{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+.nd-title-input{
+  background:none;border:0;color:var(--text);font:700 1.35rem var(--display);
+  letter-spacing:-.02em;outline:0;width:100%;
+}
+.nd-title-input::placeholder{color:var(--muted)}
+
+.nd-right{display:flex;flex-direction:column;align-items:end;gap:6px}
+.nd-actions-row{display:flex;align-items:center;gap:6px}
+.nd-colors-row{display:flex;align-items:center;gap:6px}
+
+.color-dot{
+  width:16px;height:16px;border-radius:50%;cursor:pointer;border:1px solid rgba(251,251,239,.3);
+  display:grid;place-items:center;transition:transform .2s var(--spring),border-width .2s;
+}
+.color-dot:hover{transform:scale(1.2)}
+.color-dot.selected{border:2px solid var(--text);transform:scale(1.15)}
+
+.nd-desc-card{
+  flex:1;min-height:0;border-radius:20px;padding:16px;border:1px solid var(--line);
+  background:var(--surface-2);display:flex;flex-direction:column;position:relative;overflow:hidden;
+  transition:background .3s,border-color .3s;
+}
+.nd-desc-card.c-primary{background:color-mix(in srgb,var(--accent) 22%,var(--surface-2));border-color:color-mix(in srgb,var(--accent) 45%,transparent)}
+.nd-desc-card.c-secondary{background:color-mix(in srgb,var(--mauve) 22%,var(--surface-2));border-color:color-mix(in srgb,var(--mauve) 45%,transparent)}
+.nd-desc-card.c-tertiary{background:color-mix(in srgb,var(--tertiary) 22%,var(--surface-2));border-color:color-mix(in srgb,var(--tertiary) 45%,transparent)}
+.nd-desc-card.c-pink{background:color-mix(in srgb,#E06D53 22%,var(--surface-2));border-color:color-mix(in srgb,#E06D53 45%,transparent)}
+
+.nd-textarea{
+  flex:1;width:100%;background:none;border:0;color:var(--text);font:.95rem/1.6 var(--mono);
+  resize:none;outline:0;
+}
+.nd-textarea::placeholder{color:var(--muted)}
+
+.nd-preview-scroll{flex:1;overflow-y:auto;min-height:0;font-size:.95rem;line-height:1.6}
+.nd-preview-scroll h1{font-size:1.3em;margin-bottom:6px}
+.nd-preview-scroll h2{font-size:1.15em;margin-bottom:4px}
+.nd-preview-scroll h3{font-size:1.05em;margin-bottom:4px}
+.nd-preview-scroll p{margin-bottom:6px}
+.nd-preview-scroll ul{list-style:none;padding:0;margin-bottom:8px}
+.nd-preview-scroll li{display:flex;align-items:baseline;gap:8px;margin-bottom:3px;padding-left:calc(var(--d,0)*1.3em)}
+.bl{
+  flex:none;width:.65em;height:.65em;background:currentColor;opacity:.9;translate:0 .06em;
+  -webkit-mask:var(--s0) center/contain no-repeat;mask:var(--s0) center/contain no-repeat;
+}
 .bl.d1{-webkit-mask-image:var(--s1);mask-image:var(--s1)}
 .bl.d2{-webkit-mask-image:var(--s2);mask-image:var(--s2)}
-.md code{font-family:var(--mono);font-size:.88em;background:rgba(127,127,127,.22);padding:1px 5px;border-radius:5px}
+.nd-preview-scroll code{font-family:var(--mono);font-size:.88em;background:rgba(127,127,127,.22);padding:1px 5px;border-radius:5px}
 
-/* note detail & lazy editor modal */
-.editor-modal{position:absolute;inset:0;display:none;place-items:center;background:rgba(15,18,24,.6);padding:20px;z-index:30}
-.editor-modal.open{display:grid;animation:fade .25s var(--ease)}
-.sheet{--c-bg:var(--slate-mid);--c-ink:var(--cream);background:var(--c-bg);color:var(--c-ink);width:min(680px,100%);max-height:100%;border-radius:28px;padding:22px;display:flex;flex-direction:column;gap:12px;animation:sheet .35s var(--spring);transition:background .3s,color .3s;box-shadow:0 30px 60px -20px rgba(0,0,0,.6)}
-@keyframes sheet{from{transform:scale(.92) translateY(16px);opacity:0}}
-.sheet input.title{background:none;border:0;color:inherit;font:700 1.45rem var(--display);letter-spacing:-.02em;outline:0;width:100%}
-.sheet textarea{background:rgba(127,127,127,.15);border:0;border-radius:16px;color:inherit;font:.95rem/1.55 var(--mono);padding:14px;height:140px;resize:none;outline:0;width:100%}
-.sheet textarea:focus-visible{outline:2px solid currentColor}
-.sheet .preview-pane{overflow-y:auto;min-height:90px;max-height:160px;padding:6px;border-radius:14px;background:rgba(127,127,127,.08)}
-.sheet .bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.dots{display:flex;gap:7px}
-.dot{width:26px;height:26px;border-radius:50%;border:2px solid rgba(127,127,127,.45);transition:transform .25s var(--spring)}
-.dot:hover{transform:scale(1.15)}
-.dot[aria-checked="true"]{border-color:currentColor;transform:scale(1.12);outline:2px solid currentColor;outline-offset:2px}
-.sheet .sp{flex:1}
-.sbtn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:999px;background:rgba(127,127,127,.2);font-weight:600;font-size:.9rem;transition:border-radius .2s,background .2s}
-.sbtn:hover{border-radius:12px;background:rgba(127,127,127,.3)}
-.sbtn.pri{background:var(--c-ink);color:var(--c-bg)}
-
-/* showcase feature sections */
+/* Feature deep dives */
 section.feat{padding:84px 0 0}
 .feat-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
 .feat.flip .feat-copy{order:2}
 .feat h2{font-family:var(--display);font-weight:700;font-size:clamp(1.8rem,3.6vw,2.6rem);letter-spacing:-.03em;line-height:1.08;margin-bottom:16px}
 .feat p{color:var(--muted);max-width:44ch}
 .stage{background:var(--surface);border-radius:32px;padding:28px;transition:background .5s var(--ease);border:1px solid var(--line)}
-.stage .todo label{padding:10px 8px}
 
 .shapes{display:flex;flex-direction:column;gap:14px}
 .src-out{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -300,16 +416,10 @@ section.feat{padding:84px 0 0}
 .lvls{display:flex;gap:8px;flex-wrap:wrap}
 .lvl{display:flex;align-items:center;gap:8px;background:var(--bg);padding:6px 14px 6px 10px;border-radius:999px;font-size:.88rem;border:1px solid var(--line)}
 .lvl .bl{width:.95em;height:.95em;color:var(--accent);opacity:1;background:var(--accent);animation:spin 14s linear infinite}
-.lvl:nth-child(2) .bl{animation-duration:9s}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 .swatches{display:flex;gap:10px;margin-bottom:18px}
-.swatches .dot{width:36px;height:36px}
-.sample{height:auto;min-height:130px;cursor:default}
-.sample:hover{transform:none;border-radius:18px}
-.sample::after{display:none}
-.sample h4{font-size:1.1rem}
-.sample .body{font-size:.95rem}
+.swatches .color-dot{width:32px;height:32px}
 
 .sync{display:flex;align-items:center;justify-content:space-between;gap:28px;flex-wrap:wrap;background:var(--surface);border-radius:32px;padding:36px;transition:background .5s var(--ease);border:1px solid var(--line)}
 .sync h2{font-family:var(--display);font-size:clamp(1.6rem,3vw,2.2rem);letter-spacing:-.03em;line-height:1.1;margin-bottom:10px}
@@ -318,7 +428,6 @@ section.feat{padding:84px 0 0}
 .seg button{display:flex;align-items:center;gap:6px;padding:10px 22px;border-radius:999px;font-weight:600;color:var(--muted);transition:background .3s,color .3s}
 .seg button[aria-pressed=true]{background:var(--accent);color:var(--on-accent)}
 
-/* call to action */
 .cta{margin-top:96px;text-align:center;padding-bottom:20px}
 .cta img{width:88px;height:88px;margin:0 auto 20px;border-radius:24px;object-fit:cover;box-shadow:0 16px 36px -10px rgba(0,0,0,.4)}
 .cta h2{font-family:var(--display);font-size:clamp(1.8rem,4vw,2.8rem);letter-spacing:-.03em;margin-bottom:12px}
@@ -329,8 +438,9 @@ footer{margin-top:64px;padding:28px 0 40px;border-top:1px solid var(--line);colo
 @media (max-width:860px){
   .hero{grid-template-columns:1fr;padding-top:24px}
   .mark{width:160px;justify-self:start;order:-1}
-  .panes{grid-template-columns:1fr;min-height:auto}
-  .pane{height:460px}
+  .panes{flex-direction:column;min-height:auto}
+  #todoPane{width:100%!important}
+  #notesPane{width:100%!important}
   .feat-grid{grid-template-columns:1fr;gap:28px}
   .feat.flip .feat-copy{order:0}
   nav a.link{display:none}
@@ -340,7 +450,7 @@ footer{margin-top:64px;padding:28px 0 40px;border-top:1px solid var(--line);colo
   *,*::before,*::after{animation:none!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
 }
 
-/* focus mode overlay */
+/* Focus mode */
 .veil{position:fixed;inset:0;z-index:40;background:color-mix(in srgb,var(--bg) 50%,transparent);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity .4s var(--ease)}
 .hint{position:fixed;left:50%;bottom:24px;z-index:45;translate:-50% 12px;padding:8px 18px;border-radius:999px;background:var(--surface-2);color:var(--muted);font-size:.85rem;opacity:0;pointer-events:none;transition:opacity .4s .2s,translate .4s .2s var(--ease);border:1px solid var(--line)}
 body.focus-mode{overflow:hidden}
@@ -362,13 +472,8 @@ body.focus-mode .panel{z-index:42;transform:scale(1.035);box-shadow:0 50px 100px
       <a class="link" href="#try">Try it</a>
       <a class="link" href="#features">Features</a>
       <a class="link" href="#theme">Theme</a>
-      <button class="icon-btn" id="themeBtn" aria-label="Switch theme" title="Switch theme">
-        <span class="icon i-sun">light_mode</span>
-        <span class="icon i-moon">dark_mode</span>
-      </button>
-      <a class="btn sm" href="https://github.com/Denzils-repo/Caelestia_Notes" target="_blank" rel="noopener">
-        <span class="icon sm">star</span> GitHub
-      </a>
+      <button class="icon-btn" id="themeBtn" aria-label="Switch theme" title="Switch theme"></button>
+      <a class="btn sm" href="https://github.com/Denzils-repo/Caelestia_Notes" target="_blank" rel="noopener" id="githubTopLink"></a>
     </nav>
   </header>
 
@@ -378,12 +483,8 @@ body.focus-mode .panel{z-index:42;transform:scale(1.035);box-shadow:0 50px 100px
         <h1>Notes and to-dos, one tab away in your shell.</h1>
         <p class="lead">Caelestia Notes is a lightweight, local-first productivity plugin for Caelestia Shell on Linux. It brings daily habit tracking, an animated clover date picker, and pinnable, zero-lag Markdown notes into your Material 3 desktop.</p>
         <div class="actions">
-          <a class="btn" href="https://github.com/Denzils-repo/Caelestia_Notes" target="_blank" rel="noopener">
-            <span class="icon sm">download</span> Get it on GitHub
-          </a>
-          <a class="btn ghost" href="#try">
-            <span class="icon sm">play_arrow</span> Try interactive panel
-          </a>
+          <a class="btn" href="https://github.com/Denzils-repo/Caelestia_Notes" target="_blank" rel="noopener" id="githubHeroBtn"></a>
+          <a class="btn ghost" href="#try" id="tryHeroBtn"></a>
         </div>
       </div>
       <div class="mark" aria-hidden="true">
@@ -393,210 +494,211 @@ body.focus-mode .panel{z-index:42;transform:scale(1.035);box-shadow:0 50px 100px
       </div>
     </div>
 
-    <!-- interactive live panel -->
+    <!-- Live Interactive Panel -->
     <section id="try" aria-label="Interactive demo">
       <div class="demo-head">
         <h2>The Notes tab, live</h2>
-        <p>1-to-1 interactive replica of the Caelestia Shell QML plugin. 100% offline client-side.</p>
+        <p>Exact 1-to-1 interactive replica of the Caelestia Shell QML plugin. 100% offline client-side.</p>
       </div>
 
       <div class="panel">
+        <!-- Top Shell Tabs -->
         <div class="tabs" id="tabs">
-          <div class="tab" data-i="0"><span class="icon">grid_view</span>Dashboard</div>
-          <div class="tab" data-i="1"><span class="icon">music_note</span>Media</div>
-          <div class="tab on" data-i="2"><span class="icon fill">edit_note</span>Notes</div>
-          <div class="tab" data-i="3"><span class="icon">speed</span>Performance</div>
-          <div class="tab" data-i="4"><span class="icon">partly_cloudy_day</span>Weather</div>
-          <div class="tab" data-i="5"><span class="icon">memory</span>Hardware</div>
+          <div class="tab" data-i="0" id="tab0">Dashboard</div>
+          <div class="tab" data-i="1" id="tab1">Media</div>
+          <div class="tab on" data-i="2" id="tab2">Notes</div>
+          <div class="tab" data-i="3" id="tab3">Performance</div>
+          <div class="tab" data-i="4" id="tab4">Weather</div>
+          <div class="tab" data-i="5" id="tab5">Hardware</div>
           <span class="tab-bar" id="tabBar"></span>
         </div>
 
-        <div class="panes">
-          <!-- to-do & habits pane -->
-          <div class="pane" aria-label="To-Do & Habits">
-            <div class="pane-head">
-              <h3>To-Do</h3>
-              <span class="count" id="todoCountBadge">0 remaining</span>
-              <span class="sp"></span>
-              <!-- Sort toggle button -->
-              <button class="pbtn soft" id="todoSortBtn" title="Toggle Sort (Due Date / Chronological)">
-                <span class="icon" id="todoSortIcon">calendar_month</span>
-              </button>
-              <!-- Trash button -->
-              <button class="pbtn soft" id="trashToggleBtn" title="Split Trash Bin">
-                <span class="icon">delete</span>
-              </button>
-            </div>
+        <!-- Master Split Panes -->
+        <div class="panes" id="panesContainer">
+          
+          <!-- ==========================================
+               TO-DO PANEL (40% normal / 58% date-picking / 0% note-takeover)
+               ========================================== -->
+          <div class="pane" id="todoPane" aria-label="To-Do & Habits">
+            
+            <!-- Active To-Do View -->
+            <div id="todoMainView" style="display:flex;flex-direction:column;flex:1;min-height:0">
+              <div class="pane-head">
+                <h3>To-do</h3>
+                <span class="count" id="todoCountBadge">0 left</span>
+                <span class="sp"></span>
+                <button class="pbtn soft" id="todoSortBtn" title="Toggle Sort (Due Date / Chronological)"></button>
+                <button class="pbtn soft" id="trashToggleBtn" title="Split Trash Bin"></button>
+                <button class="pbtn" id="inlineAddToggleBtn" title="Add To-do"></button>
+              </div>
 
-            <!-- Task List -->
-            <div class="scroll">
-              <ul class="todo-list" id="todoList"></ul>
-            </div>
-
-            <!-- Quick Add Box -->
-            <div class="adder-box">
-              <div class="adder-row">
-                <input type="text" class="adder-input" id="newTaskInput" placeholder="Add a task or daily habit..." maxlength="120">
-                <button class="pbtn" id="submitTaskBtn" title="Add task">
-                  <span class="icon">add</span>
-                </button>
-              </div>
-              <div class="adder-actions">
-                <!-- Date Picker trigger -->
-                <button type="button" class="toggle-pill" id="dpTriggerBtn">
-                  <span class="icon xs">calendar_today</span>
-                  <span id="dpTriggerLabel">No Date</span>
-                </button>
-                <!-- Daily habit toggle -->
-                <button type="button" class="toggle-pill" id="repeatHabitBtn" aria-pressed="false">
-                  <span class="icon xs">repeat</span>
-                  <span>Daily Habit</span>
-                </button>
-              </div>
-            </div>
-
-            <!-- Floating Calendar Picker Popup with Rotating Clover -->
-            <div class="datepicker-popup" id="datePickerPopup">
-              <div class="dp-header">
-                <span class="dp-month-title" id="dpMonthYear">September 2026</span>
-                <div class="dp-nav">
-                  <button type="button" id="dpPrevMonth"><span class="icon xs">chevron_left</span></button>
-                  <button type="button" id="dpNextMonth"><span class="icon xs">chevron_right</span></button>
-                </div>
-              </div>
-              <div class="dp-weekdays">
-                <span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span><span>Su</span>
-              </div>
-              <div class="dp-days" id="dpDaysGrid"></div>
-              <div class="dp-shortcuts">
-                <button type="button" class="dp-chip" id="dpPickToday">Today</button>
-                <button type="button" class="dp-chip" id="dpPickTomorrow">Tomorrow</button>
-                <button type="button" class="dp-chip" id="dpClearDate">Clear</button>
-                <button type="button" class="dp-chip" id="dpDoneBtn">Done</button>
-              </div>
-            </div>
-
-            <!-- Split Trash Drawer -->
-            <div class="trash-drawer" id="trashDrawer">
-              <div class="td-head">
-                <h3 style="display:flex;align-items:center;gap:6px">
-                  <span class="icon fill">auto_delete</span> Recycling & Habits
-                </h3>
-                <div style="display:flex;gap:6px">
-                  <button class="pbtn soft" id="emptyTrashBtn" title="Purge general trash" style="width:34px;height:34px">
-                    <span class="icon sm">delete_forever</span>
+              <!-- Inline Quick-Add Box (TodoPanel.qml) -->
+              <div class="inline-add-box" id="inlineAddBox">
+                <div class="inline-add-row">
+                  <div class="input-shape-icon"></div>
+                  <input type="text" class="add-input" id="newTodoInput" placeholder="Add a new to-do…" maxlength="300">
+                  
+                  <!-- Morphing Repeating Habit button: 26px circle -> pill with "Repeating" -->
+                  <button type="button" class="morph-btn" id="repeatToggleBtn" title="Toggle Daily Repeating Habit">
+                    <span id="repeatIconHolder"></span>
+                    <span class="btn-label">Repeating</span>
                   </button>
-                  <button class="pbtn soft" id="closeTrashBtn" title="Close" style="width:34px;height:34px">
-                    <span class="icon sm">close</span>
+
+                  <!-- Morphing Date button: 26px circle -> pill with date label -->
+                  <button type="button" class="morph-btn" id="datePickerTriggerBtn" title="Pick Due Date">
+                    <span id="dateIconHolder"></span>
+                    <span class="btn-label" id="dateBtnLabel">Date</span>
                   </button>
+
+                  <!-- Commit button -->
+                  <button type="button" class="pbtn soft" id="commitTodoBtn" style="width:28px;height:28px;border-radius:50%" title="Add Task"></button>
                 </div>
-              </div>
-              <div class="td-split">
-                <!-- Completed Daily Habits section -->
-                <div class="td-col">
-                  <h4><span class="icon sm">repeat</span> Daily Habits</h4>
-                  <div style="font-size:.74rem;color:var(--muted);margin-bottom:8px;" id="midnightResetCountdown">
-                    Resetting in 5h 12m
+
+                <!-- Embedded Calendar Date Picker (TodoDatePicker.qml) -->
+                <div class="embedded-dp" id="embeddedDatePicker">
+                  <div class="dp-nav-row">
+                    <button type="button" class="dp-nav-btn" id="dpPrevMonth" title="Previous Month"></button>
+                    <div class="dp-month-pill" id="dpMonthYearDisplay" title="Click to reset to Today">September 2026</div>
+                    <button type="button" class="dp-nav-btn" id="dpNextMonth" title="Next Month"></button>
+                    <button type="button" class="dp-nav-btn" id="dpCloseBtn" title="Close Calendar"></button>
                   </div>
-                  <ul class="td-list" id="trashHabitsList"></ul>
+                  <div class="dp-weekdays-row">
+                    <span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span class="weekend">Sa</span><span class="weekend">Su</span>
+                  </div>
+                  <div class="dp-month-grid" id="dpMonthGrid"></div>
+                  <div class="dp-quick-chips">
+                    <button type="button" class="dp-chip" id="dpChipToday">Today</button>
+                    <button type="button" class="dp-chip" id="dpChipTomorrow">Tomorrow</button>
+                    <button type="button" class="dp-chip" id="dpChipClear">Clear</button>
+                  </div>
                 </div>
-                <!-- General Trashed Tasks section -->
-                <div class="td-col">
-                  <h4><span class="icon sm">delete</span> General Trash</h4>
-                  <div style="font-size:.74rem;color:var(--muted);margin-bottom:8px;">Deleted & completed tasks</div>
-                  <ul class="td-list" id="trashGeneralList"></ul>
+              </div>
+
+              <!-- Task List Scroll View (Hidden when date picker is open) -->
+              <div class="scroll" id="todoScrollArea">
+                <ul class="todo-list" id="activeTodoList"></ul>
+                <div class="empty-view" id="todoEmptyView" style="display:none">
+                  <div id="todoEmptyIcon"></div>
+                  <div style="font-weight:600;font-size:.95rem">All clear for today</div>
+                  <div style="font-size:.82rem;opacity:.7">Click + to add a to-do or habit</div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <!-- notes board pane -->
-          <div class="pane" aria-label="Notes Board">
-            <div class="pane-head">
-              <h3>Notes</h3>
-              <span class="count" id="notesCountBadge">0</span>
-              <span class="sp"></span>
-              <button class="pbtn soft" id="notesLayoutBtn" title="Switch layout">
-                <span class="icon" id="notesLayoutIcon">grid_view</span>
-              </button>
-              <button class="pbtn" id="newNoteBtn" title="New Note">
-                <span class="icon">add</span>
-              </button>
-            </div>
+            <!-- Split Trash View (TodoPanel.qml) -->
+            <div class="trash-view" id="trashView">
+              <div class="pane-head">
+                <h3>Trash</h3>
+                <span class="count" id="trashCountBadge">0</span>
+                <span class="sp"></span>
+                <button class="pbtn soft" id="emptyTrashBtn" title="Empty All General Trash" style="display:none"></button>
+                <button class="pbtn" id="backFromTrashBtn" title="Back to Active To-dos"></button>
+              </div>
 
-            <!-- Search bar -->
-            <div class="notes-toolbar">
-              <div class="search-box">
-                <span class="icon sm" style="color:var(--muted)">search</span>
-                <input type="text" id="noteSearchInput" placeholder="Search notes...">
+              <div class="scroll">
+                <!-- Repeating Habits Resting Section -->
+                <div id="trashHabitsSection" style="display:none">
+                  <div class="trash-sub-head habits">
+                    <span id="trashHabitsIcon"></span>
+                    <span id="trashHabitsTitle">Repeating Habits (0)</span>
+                  </div>
+                  <ul class="todo-list" id="trashHabitsList"></ul>
+                </div>
+
+                <div class="trash-divider" id="trashDivider" style="display:none"></div>
+
+                <!-- General Trashed Tasks Section -->
+                <div id="trashGeneralSection" style="display:none">
+                  <div class="trash-sub-head general">
+                    <span id="trashGeneralIcon"></span>
+                    <span id="trashGeneralTitle">General (0)</span>
+                  </div>
+                  <ul class="todo-list" id="trashGeneralList"></ul>
+                </div>
+
+                <div class="empty-view" id="trashEmptyView" style="display:none">
+                  <div id="trashEmptyIcon"></div>
+                  <div style="font-weight:600;font-size:.95rem">Trash is empty</div>
+                  <div style="font-size:.82rem;opacity:.7">No completed habits or deleted tasks</div>
+                </div>
               </div>
             </div>
 
-            <!-- Category Tag bar -->
-            <div class="tag-bar" id="tagFilterBar">
-              <button class="tag-pill active" data-tag="all">All</button>
-              <button class="tag-pill" data-tag="work">Work</button>
-              <button class="tag-pill" data-tag="personal">Personal</button>
-              <button class="tag-pill" data-tag="ideas">Ideas</button>
-              <button class="tag-pill" data-tag="todo">Todo</button>
-            </div>
-
-            <!-- Scrollable Notes List with Pinned / Others sections -->
-            <div class="scroll" id="notesScrollContainer">
-              <div id="pinnedSection">
-                <div class="sec-title"><span class="icon xs fill">push_pin</span> Pinned</div>
-                <div class="notes-grid" id="pinnedNotesGrid"></div>
-              </div>
-              <div id="othersSection">
-                <div class="sec-title" id="othersTitle"><span class="icon xs">notes</span> Notes</div>
-                <div class="notes-grid" id="otherNotesGrid"></div>
-              </div>
-            </div>
           </div>
-        </div>
 
-        <!-- Note Detail & Lazy Markdown Editor Modal -->
-        <div class="editor-modal" id="editorModal" role="dialog" aria-modal="true" aria-label="Edit note">
-          <div class="sheet" id="editorSheet">
-            <div class="note-header">
-              <input class="title" id="noteTitleInput" placeholder="Untitled Note" maxlength="60">
-              <button class="icon-btn" id="modalCloseX" style="width:32px;height:32px">
-                <span class="icon sm">close</span>
-              </button>
+          <!-- ==========================================
+               NOTES PANEL (60% normal / 42% date-picking / 100% note-takeover)
+               ========================================== -->
+          <div class="pane" id="notesPane" aria-label="Notes Board">
+            
+            <!-- List & Board Mode (NotesPanel.qml) -->
+            <div class="notes-list-view" id="notesListView">
+              <div class="pane-head">
+                <button class="pbtn soft" id="notesBackFilterBtn" style="display:none" title="Back to All Notes"></button>
+                <h3 id="notesPaneTitle">Notes</h3>
+                <span class="count" id="notesCountBadge">0</span>
+                <span class="sp"></span>
+                <button class="pbtn soft active" id="notesLayoutToggleBtn" title="Toggle Grid / List View"></button>
+                <button class="pbtn" id="createNoteBtn" title="Create New Note"></button>
+              </div>
+
+              <div class="scroll">
+                <!-- Empty Notes State -->
+                <div class="empty-view" id="notesEmptyView" style="display:none">
+                  <div id="notesEmptyIcon"></div>
+                  <div style="font-weight:600;font-size:.95rem">No notes yet</div>
+                  <div style="font-size:.82rem;opacity:.7">Click + to jot down thoughts, ideas, or reminders</div>
+                </div>
+
+                <!-- Pinned Notes Section -->
+                <div id="pinnedNotesSection" style="display:none">
+                  <div class="sec-title" id="pinnedSecTitle">
+                    <span id="pinnedSecIcon"></span> PINNED
+                  </div>
+                  <div class="notes-grid" id="pinnedNotesContainer"></div>
+                </div>
+
+                <!-- Other Notes Section -->
+                <div id="otherNotesSection" style="display:none">
+                  <div class="sec-title" id="otherSecTitle">
+                    <span id="otherSecIcon"></span> OTHERS
+                  </div>
+                  <div class="notes-grid" id="otherNotesContainer"></div>
+                </div>
+              </div>
             </div>
 
-            <!-- View mode: raw textarea (edit) vs lazy preview (markdown) -->
-            <textarea id="noteBodyInput" aria-label="Note body" placeholder="Write in Markdown (# Heading, - Bullet, **Bold**, `Code`)..."></textarea>
-            <div class="preview-pane md" id="notePreviewPane" style="display:none;"></div>
+            <!-- In-Place Note Detail Takeover (NoteDetailView.qml) -->
+            <div class="note-detail-view" id="noteDetailView">
+              <div class="nd-header">
+                <div class="nd-left">
+                  <button class="pbtn soft" id="detailBackBtn" title="Back to Notes"></button>
+                  <input type="text" class="nd-title-input" id="detailTitleInput" placeholder="Title" maxlength="120">
+                </div>
+                <div class="nd-right">
+                  <div class="nd-actions-row">
+                    <button class="pbtn soft" id="detailEditToggleBtn" title="Toggle View / Edit Mode"></button>
+                    <button class="pbtn soft" id="detailPinBtn" title="Toggle Pinned"></button>
+                    <button class="pbtn soft" id="detailDeleteBtn" title="Delete Note"></button>
+                  </div>
+                  <div class="nd-colors-row" id="detailColorsBar"></div>
+                </div>
+              </div>
 
-            <div class="bar">
-              <!-- Mode Toggle: Edit / Preview -->
-              <button type="button" class="sbtn" id="togglePreviewBtn">
-                <span class="icon xs" id="previewIcon">visibility</span>
-                <span id="previewLabel">Preview</span>
-              </button>
-
-              <!-- Color dots -->
-              <div class="dots" id="colorDotsBar"></div>
-
-              <span class="sp"></span>
-              <button class="sbtn" id="modalPinBtn">
-                <span class="icon xs" id="modalPinIcon">push_pin</span>
-                <span id="modalPinText">Pin</span>
-              </button>
-              <button class="sbtn" id="modalDeleteBtn">
-                <span class="icon xs">delete</span> Delete
-              </button>
-              <button class="sbtn pri" id="modalDoneBtn">
-                <span class="icon xs">check</span> Done
-              </button>
+              <!-- Dedicated Tinted Description Card -->
+              <div class="nd-desc-card" id="detailDescCard">
+                <div class="nd-preview-scroll" id="detailPreviewPane" style="display:none"></div>
+                <textarea class="nd-textarea" id="detailTextarea" placeholder="Take a note… (Markdown supported)"></textarea>
+              </div>
             </div>
+
           </div>
+
         </div>
       </div>
     </section>
 
-    <!-- feature deep-dives -->
+    <!-- Features Section -->
     <div id="features">
       <section class="feat">
         <div class="feat-grid">
@@ -644,18 +746,18 @@ body.focus-mode .panel{z-index:42;transform:scale(1.035);box-shadow:0 50px 100px
         <div class="feat-grid">
           <div class="feat-copy">
             <h2>Pin what matters, color-code the rest</h2>
-            <p>Pinned cards stay anchored to the top of your board. Choose from 7 expressive Material 3 tonal palettes harmonized with your Caelestia shell, and filter instantly across titles, bodies, and tags.</p>
+            <p>Pinned cards stay anchored to the top of your board. Choose from 5 expressive Material 3 tonal palettes harmonized with your Caelestia shell, and filter instantly across titles, bodies, and tags.</p>
           </div>
           <div class="stage">
             <div class="swatches" id="swatches" role="radiogroup" aria-label="Try note colors"></div>
-            <div class="note sample c-slate" id="sample">
-              <div class="note-header">
+            <div class="note-card c-primary" id="sampleNoteCard" style="height:118px;cursor:default">
+              <div class="nc-head">
                 <h4>Weekend Project</h4>
-                <button class="pin-btn on" id="samplePin" aria-label="Pinned">
-                  <span class="icon sm fill">push_pin</span>
-                </button>
+                <span id="samplePinIcon"></span>
               </div>
-              <div class="note-body md"><ul><li><span class="bl"></span><span>Tune Quickshell render thread</span></li><li><span class="bl"></span><span>Back up dotfiles to local vault</span></li></ul></div>
+              <div class="nc-body">
+                Tune Quickshell render thread for 144Hz Wayland compositor. Back up dotfiles to local vault.
+              </div>
             </div>
           </div>
         </div>
@@ -668,21 +770,19 @@ body.focus-mode .panel{z-index:42;transform:scale(1.035);box-shadow:0 50px 100px
             <p>The panel automatically inherits your Material 3 system palette, shapes, and corner radius tokens in dark and light modes. Flip it and watch this page follow.</p>
           </div>
           <div class="seg" role="group" aria-label="Theme">
-            <button id="segDark" aria-pressed="true"><span class="icon sm">dark_mode</span> Dark</button>
-            <button id="segLight" aria-pressed="false"><span class="icon sm">light_mode</span> Light</button>
+            <button id="segDark" aria-pressed="true"></button>
+            <button id="segLight" aria-pressed="false"></button>
           </div>
         </div>
       </section>
     </div>
 
-    <!-- cta / github -->
+    <!-- CTA & GitHub Clone -->
     <section class="cta" id="get">
       <img src="logo.png" alt="Caelestia Notes logo">
       <h2>Add Notes to Caelestia Shell</h2>
       <p>Free, 100% local-first, and engineered for Linux Wayland desktops. Get the plugin and enjoy a unified notes & habit dashboard tab.</p>
-      <a class="btn" href="https://github.com/Denzils-repo/Caelestia_Notes" target="_blank" rel="noopener">
-        <span class="icon sm">download</span> View on GitHub
-      </a>
+      <a class="btn" href="https://github.com/Denzils-repo/Caelestia_Notes" target="_blank" rel="noopener" id="githubCtaBtn"></a>
       <div>
         <div class="cmd-box">
           <span>git clone https://github.com/Denzils-repo/Caelestia_Notes.git</span>
@@ -697,8 +797,62 @@ body.focus-mode .panel{z-index:42;transform:scale(1.035);box-shadow:0 50px 100px
   </footer>
 </div>
 
+<!-- ==========================================================================
+     CORE JAVASCRIPT: EMBEDDED SVG ICONS & REACTIVE ENGINE
+     ========================================================================== -->
 <script>
-/* ---------- M3 parametric shape bullet masks ---------- */
+/* ---------- 1. Embedded Offline Material SVG Icon Dictionary ---------- */
+const SVG_PATHS = {
+  grid_view: '<path d="M3 3h7v7H3V3zm11 0h7v7h-7V3zm-11 11h7v7H3v-7zm11 0h7v7h-7v-7z"/>',
+  view_list: '<path d="M4 5h16v3H4V5zm0 5.5h16v3H4v-3zm0 5.5h16v3H4v-3z"/>',
+  music_note: '<path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>',
+  edit_note: '<path d="M3 10h11v2H3zm0-4h11v2H3zm0 8h7v2H3zm15.01-3.13l1.15-1.15c.39-.39 1.02-.39 1.41 0l1.15 1.15c.39.39.39 1.02 0 1.41l-1.15 1.15-2.56-2.56zm-1.06 1.06l-5.95 5.95V19h2.12l5.95-5.95-2.12-2.12z"/>',
+  speed: '<path d="M20.38 8.57l-1.23 1.85a8 8 0 0 1-.22 7.58H5.07A8 8 0 0 1 15.58 6.85l1.85-1.23A10 10 0 0 0 2 16h2a8 8 0 0 1 8-8c.41 0 .81.04 1.2.1l-1.8 2.7 1.66 1.11 3.52-5.28A9.97 9.97 0 0 0 20.38 8.57zM12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/>',
+  partly_cloudy_day: '<path d="M19.35 10.04A7.49 7.49 0 0 0 12 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 0 0 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4 0-2.05 1.53-3.76 3.56-3.97l1.07-.11.5-.95A5.5 5.5 0 0 1 12 6c2.72 0 4.99 1.97 5.43 4.67l.32 1.94 1.93.2C20.9 12.94 22 13.86 22 15c0 1.65-1.35 3-3 3z"/>',
+  memory: '<path d="M15 9H9v6h6V9zm-2 4h-2v-2h2v2zm8-2V9h-2V7c0-1.1-.9-2-2-2h-2V3h-2v2h-2V3H9v2H7c-1.1 0-2 .9-2 2v2H3v2h2v2H3v2h2v2c0 1.1.9 2 2 2h2v2h2v-2h2v2h2v-2h2c1.1 0 2-.9 2-2v-2h2v-2h-2v-2h2zm-4 6H7V7h10v10z"/>',
+  check: '<path d="M9 16.2l-3.5-3.5a.984.984 0 0 0-1.4 0 .984.984 0 0 0 0 1.4l4.19 4.19c.39.39 1.02.39 1.41 0L20.3 7.7a.984.984 0 0 0 0-1.4.984.984 0 0 0-1.4 0L9 16.2z"/>',
+  add: '<path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>',
+  close: '<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>',
+  sort: '<path d="M3 18h6v-2H3v2zM3 6v2h18V6H3zm0 7h12v-2H3v2z"/>',
+  calendar_month: '<path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2zm-7 5h5v5h-5z"/>',
+  calendar_today: '<path d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z"/>',
+  event: '<path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>',
+  repeat: '<path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/>',
+  delete: '<path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>',
+  delete_outline: '<path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM8 9h8v10H8V9zm7.5-5l-1-1h-5l-1 1H5v2h14V4h-3.5z"/>',
+  delete_sweep: '<path d="M15 16h4v2h-4zm0-8h7v2h-7zm0 4h6v2h-6zM3 18c0 1.1.9 2 2 2h6c1.1 0 2-.9 2-2V8H3v10zm2-8h6v8H5v-8zm5-6H6L5 5H2v2h12V5h-3z"/>',
+  delete_forever: '<path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zm2.46-7.12l1.41-1.41L12 12.59l2.12-2.12 1.41 1.41L13.41 14l2.12 2.12-1.41 1.41L12 15.41l-2.12 2.12-1.41-1.41L10.59 14l-2.13-2.12zM15.5 4l-1-1h-5l-1 1H5v2h14V4z"/>',
+  auto_delete: '<path d="M15 4V2h3v2h2v2h-2v2h-3V6H9V4h6zm-2 15c0 1.1.9 2 2 2h6c1.1 0 2-.9 2-2v-9h-2v9h-6v-9h-2v9zm-4-4c0-3.31 2.69-6 6-6s6 2.69 6 6-2.69 6-6 6-6-2.69-6-6zm6-4c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm-.5 1.5v3l2.25 1.35.75-1.23-1.5-.9V12.5h-1.5z"/>',
+  restore: '<path d="M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42A8.954 8.954 0 0 0 13 21a9 9 0 0 0 0-18zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/>',
+  checklist: '<path d="M22 7h-9v2h9V7zm0 8h-9v2h9v-2zM5.5 10.5L2 7l1.41-1.41L5.5 7.67l6.09-6.09L13 3l-7.5 7.5zm0 8L2 15l1.41-1.41L5.5 15.67l6.09-6.09L13 11l-7.5 7.5z"/>',
+  push_pin: '<path d="M16 9V4l1 0c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1l1 0v5c0 1.66-1.34 3-3 3v2h5.97v7l1 1 1-1v-7H19v-2c-1.66 0-3-1.34-3-3z"/>',
+  arrow_back: '<path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>',
+  visibility: '<path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>',
+  edit: '<path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>',
+  block: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm6.31-3.1L7.1 5.69C8.45 4.63 10.15 4 12 4c4.42 0 8 3.58 8 8 0 1.85-.63 3.55-1.69 4.9z"/>',
+  chevron_left: '<path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>',
+  chevron_right: '<path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>',
+  light_mode: '<path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/>',
+  dark_mode: '<path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>',
+  star: '<path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>',
+  sticky_note_2: '<path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h10l6-6V5c0-1.1-.9-2-2-2zm-5 16H5V5h14v9h-5v5zm-7-9h8v2H7v-2zm0-3h10v2H7V7z"/>',
+  download: '<path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>',
+  play_arrow: '<path d="M8 5v14l11-7z"/>',
+  check_circle: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>'
+};
+
+function icon(name, cls=''){
+  const p = SVG_PATHS[name] || '';
+  return `<svg class="icon ${cls}" viewBox="0 0 24 24">${p}</svg>`;
+}
+
+/* Algorithmic M3 4-Leaf Clover SVG for Selected Date */
+const CLOVER_SHAPE_SVG = `<svg class="clover-shape" viewBox="0 0 24 24"><path d="M12 2.5a3.5 3.5 0 0 0-3.5 3.5c0 1.25.66 2.34 1.64 2.96A3.49 3.49 0 0 0 3.5 12C3.5 13.93 5.07 15.5 7 15.5c1.25 0 2.34-.66 2.96-1.64.62.98 1.71 1.64 2.96 1.64 1.93 0 3.5-1.57 3.5-3.5 0-1.25-.66-2.34-1.64-2.96.98-.62 1.64-1.71 1.64-2.96 0-1.93-1.57-3.5-3.5-3.5zm-5 6.5a3.5 3.5 0 0 0-3.5 3.5C3.5 17.43 5.07 19 7 19c1.25 0 2.34-.66 2.96-1.64.62.98 1.71 1.64 2.96 1.64 1.93 0 3.5-1.57 3.5-3.5 0-1.25-.66-2.34-1.64-2.96A3.49 3.49 0 0 0 12 12c0-1.93-1.57-3.5-3.5-3.5-1.25 0-2.34.66-2.96 1.64-.62-.98-1.71-1.64-2.96-1.64z"/></svg>`;
+
+/* Algorithmic M3 Sunny Star SVG for Today */
+const SUNNY_SHAPE_SVG = `<svg class="today-shape" viewBox="0 0 24 24"><path d="M12 2l1.6 3.6 3.9-1-1 3.9 3.6 1.6-2.6 3 2.6 3-3.6 1.6 1 3.9-3.9-1L12 22l-1.6-3.6-3.9 1 1-3.9-3.6-1.6 2.6-3-2.6-3 3.6-1.6-1-3.9 3.9 1z"/></svg>`;
+
+/* Algorithmic M3 Bullet Masks */
 (function(){
   const mk = fn => {
     let p=[]; const N=96;
@@ -712,15 +866,18 @@ body.focus-mode .panel{z-index:42;transform:scale(1.035);box-shadow:0 50px 100px
   root.setProperty('--s2', mk(t=>0.68+0.32*Math.cos(6*t)));                       // 6-petal flower
 })();
 
-/* ---------- utility functions ---------- */
+/* Helper DOM Selectors */
 const $ = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);
 const esc = s => (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const inlineMd = s => esc(s)
-  .replace(/`([^`]+)`/g, '<code>$1</code>')
-  .replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>')
-  .replace(/(^|[^*])\*([^*]+)\*/g, '$1<i>$2</i>')
-  .replace(/~~([^~]+)~~/g, '<del>$1</del>');
+
+function inlineMd(s){
+  return esc(s)
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>')
+    .replace(/(^|[^*])\*([^*]+)\*/g, '$1<i>$2</i>')
+    .replace(/~~([^~]+)~~/g, '<del>$1</del>');
+}
 
 function renderMarkdown(src){
   if(!src) return '';
@@ -746,44 +903,51 @@ function renderMarkdown(src){
   return out + (inUl ? '</ul>' : '');
 }
 
-/* 4-leaf clover SVG for selected calendar date */
-const CLOVER_SVG = `<svg class="clover-svg" viewBox="0 0 24 24"><path d="M12 2.5a3.2 3.2 0 0 0-3.2 3.2c0 1.1.5 2 1.4 2.6-.9.5-1.4 1.5-1.4 2.6A3.2 3.2 0 0 0 12 14.1a3.2 3.2 0 0 0 3.2-3.2c0-1.1-.5-2-1.4-2.6.9-.5 1.4-1.5 1.4-2.6A3.2 3.2 0 0 0 12 2.5zm-3.2 6.4a3.2 3.2 0 0 0-3.2 3.2 3.2 3.2 0 0 0 3.2 3.2c1.1 0 2-.5 2.6-1.4.5.9 1.5 1.4 2.6 1.4a3.2 3.2 0 0 0 3.2-3.2 3.2 3.2 0 0 0-3.2-3.2c-1.1 0-2 .5-2.6 1.4-.5-.9-1.5-1.4-2.6-1.4z"/></svg>`;
-
-/* 7 M3 note color palettes */
-const NOTE_COLORS = [
-  ['slate','Slate'],['cyan','Cyan'],['cream','Cream'],
-  ['teal','Teal'],['peach','Peach'],['mauve','Mauve'],['mint','Mint']
+/* 5 Caelestia M3 Note Colors */
+const NOTE_COLOR_OPTIONS = [
+  { id: 'none', color: 'rgba(251,251,239,0.2)' },
+  { id: 'primary', color: 'var(--cyan)' },
+  { id: 'secondary', color: 'var(--mauve)' },
+  { id: 'tertiary', color: 'var(--peach)' },
+  { id: 'pink', color: '#E06D53' }
 ];
 
-/* ---------- theme handling ---------- */
+/* Theme Switcher */
 function setTheme(t){
   document.documentElement.dataset.theme = t;
   $('#segDark').setAttribute('aria-pressed', t === 'dark');
   $('#segLight').setAttribute('aria-pressed', t === 'light');
-  $('#themeBtn').setAttribute('aria-label', t === 'dark' ? 'Switch to light theme' : 'Switch to dark theme');
+  $('#themeBtn').innerHTML = t === 'dark' ? icon('dark_mode','sm') : icon('light_mode','sm');
 }
 $('#themeBtn').onclick = () => setTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark');
 $('#segDark').onclick = () => setTheme('dark');
 $('#segLight').onclick = () => setTheme('light');
 
-/* ---------- top nav sliding indicator ---------- */
+/* Shell Tabs Indicator */
 const bar = $('#tabBar'), tabsEl = $('#tabs');
 function placeBar(i){
   const t = tabsEl.children[i]; if(!t) return;
   bar.style.width = t.offsetWidth + 'px';
   bar.style.transform = `translateX(${t.offsetLeft}px)`;
 }
-bar.style.transition = 'none'; placeBar(0); bar.offsetWidth; bar.style.transition = '';
-setTimeout(() => placeBar(2), 400);
+setTimeout(() => placeBar(2), 250);
 addEventListener('resize', () => { bar.style.transition='none'; placeBar(2); bar.offsetWidth; bar.style.transition=''; });
 
 /* ==========================================================================
-   TO-DO & HABITS REACTIVE STORE
+   STATE STORE (MATCHING QML NotesStore.qml)
    ========================================================================== */
 let todoCounter = 100;
-let sortMode = 'date'; // 'date' | 'latest'
-let activeDue = '';    // '' | 'today' | 'tomorrow' | 'YYYY-MM-DD'
-let activeRepeating = false;
+let todoSortMode = 'date'; // 'date' | 'latest'
+let selectedNewDue = '';
+let newTodoRepeating = false;
+let isAddingTodo = false;
+let calendarPickerOpen = false;
+let showTrash = false;
+let confirmEmptyTrash = false;
+let confirmEmptyTimeout = null;
+
+let dpYear = new Date().getFullYear();
+let dpMonth = new Date().getMonth(); // 0-indexed
 
 let todos = [
   { id: 1, title: 'Drink morning water & meditate', done: true, repeating: true, due: 'today', createdAt: Date.now() - 3600000 },
@@ -797,29 +961,73 @@ let generalTrash = [
   { id: 91, title: 'Outdated mockup wireframes', createdAt: Date.now() - 86400000 }
 ];
 
-function getDueBucket(t){
-  if(t.repeating) return 0.5; // High priority habit
-  const due = (t.due || '').trim().toLowerCase();
-  if(!due) return 999999;
-  if(due === 'today') return 0;
-  if(due === 'tomorrow') return 1;
-  const parts = due.split('-');
+let notes = [
+  { id: 1, title: 'Markdown Engine Architecture', body: '# Hardware-Accelerated QML\n- **Single-pass line parser**\n  - nesting depth cycles M3 shapes\n    - Cookie, Sunny, Flower\n- zero typing latency', color: 'primary', pinned: true },
+  { id: 2, title: 'Daily Habits & Midnight Rollover', body: '- Track habits recurring daily\n- Automatic rollover at 00:00\n- Split recycling drawer', color: 'secondary', pinned: true },
+  { id: 3, title: 'Wayland Compositor Tuning', body: '- Test 144Hz refresh rate\n- Check buffer swap efficiency\n- Verify StateLayer hover', color: 'none', pinned: false },
+  { id: 4, title: 'Caelestia System Themes', body: '- Material 3 dynamic tonal curves\n- Strict palette compliance\n- Seamless light/dark toggling', color: 'tertiary', pinned: false },
+  { id: 5, title: 'Next Sprint Priorities', body: '1. Ship showcase HTML\n2. Update git dotfiles\n3. Finalize Clover picker animation', color: 'pink', pinned: false }
+];
+
+let notesViewMode = 'grid'; // 'grid' | 'list'
+let sectionFilter = 'all';  // 'all' | 'pinned' | 'others'
+let activeNote = null;
+let noteConfirmDelete = false;
+let noteConfirmDeleteTimeout = null;
+
+/* Spatial width management */
+function updatePanesSpatial(){
+  const container = $('#panesContainer');
+  if(activeNote){
+    container.classList.add('note-takeover');
+    container.classList.remove('date-picking');
+  } else if(calendarPickerOpen){
+    container.classList.remove('note-takeover');
+    container.classList.add('date-picking');
+  } else {
+    container.classList.remove('note-takeover');
+    container.classList.remove('date-picking');
+  }
+}
+
+/* ==========================================================================
+   TO-DO PANEL ENGINE (TodoPanel.qml)
+   ========================================================================== */
+function formatDuePill(dueStr){
+  if(!dueStr) return null;
+  const d = dueStr.toLowerCase().trim();
+  if(d === 'today') return { label: 'Today', status: 'today' };
+  if(d === 'tomorrow') return { label: 'Tomorrow', status: 'tomorrow' };
+  const parts = d.split('-');
   if(parts.length === 3){
     const target = new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
     const now = new Date();
     const todayMs = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
     const diffDays = Math.round((target.getTime() - todayMs) / 86400000);
-    return diffDays < 0 ? -1 : diffDays;
+    if(diffDays < 0) return { label: 'Overdue', status: 'overdue' };
+    if(diffDays === 0) return { label: 'Today', status: 'today' };
+    if(diffDays === 1) return { label: 'Tomorrow', status: 'tomorrow' };
+    const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    return { label: `${monthNames[target.getMonth()]} ${target.getDate()}`, status: 'custom' };
   }
-  return 999999;
+  return { label: dueStr, status: 'custom' };
 }
 
 function getSortedTodos(){
   const active = todos.filter(t => !t.done || t.repeating);
-  if(sortMode === 'date'){
+  if(todoSortMode === 'date'){
     return active.slice().sort((a,b) => {
-      const da = getDueBucket(a), db = getDueBucket(b);
-      if(da !== db) return da - db;
+      const getRank = t => {
+        if(t.repeating) return 0.5;
+        const info = formatDuePill(t.due);
+        if(!info) return 9999;
+        if(info.status === 'overdue') return -1;
+        if(info.status === 'today') return 0;
+        if(info.status === 'tomorrow') return 1;
+        return 2;
+      };
+      const ra = getRank(a), rb = getRank(b);
+      if(ra !== rb) return ra - rb;
       return (b.createdAt || 0) - (a.createdAt || 0);
     });
   }
@@ -827,55 +1035,79 @@ function getSortedTodos(){
 }
 
 function updateTodoBadges(){
-  const activeCount = todos.filter(t => !t.done).length;
-  $('#todoCountBadge').textContent = `${activeCount} remaining`;
+  const remaining = todos.filter(t => !t.done).length;
+  const badge = $('#todoCountBadge');
+  if(remaining === 0){
+    badge.textContent = 'All done';
+    badge.classList.add('all-done');
+  } else {
+    badge.textContent = `${remaining} left`;
+    badge.classList.remove('all-done');
+  }
 
-  // Countdown to next midnight
-  const now = new Date();
-  const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0);
-  const diffMs = midnight - now;
-  const h = Math.floor(diffMs / 3600000);
-  const m = Math.floor((diffMs % 3600000) / 60000);
-  $('#midnightResetCountdown').textContent = `Resetting in ${h}h ${m}m`;
+  // Trash count
+  const repeatingTrash = todos.filter(t => t.repeating && t.done);
+  const totalTrash = repeatingTrash.length + generalTrash.length;
+  $('#trashCountBadge').textContent = `${totalTrash}`;
+  $('#trashHabitsTitle').textContent = `Repeating Habits (${repeatingTrash.length})`;
+  $('#trashGeneralTitle').textContent = `General (${generalTrash.length})`;
+
+  // Empty trash button visibility
+  $('#emptyTrashBtn').style.display = generalTrash.length > 0 ? 'grid' : 'none';
 }
 
 function renderTodos(){
-  const list = $('#todoList');
+  const list = $('#activeTodoList');
   list.innerHTML = '';
   const sorted = getSortedTodos();
 
+  $('#todoEmptyView').style.display = sorted.length === 0 ? 'flex' : 'none';
+
   sorted.forEach(t => {
     const li = document.createElement('li');
-    li.className = 'todo' + (t.done ? ' done-item' : '');
+    li.className = 'todo-row' + (t.done ? ' checked resting' : '');
+    li.dataset.todoId = t.id;
 
     let pillHtml = '';
     if(t.repeating){
-      pillHtml += `<span class="pill habit"><span class="icon xs">repeat</span> Daily Habit</span>`;
+      pillHtml += `<span class="pill habit">${icon('repeat','xs')} Repeating</span>`;
     }
-    if(t.due){
-      const d = t.due.toLowerCase();
-      if(d === 'today') pillHtml += `<span class="pill today">Today</span>`;
-      else if(d === 'tomorrow') pillHtml += `<span class="pill tomorrow">Tomorrow</span>`;
-      else pillHtml += `<span class="pill custom">${esc(t.due)}</span>`;
+    const dueInfo = formatDuePill(t.due);
+    if(dueInfo){
+      pillHtml += `<span class="pill ${dueInfo.status}">${dueInfo.label}</span>`;
     }
 
     li.innerHTML = `
-      <div>
-        <label>
-          <input type="checkbox" ${t.done ? 'checked' : ''} data-id="${t.id}">
-          <span class="box"><span class="icon check-mark">check</span></span>
-          <span class="t-wrap"><span class="t">${esc(t.title)}</span></span>
-          ${pillHtml}
-        </label>
+      <button type="button" class="m3-check-btn" title="Mark Done">
+        <span class="m3-check-shape">
+          ${icon('check')}
+        </span>
+      </button>
+      <div class="todo-label-wrap">
+        <span class="todo-text">${esc(t.title)}</span>
+        <canvas class="wavy-canvas"></canvas>
       </div>
+      ${pillHtml}
+      <button type="button" class="row-act-btn" title="Delete Task">
+        ${icon('close','xs')}
+      </button>
     `;
 
-    li.querySelector('input').addEventListener('change', e => {
-      t.done = e.target.checked;
-      renderTodos();
-      renderTrash();
-      updateTodoBadges();
-    });
+    // Completion Scratch-off animation
+    li.querySelector('.m3-check-btn').onclick = () => {
+      scratchAndRemove(t.id, false);
+    };
+
+    // Row click -> opens edit
+    li.querySelector('.todo-label-wrap').onclick = () => {
+      scratchAndRemove(t.id, false);
+    };
+
+    // Deletion Scratch-off animation
+    li.querySelector('.row-act-btn').onclick = e => {
+      e.stopPropagation();
+      scratchAndRemove(t.id, true);
+    };
 
     list.appendChild(li);
   });
@@ -883,9 +1115,111 @@ function renderTodos(){
   updateTodoBadges();
 }
 
-/* Quick Add Task */
-function submitNewTask(){
-  const input = $('#newTaskInput');
+/* Sinusoidal Living Worm / Scratch-Off Animation (WavyLine.qml) */
+function scratchAndRemove(todoId, isDelete=false){
+  const row = $(`[data-todo-id="${todoId}"]`);
+  if(!row || row.dataset.scratching) return;
+  row.dataset.scratching = 'true';
+
+  const textEl = row.querySelector('.todo-text');
+  const canvas = row.querySelector('.wavy-canvas');
+  const checkBtn = row.querySelector('.m3-check-btn');
+
+  if(!isDelete){
+    row.classList.add('checked');
+  }
+
+  const ctx = canvas.getContext('2d');
+  const textWidth = textEl.offsetWidth;
+  const h = canvas.height = 14;
+  canvas.width = Math.max(textWidth, 20);
+  canvas.style.display = 'block';
+
+  const startTime = performance.now();
+  const duration = 400; // 400ms strike draw
+
+  function drawWave(now){
+    const elapsed = now - startTime;
+    const progress = Math.min(1, elapsed / duration);
+
+    ctx.clearRect(0, 0, canvas.width, h);
+    ctx.strokeStyle = isDelete ? '#E06D53' : '#72E1E1';
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+
+    ctx.beginPath();
+    const length = textWidth * progress;
+    const freq = Math.max(2, Math.round(textWidth / 24));
+    const phase = (elapsed / 500) * Math.PI * 2;
+
+    for(let x=0; x<=length; x+=2){
+      const y = (h/2) + Math.sin((x / textWidth) * freq * Math.PI * 2 + phase) * 2.8;
+      if(x === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    if(progress < 1){
+      requestAnimationFrame(drawWave);
+    } else {
+      // Phase 2: Fade out & collapse row height (450ms)
+      row.style.opacity = '0';
+      row.style.height = '0px';
+      row.style.margin = '0px';
+      row.style.padding = '0px';
+
+      setTimeout(() => {
+        if(isDelete){
+          const item = todos.find(t => t.id === todoId);
+          if(item){
+            todos = todos.filter(t => t.id !== todoId);
+            generalTrash.unshift({ id: item.id, title: item.title, createdAt: Date.now() });
+          }
+        } else {
+          const item = todos.find(t => t.id === todoId);
+          if(item) item.done = true;
+        }
+        renderTodos();
+        renderTrash();
+      }, 450);
+    }
+  }
+  requestAnimationFrame(drawWave);
+}
+
+/* Quick Add Box Logic */
+function updateQuickAddState(){
+  // Repeating habit morph
+  const repBtn = $('#repeatToggleBtn');
+  repBtn.classList.toggle('active', newTodoRepeating);
+  repBtn.classList.toggle('expanded', newTodoRepeating);
+  repBtn.classList.toggle('dimmed', selectedNewDue.length > 0);
+
+  // Date picker morph
+  const dateBtn = $('#datePickerTriggerBtn');
+  const dateLabel = $('#dateBtnLabel');
+  const isDateActive = calendarPickerOpen || selectedNewDue.length > 0;
+  dateBtn.classList.toggle('active', calendarPickerOpen);
+  dateBtn.classList.toggle('expanded', isDateActive);
+  dateBtn.classList.toggle('dimmed', newTodoRepeating);
+
+  if(selectedNewDue){
+    const pill = formatDuePill(selectedNewDue);
+    dateLabel.textContent = pill ? pill.label : selectedNewDue;
+  } else {
+    dateLabel.textContent = 'Date';
+  }
+
+  // Embedded calendar container
+  const dpBox = $('#embeddedDatePicker');
+  dpBox.classList.toggle('open', calendarPickerOpen);
+  $('#todoScrollArea').style.display = calendarPickerOpen ? 'none' : 'block';
+
+  updatePanesSpatial();
+}
+
+function commitNewTodo(){
+  const input = $('#newTodoInput');
   const val = input.value.trim();
   if(!val) return;
 
@@ -893,513 +1227,663 @@ function submitNewTask(){
     id: ++todoCounter,
     title: val,
     done: false,
-    repeating: activeRepeating,
-    due: activeDue,
+    repeating: newTodoRepeating,
+    due: selectedNewDue,
     createdAt: Date.now()
   });
 
   input.value = '';
-  activeDue = '';
-  activeRepeating = false;
-  $('#repeatHabitBtn').classList.remove('on');
-  $('#repeatHabitBtn').setAttribute('aria-pressed', 'false');
-  $('#dpTriggerLabel').textContent = 'No Date';
-  $('#dpTriggerBtn').classList.remove('on-tertiary');
-
+  selectedNewDue = '';
+  newTodoRepeating = false;
+  calendarPickerOpen = false;
+  updateQuickAddState();
   renderTodos();
 }
-$('#submitTaskBtn').onclick = submitNewTask;
-$('#newTaskInput').addEventListener('keydown', e => { if(e.key === 'Enter') submitNewTask(); });
 
-/* Toggle Daily Habit in Adder */
-$('#repeatHabitBtn').onclick = () => {
-  activeRepeating = !activeRepeating;
-  $('#repeatHabitBtn').classList.toggle('on', activeRepeating);
-  $('#repeatHabitBtn').setAttribute('aria-pressed', activeRepeating);
-  if(activeRepeating && activeDue){
-    activeDue = '';
-    $('#dpTriggerLabel').textContent = 'No Date';
-    $('#dpTriggerBtn').classList.remove('on-tertiary');
+$('#inlineAddToggleBtn').onclick = () => {
+  isAddingTodo = !isAddingTodo;
+  $('#inlineAddToggleBtn').innerHTML = isAddingTodo ? icon('close') : icon('add');
+  $('#inlineAddToggleBtn').className = isAddingTodo ? 'pbtn soft' : 'pbtn';
+  $('#inlineAddBox').style.display = isAddingTodo ? 'flex' : 'none';
+  if(isAddingTodo){
+    $('#newTodoInput').focus();
+  } else {
+    calendarPickerOpen = false;
+    updateQuickAddState();
   }
 };
 
-/* Sort Toggle */
+$('#commitTodoBtn').onclick = commitNewTodo;
+$('#newTodoInput').addEventListener('keydown', e => {
+  if(e.key === 'Enter') commitNewTodo();
+  if(e.key === 'Escape'){
+    if(calendarPickerOpen){
+      calendarPickerOpen = false;
+      updateQuickAddState();
+    } else {
+      isAddingTodo = false;
+      $('#inlineAddToggleBtn').innerHTML = icon('add');
+      $('#inlineAddBox').style.display = 'none';
+    }
+  }
+});
+
+$('#repeatToggleBtn').onclick = () => {
+  if(selectedNewDue.length > 0) return;
+  newTodoRepeating = !newTodoRepeating;
+  if(newTodoRepeating){
+    selectedNewDue = '';
+    calendarPickerOpen = false;
+  }
+  updateQuickAddState();
+};
+
+$('#datePickerTriggerBtn').onclick = () => {
+  if(newTodoRepeating) return;
+  calendarPickerOpen = !calendarPickerOpen;
+  if(calendarPickerOpen) renderDatePicker();
+  updateQuickAddState();
+};
+
 $('#todoSortBtn').onclick = () => {
-  sortMode = sortMode === 'date' ? 'latest' : 'date';
-  $('#todoSortIcon').textContent = sortMode === 'date' ? 'calendar_month' : 'schedule';
-  $('#todoSortBtn').classList.toggle('active', sortMode === 'date');
+  todoSortMode = todoSortMode === 'date' ? 'latest' : 'date';
+  $('#todoSortBtn').innerHTML = todoSortMode === 'date' ? icon('calendar_month') : icon('sort');
+  $('#todoSortBtn').classList.toggle('active', todoSortMode === 'date');
   renderTodos();
-};
-
-/* Split Trash Drawer Logic */
-const trashDrawer = $('#trashDrawer');
-$('#trashToggleBtn').onclick = () => {
-  trashDrawer.classList.toggle('open');
-  if(trashDrawer.classList.contains('open')) renderTrash();
-};
-$('#closeTrashBtn').onclick = () => trashDrawer.classList.remove('open');
-
-function renderTrash(){
-  // Completed daily habits
-  const habitsList = $('#trashHabitsList');
-  habitsList.innerHTML = '';
-  const completedHabits = todos.filter(t => t.repeating && t.done);
-
-  if(!completedHabits.length){
-    habitsList.innerHTML = '<li style="color:var(--muted);font-size:.8rem;padding:8px">No habits completed yet today.</li>';
-  } else {
-    completedHabits.forEach(t => {
-      const li = document.createElement('li');
-      li.className = 'td-item';
-      li.innerHTML = `
-        <span class="icon xs" style="color:var(--accent)">check_circle</span>
-        <span class="sp">${esc(t.title)}</span>
-        <button class="td-btn" title="Undo / uncheck habit" data-id="${t.id}">
-          <span class="icon xs">undo</span>
-        </button>
-      `;
-      li.querySelector('button').onclick = () => {
-        t.done = false;
-        renderTodos();
-        renderTrash();
-      };
-      habitsList.appendChild(li);
-    });
-  }
-
-  // General trash (completed one-offs & deleted)
-  const genList = $('#trashGeneralList');
-  genList.innerHTML = '';
-  const completedOneOffs = todos.filter(t => !t.repeating && t.done);
-  const allGeneral = completedOneOffs.concat(generalTrash);
-
-  if(!allGeneral.length){
-    genList.innerHTML = '<li style="color:var(--muted);font-size:.8rem;padding:8px">Trash is empty.</li>';
-  } else {
-    allGeneral.forEach(item => {
-      const li = document.createElement('li');
-      li.className = 'td-item';
-      li.innerHTML = `
-        <span class="sp">${esc(item.title)}</span>
-        <button class="td-btn" title="Restore" data-restore="${item.id}">
-          <span class="icon xs">restore_from_trash</span>
-        </button>
-        <button class="td-btn" title="Delete Forever" data-del="${item.id}">
-          <span class="icon xs">delete</span>
-        </button>
-      `;
-      li.querySelector('[data-restore]').onclick = () => {
-        const foundTodo = todos.find(t => t.id === item.id);
-        if(foundTodo){
-          foundTodo.done = false;
-        } else {
-          generalTrash = generalTrash.filter(g => g.id !== item.id);
-          todos.push({ id: item.id, title: item.title, done: false, repeating: false, due: '', createdAt: Date.now() });
-        }
-        renderTodos();
-        renderTrash();
-      };
-      li.querySelector('[data-del]').onclick = () => {
-        todos = todos.filter(t => t.id !== item.id);
-        generalTrash = generalTrash.filter(g => g.id !== item.id);
-        renderTodos();
-        renderTrash();
-      };
-      genList.appendChild(li);
-    });
-  }
-}
-
-$('#emptyTrashBtn').onclick = () => {
-  todos = todos.filter(t => !t.done || t.repeating);
-  generalTrash = [];
-  renderTodos();
-  renderTrash();
 };
 
 /* ==========================================================================
-   INTERACTIVE CALENDAR DATE PICKER (WITH ROTATING CLOVER)
+   CALENDAR DATE PICKER (TodoDatePicker.qml)
    ========================================================================== */
-const dpPopup = $('#datePickerPopup');
-let dpYear = new Date().getFullYear();
-let dpMonth = new Date().getMonth(); // 0-indexed
-let dpSelected = null; // 'YYYY-MM-DD' or null
-
-$('#dpTriggerBtn').onclick = e => {
-  e.stopPropagation();
-  dpPopup.classList.toggle('open');
-  if(dpPopup.classList.contains('open')) renderDatePicker();
-};
+function formatDate(d){
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
 
 function renderDatePicker(){
   const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-  $('#dpMonthYear').textContent = `${monthNames[dpMonth]} ${dpYear}`;
+  $('#dpMonthYearDisplay').textContent = `${monthNames[dpMonth]} ${dpYear}`;
 
-  const grid = $('#dpDaysGrid');
+  const grid = $('#dpMonthGrid');
   grid.innerHTML = '';
 
-  const firstDayIndex = new Date(dpYear, dpMonth, 1).getDay(); // 0 is Sunday
+  const firstDay = new Date(dpYear, dpMonth, 1).getDay(); // 0 is Sunday
   const daysInMonth = new Date(dpYear, dpMonth + 1, 0).getDate();
+  const startOffset = (firstDay + 6) % 7; // Monday start
 
-  // Shift for Monday start (0=Mo, 6=Su)
-  const startOffset = (firstDayIndex + 6) % 7;
-  for(let i=0; i<startOffset; i++){
-    const emptyCell = document.createElement('div');
-    emptyCell.className = 'dp-day empty';
-    grid.appendChild(emptyCell);
+  // Offset from previous month
+  const prevMonthDays = new Date(dpYear, dpMonth, 0).getDate();
+  for(let i=startOffset-1; i>=0; i--){
+    const cell = document.createElement('div');
+    cell.className = 'dp-cell other-month';
+    cell.innerHTML = `<span class="day-num">${prevMonthDays - i}</span>`;
+    grid.appendChild(cell);
   }
 
   const today = new Date();
-  const isCurrentMonth = today.getFullYear() === dpYear && today.getMonth() === dpMonth;
+  const todayStr = formatDate(today);
 
   for(let d=1; d<=daysInMonth; d++){
-    const cell = document.createElement('button');
-    cell.className = 'dp-day';
-    cell.textContent = d;
+    const cellDate = new Date(dpYear, dpMonth, d);
+    const dateStr = formatDate(cellDate);
+    const dayOfWeek = cellDate.getDay();
+    const isToday = dateStr === todayStr;
+    const isSelected = selectedNewDue === dateStr || (selectedNewDue === 'today' && isToday);
 
-    const dateStr = `${dpYear}-${String(dpMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const cell = document.createElement('div');
+    cell.className = 'dp-cell' +
+      (isToday ? ' is-today' : '') +
+      (isSelected ? ' is-selected' : '') +
+      (dayOfWeek === 0 || dayOfWeek === 6 ? ' weekend' : '');
 
-    if(isCurrentMonth && today.getDate() === d){
-      cell.classList.add('today');
+    let shapeHtml = '';
+    if(isSelected){
+      // Rotating 4-leaf clover in peach overrides sunny today shape!
+      shapeHtml = CLOVER_SHAPE_SVG;
+    } else if(isToday){
+      // Sunny shape in cyan
+      shapeHtml = SUNNY_SHAPE_SVG;
     }
 
-    if(dpSelected === dateStr || (activeDue === 'today' && isCurrentMonth && today.getDate() === d)){
-      cell.classList.add('selected');
-      cell.innerHTML = `${CLOVER_SVG}<span>${d}</span>`;
-    }
+    cell.innerHTML = `${shapeHtml}<span class="day-num">${d}</span>`;
 
-    cell.onclick = e => {
-      e.stopPropagation();
-      if(dpSelected === dateStr){
-        dpSelected = null;
-        activeDue = '';
-        $('#dpTriggerLabel').textContent = 'No Date';
-        $('#dpTriggerBtn').classList.remove('on-tertiary');
+    cell.onclick = () => {
+      if(selectedNewDue === dateStr){
+        selectedNewDue = ''; // Toggle / deselect without closing
       } else {
-        dpSelected = dateStr;
-        activeDue = dateStr;
-        activeRepeating = false;
-        $('#repeatHabitBtn').classList.remove('on');
-        $('#dpTriggerLabel').textContent = dateStr;
-        $('#dpTriggerBtn').classList.add('on-tertiary');
+        selectedNewDue = dateStr;
+        newTodoRepeating = false;
       }
-      renderDatePicker(); // stays open!
+      renderDatePicker();
+      updateQuickAddState();
     };
 
     grid.appendChild(cell);
   }
 }
 
-$('#dpPrevMonth').onclick = e => {
-  e.stopPropagation();
+$('#dpPrevMonth').onclick = () => {
   dpMonth--;
   if(dpMonth < 0){ dpMonth = 11; dpYear--; }
   renderDatePicker();
 };
-$('#dpNextMonth').onclick = e => {
-  e.stopPropagation();
+$('#dpNextMonth').onclick = () => {
   dpMonth++;
   if(dpMonth > 11){ dpMonth = 0; dpYear++; }
   renderDatePicker();
 };
-
-$('#dpPickToday').onclick = e => {
-  e.stopPropagation();
-  activeDue = 'today';
-  dpSelected = 'today';
-  activeRepeating = false;
-  $('#repeatHabitBtn').classList.remove('on');
-  $('#dpTriggerLabel').textContent = 'Today';
-  $('#dpTriggerBtn').classList.add('on-tertiary');
+$('#dpMonthYearDisplay').onclick = () => {
+  dpYear = new Date().getFullYear();
+  dpMonth = new Date().getMonth();
   renderDatePicker();
 };
-
-$('#dpPickTomorrow').onclick = e => {
-  e.stopPropagation();
-  activeDue = 'tomorrow';
-  dpSelected = 'tomorrow';
-  activeRepeating = false;
-  $('#repeatHabitBtn').classList.remove('on');
-  $('#dpTriggerLabel').textContent = 'Tomorrow';
-  $('#dpTriggerBtn').classList.add('on-tertiary');
-  renderDatePicker();
+$('#dpCloseBtn').onclick = () => {
+  calendarPickerOpen = false;
+  updateQuickAddState();
 };
 
-$('#dpClearDate').onclick = e => {
-  e.stopPropagation();
-  activeDue = '';
-  dpSelected = null;
-  $('#dpTriggerLabel').textContent = 'No Date';
-  $('#dpTriggerBtn').classList.remove('on-tertiary');
+$('#dpChipToday').onclick = () => {
+  selectedNewDue = formatDate(new Date());
+  newTodoRepeating = false;
   renderDatePicker();
+  updateQuickAddState();
 };
-
-$('#dpDoneBtn').onclick = () => dpPopup.classList.remove('open');
-document.addEventListener('click', e => {
-  if(!e.target.closest('#datePickerPopup') && !e.target.closest('#dpTriggerBtn')){
-    dpPopup.classList.remove('open');
-  }
-});
+$('#dpChipTomorrow').onclick = () => {
+  const tom = new Date();
+  tom.setDate(tom.getDate() + 1);
+  selectedNewDue = formatDate(tom);
+  newTodoRepeating = false;
+  renderDatePicker();
+  updateQuickAddState();
+};
+$('#dpChipClear').onclick = () => {
+  selectedNewDue = '';
+  renderDatePicker();
+  updateQuickAddState();
+};
 
 /* ==========================================================================
-   NOTES BOARD, TAG FILTERING & LAZY MARKDOWN EDITOR
+   SPLIT TRASH VIEW (TodoPanel.qml)
    ========================================================================== */
-let notesList = [
-  { id: 1, title: 'Markdown Engine Architecture', body: '# Hardware-Accelerated QML\n- **Single-pass line parser**\n  - nesting depth cycles M3 shapes\n    - Cookie, Sunny, Flower\n- zero typing latency', color: 'cyan', pinned: true, tag: 'work' },
-  { id: 2, title: 'Daily Habits & Midnight Rollover', body: '- Track habits recurring daily\n- Automatic rollover at 00:00\n- Split recycling drawer', color: 'teal', pinned: true, tag: 'ideas' },
-  { id: 3, title: 'Wayland Compositor Tuning', body: '- Test 144Hz refresh rate\n- Check buffer swap efficiency\n- Verify StateLayer hover', color: 'cream', pinned: false, tag: 'personal' },
-  { id: 4, title: 'Caelestia System Themes', body: '- Material 3 dynamic tonal curves\n- Strict palette compliance\n- Seamless light/dark toggling', color: 'peach', pinned: false, tag: 'work' },
-  { id: 5, title: 'Next Sprint Priorities', body: '1. Ship showcase HTML\n2. Update git dotfiles\n3. Finalize Clover picker animation', color: 'mint', pinned: false, tag: 'todo' }
-];
+function renderTrash(){
+  const repeatingTrash = todos.filter(t => t.repeating && t.done);
+  const habitsList = $('#trashHabitsList');
+  const genList = $('#trashGeneralList');
+  habitsList.innerHTML = '';
+  genList.innerHTML = '';
 
-let activeTag = 'all';
-let notesLayout = 'grid'; // 'grid' | 'list'
-let editingNote = null;
-let isPreviewMode = false;
+  const hasHabits = repeatingTrash.length > 0;
+  const hasGeneral = generalTrash.length > 0;
 
-function renderNotesBoard(){
-  const pinnedGrid = $('#pinnedNotesGrid');
-  const otherGrid = $('#otherNotesGrid');
-  pinnedGrid.innerHTML = '';
-  otherGrid.innerHTML = '';
+  $('#trashHabitsSection').style.display = hasHabits ? 'block' : 'none';
+  $('#trashGeneralSection').style.display = hasGeneral ? 'block' : 'none';
+  $('#trashDivider').style.display = (hasHabits && hasGeneral) ? 'block' : 'none';
+  $('#trashEmptyView').style.display = (!hasHabits && !hasGeneral) ? 'flex' : 'none';
 
-  const search = $('#noteSearchInput').value.trim().toLowerCase();
+  // Countdown to next midnight
+  const now = new Date();
+  const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0);
+  const diffMs = midnight - now;
+  const h = Math.floor(diffMs / 3600000);
+  const m = Math.floor((diffMs % 3600000) / 60000);
 
-  const filtered = notesList.filter(n => {
-    const matchesTag = activeTag === 'all' || (n.tag || '').toLowerCase() === activeTag;
-    const matchesSearch = !search || n.title.toLowerCase().includes(search) || n.body.toLowerCase().includes(search);
-    return matchesTag && matchesSearch;
+  // Render Completed Daily Habits
+  repeatingTrash.forEach(t => {
+    const li = document.createElement('li');
+    li.className = 'todo-row checked resting';
+    li.innerHTML = `
+      <div style="color:var(--accent);display:grid;place-items:center">${icon('check_circle','sm')}</div>
+      <div class="todo-label-wrap">
+        <span class="todo-text">${esc(t.title)}</span>
+      </div>
+      <span class="pill resetting">Reset in ${h}h ${m}m</span>
+      <button type="button" class="row-act-btn" style="opacity:1" title="Restore Habit">
+        ${icon('restore','sm')}
+      </button>
+    `;
+    li.querySelector('.row-act-btn').onclick = () => {
+      t.done = false;
+      renderTodos();
+      renderTrash();
+    };
+    habitsList.appendChild(li);
   });
 
-  const pinned = filtered.filter(n => n.pinned);
-  const others = filtered.filter(n => !n.pinned);
+  // Render General Trashed Tasks
+  generalTrash.forEach(item => {
+    const li = document.createElement('li');
+    li.className = 'todo-row resting';
+    li.innerHTML = `
+      <div style="color:var(--muted);display:grid;place-items:center">${icon('delete_outline','sm')}</div>
+      <div class="todo-label-wrap">
+        <span class="todo-text">${esc(item.title)}</span>
+      </div>
+      <div style="display:flex;gap:4px">
+        <button type="button" class="row-act-btn" style="opacity:1" data-act="restore" title="Restore to To-dos">
+          ${icon('restore','sm')}
+        </button>
+        <button type="button" class="row-act-btn" style="opacity:1" data-act="delete" title="Delete Forever">
+          ${icon('close','sm')}
+        </button>
+      </div>
+    `;
+    li.querySelector('[data-act="restore"]').onclick = () => {
+      generalTrash = generalTrash.filter(g => g.id !== item.id);
+      todos.unshift({ id: item.id, title: item.title, done: false, repeating: false, due: '', createdAt: Date.now() });
+      renderTodos();
+      renderTrash();
+    };
+    li.querySelector('[data-act="delete"]').onclick = () => {
+      generalTrash = generalTrash.filter(g => g.id !== item.id);
+      renderTodos();
+      renderTrash();
+    };
+    genList.appendChild(li);
+  });
 
-  $('#pinnedSection').style.display = pinned.length ? 'block' : 'none';
-  $('#othersSection').style.display = others.length ? 'block' : 'none';
-  $('#notesCountBadge').textContent = filtered.length;
+  updateTodoBadges();
+}
 
-  pinned.forEach(n => pinnedGrid.appendChild(createNoteCard(n)));
-  others.forEach(n => otherGrid.appendChild(createNoteCard(n)));
+$('#trashToggleBtn').onclick = () => {
+  showTrash = true;
+  $('#todoMainView').style.display = 'none';
+  $('#trashView').classList.add('open');
+  calendarPickerOpen = false;
+  updateQuickAddState();
+  renderTrash();
+};
+
+$('#backFromTrashBtn').onclick = () => {
+  showTrash = false;
+  $('#trashView').classList.remove('open');
+  $('#todoMainView').style.display = 'flex';
+  confirmEmptyTrash = false;
+  renderTodos();
+};
+
+/* Empty All Trash with Two-Step 3-Second Confirmation */
+$('#emptyTrashBtn').onclick = () => {
+  if(!confirmEmptyTrash){
+    confirmEmptyTrash = true;
+    $('#emptyTrashBtn').innerHTML = icon('check');
+    $('#emptyTrashBtn').className = 'pbtn danger';
+    confirmEmptyTimeout = setTimeout(() => {
+      confirmEmptyTrash = false;
+      $('#emptyTrashBtn').innerHTML = icon('delete_sweep');
+      $('#emptyTrashBtn').className = 'pbtn soft';
+    }, 3000);
+  } else {
+    clearTimeout(confirmEmptyTimeout);
+    confirmEmptyTrash = false;
+    generalTrash = [];
+    $('#emptyTrashBtn').innerHTML = icon('delete_sweep');
+    $('#emptyTrashBtn').className = 'pbtn soft';
+    renderTrash();
+  }
+};
+
+/* ==========================================================================
+   NOTES BOARD & STACK CARDS (NotesPanel.qml)
+   ========================================================================= */
+function renderNotesBoard(){
+  const pinnedBox = $('#pinnedNotesContainer');
+  const otherBox = $('#otherNotesContainer');
+  pinnedBox.innerHTML = '';
+  otherBox.innerHTML = '';
+
+  const isGrid = notesViewMode === 'grid';
+  pinnedBox.className = 'notes-grid' + (isGrid ? '' : ' list-mode');
+  otherBox.className = 'notes-grid' + (isGrid ? '' : ' list-mode');
+
+  const pinnedNotes = notes.filter(n => n.pinned);
+  const otherNotes = notes.filter(n => !n.pinned);
+
+  $('#notesCountBadge').textContent = `${notes.length}`;
+  $('#notesEmptyView').style.display = notes.length === 0 ? 'flex' : 'none';
+
+  // Section title & back button
+  if(sectionFilter === 'pinned'){
+    $('#notesPaneTitle').textContent = 'Pinned Notes';
+    $('#notesBackFilterBtn').style.display = 'grid';
+    $('#pinnedNotesSection').style.display = 'block';
+    $('#otherNotesSection').style.display = 'none';
+  } else if(sectionFilter === 'others'){
+    $('#notesPaneTitle').textContent = 'Other Notes';
+    $('#notesBackFilterBtn').style.display = 'grid';
+    $('#pinnedNotesSection').style.display = 'none';
+    $('#otherNotesSection').style.display = 'block';
+  } else {
+    $('#notesPaneTitle').textContent = 'Notes';
+    $('#notesBackFilterBtn').style.display = 'none';
+    $('#pinnedNotesSection').style.display = pinnedNotes.length > 0 ? 'block' : 'none';
+    $('#otherNotesSection').style.display = otherNotes.length > 0 ? 'block' : 'none';
+  }
+
+  // Render Pinned
+  const dispPinned = (sectionFilter === 'all' && pinnedNotes.length > 4) ? pinnedNotes.slice(0, 3) : pinnedNotes;
+  dispPinned.forEach(n => pinnedBox.appendChild(createNoteCard(n)));
+  if(sectionFilter === 'all' && pinnedNotes.length > 4){
+    pinnedBox.appendChild(createStackCard(pinnedNotes[3], pinnedNotes.length - 4, 'pinned'));
+  }
+
+  // Render Others
+  const dispOthers = (sectionFilter === 'all' && otherNotes.length > 4) ? otherNotes.slice(0, 3) : otherNotes;
+  dispOthers.forEach(n => otherBox.appendChild(createNoteCard(n)));
+  if(sectionFilter === 'all' && otherNotes.length > 4){
+    otherBox.appendChild(createStackCard(otherNotes[3], otherNotes.length - 4, 'others'));
+  }
 }
 
 function createNoteCard(n){
   const el = document.createElement('div');
-  el.className = `note c-${n.color}`;
+  const isGrid = notesViewMode === 'grid';
+  el.className = `note-card c-${n.color||'none'} ${isGrid ? 'grid-mode' : 'list-mode'}`;
+  
+  const snippet = (n.body||'')
+    .replace(/^#+\s+/gm, '')
+    .replace(/^[-*+]\s+/gm, '• ')
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/`([^`]+)`/g, '$1')
+    .trim();
+
   el.innerHTML = `
-    <div class="note-header">
+    <div class="nc-head">
       <h4>${esc(n.title || 'Untitled')}</h4>
-      <button class="pin-btn${n.pinned ? ' on' : ''}" title="${n.pinned ? 'Unpin' : 'Pin'}">
-        <span class="icon sm ${n.pinned ? 'fill' : ''}">push_pin</span>
-      </button>
+      ${n.pinned ? icon('push_pin','xs') : ''}
     </div>
-    <div class="note-body md">${renderMarkdown(n.body)}</div>
+    <div class="nc-body">${esc(snippet)}</div>
   `;
 
-  el.querySelector('.pin-btn').onclick = e => {
-    e.stopPropagation();
-    n.pinned = !n.pinned;
-    renderNotesBoard();
-  };
-
-  el.onclick = () => openEditor(n);
+  el.onclick = () => openNoteDetail(n);
   return el;
 }
 
-/* Layout Switcher */
-$('#notesLayoutBtn').onclick = () => {
-  notesLayout = notesLayout === 'grid' ? 'list' : 'grid';
-  $('#pinnedNotesGrid').classList.toggle('list', notesLayout === 'list');
-  $('#otherNotesGrid').classList.toggle('list', notesLayout === 'list');
-  $('#notesLayoutIcon').textContent = notesLayout === 'grid' ? 'grid_view' : 'view_agenda';
+function createStackCard(note, remainingCount, secType){
+  const wrap = document.createElement('div');
+  wrap.className = 'stack-card-wrap';
+  const isGrid = notesViewMode === 'grid';
+  wrap.innerHTML = `
+    <div class="stack-layer b2"></div>
+    <div class="stack-layer b1"></div>
+    <div class="note-card stack-front c-${note.color||'none'} ${isGrid ? 'grid-mode' : 'list-mode'}">
+      <div class="nc-head">
+        <h4>${esc(note.title || 'Untitled')}</h4>
+        ${note.pinned ? icon('push_pin','xs') : ''}
+      </div>
+      <div class="nc-body">${esc(note.body||'')}</div>
+      <span class="stack-badge">+${remainingCount} more</span>
+    </div>
+  `;
+  wrap.onclick = () => {
+    sectionFilter = secType;
+    renderNotesBoard();
+  };
+  return wrap;
+}
+
+$('#notesBackFilterBtn').onclick = () => {
+  sectionFilter = 'all';
+  renderNotesBoard();
 };
 
-/* Search Input */
-$('#noteSearchInput').addEventListener('input', renderNotesBoard);
-
-/* Tag Bar Filtering */
-$('#tagFilterBar').addEventListener('click', e => {
-  const pill = e.target.closest('.tag-pill');
-  if(!pill) return;
-  $$('#tagFilterBar .tag-pill').forEach(p => p.classList.remove('active'));
-  pill.classList.add('active');
-  activeTag = pill.dataset.tag;
+$('#notesLayoutToggleBtn').onclick = () => {
+  notesViewMode = notesViewMode === 'grid' ? 'list' : 'grid';
+  $('#notesLayoutToggleBtn').innerHTML = notesViewMode === 'grid' ? icon('grid_view') : icon('view_list');
   renderNotesBoard();
-});
+};
 
-/* New Note */
-$('#newNoteBtn').onclick = () => {
-  const n = {
+$('#createNoteBtn').onclick = () => {
+  const newNote = {
     id: Date.now(),
     title: '',
     body: '',
-    color: 'slate',
+    color: 'none',
     pinned: false,
-    tag: activeTag === 'all' ? 'work' : activeTag,
     isNew: true
   };
-  notesList.unshift(n);
-  renderNotesBoard();
-  openEditor(n);
+  notes.unshift(newNote);
+  openNoteDetail(newNote, true);
 };
 
 /* ==========================================================================
-   NOTE DETAIL MODAL & LAZY MARKDOWN EDITOR
+   IN-PLACE NOTE DETAIL TAKEOVER (NoteDetailView.qml)
    ========================================================================== */
-const editorModal = $('#editorModal');
-const editorSheet = $('#editorSheet');
-const titleInput = $('#noteTitleInput');
-const bodyInput = $('#noteBodyInput');
-const previewPane = $('#notePreviewPane');
-const previewBtn = $('#togglePreviewBtn');
+let isNoteEditingMode = true;
 
-// Populate 7 color dots
-const dotsBar = $('#colorDotsBar');
-NOTE_COLORS.forEach(([c, name]) => {
-  const d = document.createElement('button');
-  d.className = `dot c-${c}`;
-  d.setAttribute('title', name);
-  d.onclick = () => {
-    if(!editingNote) return;
-    editingNote.color = c;
-    applyEditorTheme(c);
-  };
-  dotsBar.appendChild(d);
-});
-
-function applyEditorTheme(c){
-  editorSheet.className = `sheet c-${c}`;
-  $$('#colorDotsBar .dot').forEach(d => {
-    d.setAttribute('aria-checked', d.classList.contains(`c-${c}`));
+function setupColorDots(){
+  const bar = $('#detailColorsBar');
+  bar.innerHTML = '';
+  NOTE_COLOR_OPTIONS.forEach(opt => {
+    const dot = document.createElement('button');
+    dot.className = 'color-dot';
+    dot.style.background = opt.color;
+    dot.title = opt.id;
+    if(opt.id === 'none'){
+      dot.innerHTML = icon('block','xs');
+    }
+    dot.onclick = () => {
+      if(!activeNote) return;
+      activeNote.color = opt.id;
+      applyNoteDetailColor(opt.id);
+      $$('#detailColorsBar .color-dot').forEach(d => d.classList.toggle('selected', d === dot));
+    };
+    bar.appendChild(dot);
   });
 }
 
-function openEditor(n){
-  editingNote = n;
-  titleInput.value = n.title;
-  bodyInput.value = n.body;
-  applyEditorTheme(n.color);
-
-  // Default to edit mode (zero lag)
-  setPreviewMode(false);
-
-  $('#modalPinBtn').classList.toggle('on', n.pinned);
-  $('#modalPinIcon').className = `icon xs ${n.pinned ? 'fill' : ''}`;
-  $('#modalPinText').textContent = n.pinned ? 'Pinned' : 'Pin';
-
-  editorModal.classList.add('open');
-  titleInput.focus();
+function applyNoteDetailColor(cId){
+  const card = $('#detailDescCard');
+  card.className = `nd-desc-card c-${cId||'none'}`;
 }
 
-function setPreviewMode(preview){
-  isPreviewMode = preview;
-  if(preview){
-    previewPane.innerHTML = renderMarkdown(bodyInput.value) || '<p style="opacity:.6">Nothing to preview.</p>';
-    previewPane.style.display = 'block';
-    bodyInput.style.display = 'none';
-    $('#previewLabel').textContent = 'Edit';
-    $('#previewIcon').textContent = 'edit';
+function openNoteDetail(n, forceEdit=false){
+  activeNote = n;
+  $('#notesListView').style.display = 'none';
+  $('#noteDetailView').classList.add('open');
+
+  $('#detailTitleInput').value = n.title || '';
+  $('#detailTextarea').value = n.body || '';
+
+  // Mode: if empty, start in edit; if filled, start in preview
+  isNoteEditingMode = forceEdit || (!n.title && !n.body);
+  setNoteDetailMode(isNoteEditingMode);
+
+  // Pin button state
+  $('#detailPinBtn').innerHTML = icon('push_pin');
+  $('#detailPinBtn').classList.toggle('active', !!n.pinned);
+
+  // Color dots
+  applyNoteDetailColor(n.color);
+  $$('#detailColorsBar .color-dot').forEach(d => {
+    d.classList.toggle('selected', d.title === (n.color || 'none'));
+  });
+
+  // Spatial width takeover: 0% / 100%
+  updatePanesSpatial();
+
+  if(isNoteEditingMode){
+    $('#detailTextarea').focus();
+  }
+}
+
+function setNoteDetailMode(editing){
+  isNoteEditingMode = editing;
+  if(editing){
+    $('#detailPreviewPane').style.display = 'none';
+    $('#detailTextarea').style.display = 'block';
+    $('#detailEditToggleBtn').innerHTML = icon('visibility');
+    $('#detailEditToggleBtn').title = 'Switch to Rendered Preview';
   } else {
-    previewPane.style.display = 'none';
-    bodyInput.style.display = 'block';
-    $('#previewLabel').textContent = 'Preview';
-    $('#previewIcon').textContent = 'visibility';
+    $('#detailPreviewPane').innerHTML = renderMarkdown($('#detailTextarea').value) || '<p style="opacity:.6">No content to preview.</p>';
+    $('#detailPreviewPane').style.display = 'block';
+    $('#detailTextarea').style.display = 'none';
+    $('#detailEditToggleBtn').innerHTML = icon('edit');
+    $('#detailEditToggleBtn').title = 'Switch to Text Editor';
   }
 }
 
-previewBtn.onclick = () => setPreviewMode(!isPreviewMode);
+$('#detailEditToggleBtn').onclick = () => setNoteDetailMode(!isNoteEditingMode);
+$('#detailPreviewPane').ondblclick = () => setNoteDetailMode(true);
 
-$('#modalPinBtn').onclick = () => {
-  if(!editingNote) return;
-  editingNote.pinned = !editingNote.pinned;
-  $('#modalPinBtn').classList.toggle('on', editingNote.pinned);
-  $('#modalPinIcon').className = `icon xs ${editingNote.pinned ? 'fill' : ''}`;
-  $('#modalPinText').textContent = editingNote.pinned ? 'Pinned' : 'Pin';
+$('#detailPinBtn').onclick = () => {
+  if(!activeNote) return;
+  activeNote.pinned = !activeNote.pinned;
+  $('#detailPinBtn').classList.toggle('active', activeNote.pinned);
 };
 
-$('#modalDeleteBtn').onclick = () => {
-  if(!editingNote) return;
-  notesList = notesList.filter(n => n.id !== editingNote.id);
-  closeEditor();
-};
-
-function closeEditor(){
-  if(!editingNote) return;
-  editingNote.title = titleInput.value.trim();
-  editingNote.body = bodyInput.value.trim();
-  if(!editingNote.title && !editingNote.body && editingNote.isNew){
-    notesList = notesList.filter(n => n.id !== editingNote.id);
+$('#detailBackBtn').onclick = () => {
+  if(!activeNote) return;
+  activeNote.title = $('#detailTitleInput').value.trim();
+  activeNote.body = $('#detailTextarea').value.trim();
+  if(!activeNote.title && !activeNote.body && activeNote.isNew){
+    notes = notes.filter(n => n.id !== activeNote.id);
   }
-  delete editingNote.isNew;
-  editingNote = null;
-  editorModal.classList.remove('open');
+  delete activeNote.isNew;
+  activeNote = null;
+  noteConfirmDelete = false;
+
+  $('#noteDetailView').classList.remove('open');
+  $('#notesListView').style.display = 'flex';
+  updatePanesSpatial();
   renderNotesBoard();
-}
+};
 
-$('#modalDoneBtn').onclick = closeEditor;
-$('#modalCloseX').onclick = closeEditor;
-editorModal.addEventListener('click', e => {
-  if(e.target === editorModal) closeEditor();
-});
-addEventListener('keydown', e => {
-  if(e.key === 'Escape' && editorModal.classList.contains('open')) closeEditor();
-});
+/* Two-Step Note Deletion */
+$('#detailDeleteBtn').onclick = () => {
+  if(!activeNote) return;
+  if(!noteConfirmDelete){
+    noteConfirmDelete = true;
+    $('#detailDeleteBtn').innerHTML = icon('check');
+    $('#detailDeleteBtn').className = 'pbtn danger';
+    noteConfirmDeleteTimeout = setTimeout(() => {
+      noteConfirmDelete = false;
+      $('#detailDeleteBtn').innerHTML = icon('delete');
+      $('#detailDeleteBtn').className = 'pbtn soft';
+    }, 3000);
+  } else {
+    clearTimeout(noteConfirmDeleteTimeout);
+    noteConfirmDelete = false;
+    notes = notes.filter(n => n.id !== activeNote.id);
+    activeNote = null;
+    $('#detailDeleteBtn').innerHTML = icon('delete');
+    $('#detailDeleteBtn').className = 'pbtn soft';
+    $('#noteDetailView').classList.remove('open');
+    $('#notesListView').style.display = 'flex';
+    updatePanesSpatial();
+    renderNotesBoard();
+  }
+};
 
 /* ==========================================================================
-   FEATURE SAMPLE DEMOS (BELOW THE MAIN PANEL)
+   INITIALIZATION & FEATURE SAMPLES
    ========================================================================== */
+function initAllStaticIcons(){
+  // Header & Navigation
+  $('#themeBtn').innerHTML = icon('dark_mode','sm');
+  $('#githubTopLink').innerHTML = `${icon('star','sm')} GitHub`;
+  $('#githubHeroBtn').innerHTML = `${icon('download','sm')} Get it on GitHub`;
+  $('#tryHeroBtn').innerHTML = `${icon('play_arrow','sm')} Try interactive panel`;
+  $('#githubCtaBtn').innerHTML = `${icon('download','sm')} View on GitHub`;
+
+  // Shell Tabs
+  $('#tab0').innerHTML = `${icon('grid_view')} Dashboard`;
+  $('#tab1').innerHTML = `${icon('music_note')} Media`;
+  $('#tab2').innerHTML = `${icon('edit_note')} Notes`;
+  $('#tab3').innerHTML = `${icon('speed')} Performance`;
+  $('#tab4').innerHTML = `${icon('partly_cloudy_day')} Weather`;
+  $('#tab5').innerHTML = `${icon('memory')} Hardware`;
+
+  // To-do Pane Buttons
+  $('#todoSortBtn').innerHTML = icon('calendar_month');
+  $('#trashToggleBtn').innerHTML = icon('delete_outline');
+  $('#inlineAddToggleBtn').innerHTML = icon('add');
+  $('#commitTodoBtn').innerHTML = icon('check');
+  $('#repeatIconHolder').innerHTML = icon('repeat','xs');
+  $('#dateIconHolder').innerHTML = icon('calendar_today','xs');
+
+  // Calendar Picker Icons
+  $('#dpPrevMonth').innerHTML = icon('chevron_left','xs');
+  $('#dpNextMonth').innerHTML = icon('chevron_right','xs');
+  $('#dpCloseBtn').innerHTML = icon('close','xs');
+
+  // Trash Icons
+  $('#backFromTrashBtn').innerHTML = icon('checklist');
+  $('#emptyTrashBtn').innerHTML = icon('delete_sweep');
+  $('#trashHabitsIcon').innerHTML = icon('repeat','sm');
+  $('#trashGeneralIcon').innerHTML = icon('delete_outline','sm');
+
+  // Notes Pane Icons
+  $('#notesBackFilterBtn').innerHTML = icon('arrow_back');
+  $('#notesLayoutToggleBtn').innerHTML = icon('grid_view');
+  $('#createNoteBtn').innerHTML = icon('add');
+  $('#pinnedSecIcon').innerHTML = icon('push_pin','xs');
+  $('#otherSecIcon').innerHTML = icon('sticky_note_2','xs');
+
+  // Detail View Icons
+  $('#detailBackBtn').innerHTML = icon('arrow_back');
+  $('#detailEditToggleBtn').innerHTML = icon('visibility');
+  $('#detailPinBtn').innerHTML = icon('push_pin');
+  $('#detailDeleteBtn').innerHTML = icon('delete');
+
+  // Empty View Icons
+  $('#todoEmptyIcon').innerHTML = icon('check_circle','lg');
+  $('#trashEmptyIcon').innerHTML = icon('auto_delete','lg');
+  $('#notesEmptyIcon').innerHTML = icon('sticky_note_2','lg');
+
+  // Theme Segment Buttons
+  $('#segDark').innerHTML = `${icon('dark_mode','sm')} Dark`;
+  $('#segLight').innerHTML = `${icon('light_mode','sm')} Light`;
+
+  $('#samplePinIcon').innerHTML = icon('push_pin','sm');
+}
+
+/* Feature 1 Sample todos */
 const sampleList = [
-  { text: 'Morning meditation (repeats)', due: 'today', repeating: true },
-  { text: 'Verify Caelestia Shell Wayland IPC', due: 'tomorrow', repeating: false },
-  { text: 'Tune 4-leaf clover rotation speed', due: '2026-10-02', repeating: false }
+  { text: 'Morning meditation (repeats)', due: 'Today', repeating: true },
+  { text: 'Verify Caelestia Shell Wayland IPC', due: 'Tomorrow', repeating: false },
+  { text: 'Tune 4-leaf clover rotation speed', due: 'Oct 04', repeating: false }
 ];
 const sUl = $('#sampleTodos');
 sampleList.forEach(t => {
   const li = document.createElement('li');
-  li.className = 'todo';
+  li.className = 'todo-row';
   li.innerHTML = `
-    <div>
-      <label>
-        <input type="checkbox">
-        <span class="box"><span class="icon check-mark">check</span></span>
-        <span class="t-wrap"><span class="t">${esc(t.text)}</span></span>
-        ${t.repeating ? '<span class="pill habit"><span class="icon xs">repeat</span> Habit</span>' : ''}
-        <span class="pill ${t.due === 'today' ? 'today' : (t.due === 'tomorrow' ? 'tomorrow' : 'custom')}">${t.due}</span>
-      </label>
-    </div>
+    <button type="button" class="m3-check-btn"><span class="m3-check-shape">${icon('check')}</span></button>
+    <div class="todo-label-wrap"><span class="todo-text">${esc(t.text)}</span></div>
+    ${t.repeating ? `<span class="pill habit">${icon('repeat','xs')} Habit</span>` : ''}
+    <span class="pill today">${t.due}</span>
   `;
-  li.querySelector('input').addEventListener('change', e => {
-    li.classList.toggle('done-item', e.target.checked);
-  });
+  li.querySelector('.m3-check-btn').onclick = () => li.classList.toggle('checked');
   sUl.appendChild(li);
 });
 
-// Color swatch interactive preview in feature 3
-const swatchesBox = $('#swatches'), sampleNote = $('#sample');
-NOTE_COLORS.forEach(([c, name], i) => {
+/* Feature 3 Color swatches */
+const swatchesBox = $('#swatches'), sampleNoteCard = $('#sampleNoteCard');
+NOTE_COLOR_OPTIONS.forEach((opt, i) => {
   const d = document.createElement('button');
-  d.className = `dot c-${c}`;
-  d.setAttribute('title', name);
-  if(i === 0) d.setAttribute('aria-checked', 'true');
+  d.className = 'color-dot' + (i === 1 ? ' selected' : '');
+  d.style.background = opt.color;
+  d.style.width = '32px';
+  d.style.height = '32px';
+  d.title = opt.id;
+  if(opt.id === 'none') d.innerHTML = icon('block','sm');
   d.onclick = () => {
-    sampleNote.className = `note sample c-${c}`;
-    $$('#swatches .dot').forEach(x => x.setAttribute('aria-checked', x === d));
+    sampleNoteCard.className = `note-card c-${opt.id}`;
+    $$('#swatches .color-dot').forEach(x => x.classList.toggle('selected', x === d));
   };
   swatchesBox.appendChild(d);
 });
-$('#samplePin').onclick = e => {
-  const b = e.currentTarget;
-  const on = b.classList.toggle('on');
-  b.querySelector('.icon').className = `icon sm ${on ? 'fill' : ''}`;
-};
 
-/* Focus mode overlay & try button */
+/* Focus mode overlay */
 const veil = document.createElement('div'); veil.className = 'veil';
 const hint = document.createElement('div'); hint.className = 'hint'; hint.textContent = 'Click outside or press Escape to exit interactive focus mode';
 document.body.append(veil, hint);
 
 function enterFocus(){
   $('.panel').scrollIntoView({ behavior: 'smooth', block: 'center' });
-  setTimeout(() => document.body.classList.add('focus-mode'), 450);
+  setTimeout(() => document.body.classList.add('focus-mode'), 400);
 }
 function exitFocus(){ document.body.classList.remove('focus-mode'); }
 veil.onclick = exitFocus;
@@ -1413,9 +1897,12 @@ document.addEventListener('click', e => {
   if(id === '#try'){ e.preventDefault(); enterFocus(); }
 });
 
-/* Init */
+/* Boot */
+initAllStaticIcons();
+setupColorDots();
 renderTodos();
 renderNotesBoard();
+updateQuickAddState();
 </script>
 </body>
 </html>
