@@ -149,7 +149,11 @@ section.feat{padding:80px 0 0}
   opacity:1;transform:scale(1) rotate(0deg);
 }
 .todo-row.static-done{
-  cursor:default;opacity:.78;
+  cursor:default;
+}
+.todo-row.static-done .todo-text{
+  opacity:.82;
+  color:var(--text);
 }
 .todo-row.static-done:hover{
   background:var(--bg);
@@ -312,7 +316,7 @@ footer{margin-top:64px;padding:28px 0 44px;border-top:1px solid var(--line);colo
                 </button>
                 <div class="todo-label-wrap">
                   <span class="todo-text">install caelestia notes</span>
-                  <canvas class="wavy-canvas" data-color="#ff5c7c"></canvas>
+                  <canvas class="wavy-canvas" data-color="rgba(255, 92, 124, 0.45)"></canvas>
                 </div>
               </li>
               <li class="todo-row" data-id="2">
@@ -329,6 +333,19 @@ footer{margin-top:64px;padding:28px 0 44px;border-top:1px solid var(--line);colo
                 <span class="pill habit">Repeating</span>
               </li>
               <li class="todo-row" data-id="3">
+                <button type="button" class="m3-check-btn" aria-label="Toggle task">
+                  <div class="m3-check-box">
+                    <svg class="m3-shape-svg" viewBox="0 0 24 24"><path d="M12,2.3551C12.1158,2.266 12.2317,2.177 12.3475,2.0879C15.063,0 18.9058,0.25 21.3279,2.6721C23.75,5.0942 24,8.937 21.9121,11.6525C21.823,11.7683 21.734,11.8842 21.6449,12C21.734,12.1158 21.823,12.2317 21.9121,12.3475C24,15.063 23.75,18.9058 21.3279,21.3279C18.9058,23.75 15.063,24 12.3475,21.9121C12.2317,21.823 12.1158,21.734 12,21.6449C11.8842,21.734 11.7683,21.823 11.6525,21.9121C8.937,24 5.0942,23.75 2.6721,21.3279C0.25,18.9058 0,15.063 2.0879,12.3475C2.177,12.2317 2.266,12.1158 2.3551,12C2.266,11.8842 2.177,11.7683 2.0879,11.6525C0,8.937 0.25,5.0942 2.6721,2.6721C5.0942,0.25 8.937,0 11.6525,2.0879C11.7683,2.177 11.8842,2.266 12,2.3551Z"/></svg>
+                    <svg class="check-tick" viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5a.984.984 0 0 0-1.4 0 .984.984 0 0 0 0 1.4l4.19 4.19c.39.39 1.02.39 1.41 0L20.3 7.7a.984.984 0 0 0 0-1.4.984.984 0 0 0-1.4 0L9 16.2z"/></svg>
+                  </div>
+                </button>
+                <div class="todo-label-wrap">
+                  <span class="todo-text">thank karin for helping</span>
+                  <canvas class="wavy-canvas"></canvas>
+                </div>
+                <span class="pill today">Tomorrow</span>
+              </li>
+              <li class="todo-row" data-id="4">
                 <button type="button" class="m3-check-btn" aria-label="Toggle task">
                   <div class="m3-check-box">
                     <svg class="m3-shape-svg" viewBox="0 0 24 24"><path d="M16.2594,22.6245C14.4334,23.4529 13.5204,23.8672 12.5706,23.9615C12.1829,24 11.7924,23.9993 11.4048,23.9593C10.4553,23.8613 9.544,23.4436 7.7212,22.6082C6.243,21.9306 4.7647,21.2531 3.2865,20.5756C1.2701,19.6514 0.1048,17.5082 0.4254,15.3134C0.7573,13.0412 1.0892,10.7691 1.4211,8.4969C1.636,7.0254 2.4404,5.7046 3.6492,4.8383C5.4579,3.542 7.2667,2.2457 9.0754,0.9494C9.9378,0.3314 10.9726,0 12.0335,0.002C13.0945,0.0041 14.128,0.3394 14.9879,0.9607C16.7917,2.2639 18.5955,3.5671 20.3993,4.8703C21.6048,5.7412 22.4041,7.0651 22.6134,8.5374C22.9366,10.8109 23.2598,13.0843 23.583,15.3577C23.8952,17.5537 22.7217,19.6924 20.7018,20.6089C19.221,21.2808 17.7402,21.9526 16.2594,22.6245Z"/></svg>
