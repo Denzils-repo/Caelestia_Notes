@@ -198,6 +198,8 @@ section.feat{padding:80px 0 0}
 }
 .color-dot:hover{transform:scale(1.15)}
 .color-dot.selected{border-color:var(--text);transform:scale(1.12)}
+.color-dot svg{width:16px;height:16px;fill:var(--muted);transition:fill .2s;pointer-events:none}
+.color-dot:hover svg, .color-dot.selected svg{fill:var(--text)}
 .note-card{
   border-radius:20px;padding:18px;background:var(--bg);border:1px solid var(--line);
   display:flex;flex-direction:column;gap:8px;transition:background .35s var(--ease),color .35s;
@@ -403,11 +405,13 @@ footer{margin-top:64px;padding:28px 0 44px;border-top:1px solid var(--line);colo
           </div>
           <div class="stage">
             <div class="swatches" id="swatches" role="radiogroup" aria-label="Try note colors">
+              <button class="color-dot" data-c="surface" style="background:var(--btn-2);border:1px solid var(--line)" title="No color">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM4 12c0-4.42 3.58-8 8-8 1.85 0 3.55.63 4.9 1.69L5.69 16.9C4.63 15.55 4 13.85 4 12zm8 8c-1.85 0-3.55-.63-4.9-1.69L18.31 7.1c1.06 1.35 1.69 3.05 1.69 4.9 0 4.42-3.58 8-8 8z"/></svg>
+              </button>
               <button class="color-dot selected" data-c="primary" style="background:#72E1E1" title="Primary Cyan"></button>
-              <button class="color-dot" data-c="tertiary" style="background:#EBB094" title="Tertiary Peach"></button>
               <button class="color-dot" data-c="mint" style="background:#A8E6CF" title="Mint"></button>
               <button class="color-dot" data-c="mauve" style="background:#D4B2D8" title="Mauve"></button>
-              <button class="color-dot" data-c="surface" style="background:var(--btn-2);border:1px solid var(--line)" title="Neutral"></button>
+              <button class="color-dot" data-c="tertiary" style="background:#EBB094" title="Tertiary Peach"></button>
             </div>
             <div class="note-card c-primary" id="sampleNoteCard">
               <div class="nc-head">
