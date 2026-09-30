@@ -588,21 +588,21 @@ footer{margin-top:64px;padding:28px 0 44px;border-top:1px solid var(--line);colo
           </div>
           <div class="card-stack-wrap">
             <div class="card-stack" id="themeCardStack" aria-label="Theme screenshot stack">
-              <div class="card" data-idx="0" data-theme="dark" title="Click to inspect Dark Mode">
+              <div class="card" data-idx="0" title="Click to inspect Dark Mode">
                 <img src="dark.png" alt="Caelestia Notes Dark Mode" loading="lazy">
                 <div class="card-label">
                   <span>Dark Mode</span>
                   <svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
                 </div>
               </div>
-              <div class="card" data-idx="1" data-theme="transparent" title="Click to inspect Transparent Glass Mode">
+              <div class="card" data-idx="1" title="Click to inspect Transparent Glass Mode">
                 <img src="transparent.png" alt="Caelestia Notes Transparent Mode" loading="lazy">
                 <div class="card-label">
                   <span>Transparent Glass</span>
                   <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 10h2v7H7zm4-3h2v10h-2zm4 6h2v4h-2z"/></svg>
                 </div>
               </div>
-              <div class="card" data-idx="2" data-theme="light" title="Click to inspect Light Mode">
+              <div class="card" data-idx="2" title="Click to inspect Light Mode">
                 <img src="light.png" alt="Caelestia Notes Light Mode" loading="lazy">
                 <div class="card-label">
                   <span>Light Mode</span>
@@ -686,9 +686,9 @@ themeBtn.onclick = () => {
 
 // Interactive Theme Screenshots Card Stack & Lightbox
 const themeScreenshots = [
-  { src: 'dark.png', title: 'Dark Mode — High Contrast & Deep OLED Blacks', theme: 'dark' },
-  { src: 'transparent.png', title: 'Transparent Mode — Native Wayland Blur & Vibrancy', theme: 'dark' },
-  { src: 'light.png', title: 'Light Mode — Clean Daylight Material Aesthetics', theme: 'light' }
+  { src: 'dark.png', title: 'Dark Mode — High Contrast & Deep OLED Blacks' },
+  { src: 'transparent.png', title: 'Transparent Mode — Native Wayland Blur & Vibrancy' },
+  { src: 'light.png', title: 'Light Mode — Clean Daylight Material Aesthetics' }
 ];
 let currentLightboxIdx = 0;
 
@@ -719,10 +719,6 @@ function closeLightbox() {
 document.querySelectorAll('#themeCardStack .card').forEach((card) => {
   card.onclick = () => {
     const idx = parseInt(card.getAttribute('data-idx'), 10) || 0;
-    const themeTarget = card.getAttribute('data-theme');
-    if (themeTarget === 'light' || themeTarget === 'dark') {
-      setTheme(themeTarget);
-    }
     showLightbox(idx);
   };
 });
