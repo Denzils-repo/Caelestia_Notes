@@ -114,28 +114,48 @@ section.feat{padding:80px 0 0}
 .todo-row{
   display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:16px;
   background:var(--bg);border:1px solid var(--line);transition:background .2s,opacity .25s;
+  cursor:pointer;user-select:none;
 }
 .todo-row:hover{background:var(--btn-2)}
 .m3-check-btn{
   width:24px;height:24px;display:grid;place-items:center;background:none;border:0;
-  cursor:pointer;position:relative;flex:none;transition:transform .2s var(--spring);
+  cursor:pointer;position:relative;flex:none;padding:0;
 }
-.m3-check-shape{
-  width:20px;height:20px;border-radius:6px;border:2px solid var(--muted);
-  display:grid;place-items:center;transition:border-radius .3s var(--spring),background .25s,border-color .25s;
+.m3-shape-wrap{
+  width:22px;height:22px;position:relative;display:grid;place-items:center;
+  transition:transform .25s var(--spring);
 }
-.m3-check-btn:hover .m3-check-shape{border-color:var(--accent)}
-.todo-row.checked .m3-check-shape{
-  background:var(--accent);border-color:var(--accent);border-radius:50%;
+.m3-check-btn:hover .m3-shape-wrap{transform:scale(1.1)}
+.m3-shape-svg{
+  width:22px;height:22px;fill:var(--btn-2);stroke:var(--muted);stroke-width:1.5px;
+  transition:fill .25s var(--ease),stroke .25s var(--ease),transform .3s var(--spring);
 }
-.m3-check-shape .icon{width:13px;height:13px;fill:var(--on-accent);opacity:0;transform:scale(.4);transition:opacity .2s,transform .25s var(--spring)}
-.todo-row.checked .m3-check-shape .icon{opacity:1;transform:scale(1)}
-.todo-label-wrap{flex:1;min-width:0;position:relative;cursor:pointer}
-.todo-text{font-size:.95rem;transition:color .3s,opacity .3s}
-.todo-row.checked .todo-text{color:var(--muted);text-decoration:line-through;opacity:.7}
+.todo-row:hover .m3-shape-svg{stroke:var(--accent)}
+.todo-row.checked .m3-shape-svg{
+  fill:var(--accent);stroke:var(--accent);transform:scale(1.06) rotate(4deg);
+}
+.check-tick{
+  position:absolute;width:13px;height:13px;fill:var(--on-accent);
+  opacity:0;transform:scale(0.3) rotate(-15deg);
+  transition:opacity .2s var(--ease),transform .25s var(--spring);
+  pointer-events:none;
+}
+.todo-row.checked .check-tick{
+  opacity:1;transform:scale(1) rotate(0deg);
+}
+.todo-label-wrap{
+  flex:1;min-width:0;position:relative;display:inline-flex;align-items:center;
+}
+.todo-text{font-size:.95rem;line-height:1.4;color:var(--text);transition:color .3s,opacity .3s}
+.todo-row.checked .todo-text{color:var(--muted);opacity:.65}
+.wavy-canvas{
+  position:absolute;left:0;top:50%;transform:translateY(-50%);
+  pointer-events:none;height:24px;
+}
 .pill{display:inline-flex;align-items:center;gap:4px;font-size:.74rem;padding:3px 10px;border-radius:999px;font-weight:600;white-space:nowrap;flex:none}
 .pill.habit{background:rgba(114,225,225,.15);color:var(--accent);border:1px solid rgba(114,225,225,.25)}
 .pill.today{background:var(--btn-2);color:var(--text)}
+.pill.trash{background:rgba(242,143,173,.14);color:#f28fad;border:1px solid rgba(242,143,173,.25)}
 
 /* Markdown Preview */
 .shapes{display:flex;flex-direction:column;gap:14px}
@@ -278,21 +298,81 @@ footer{margin-top:64px;padding:28px 0 44px;border-top:1px solid var(--line);colo
           </div>
           <div class="stage">
             <ul class="todo-list" id="sampleTodos">
-              <li class="todo-row">
-                <button type="button" class="m3-check-btn"><span class="m3-check-shape"><svg class="icon" viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5a.984.984 0 0 0-1.4 0 .984.984 0 0 0 0 1.4l4.19 4.19c.39.39 1.02.39 1.41 0L20.3 7.7a.984.984 0 0 0 0-1.4.984.984 0 0 0-1.4 0L9 16.2z"/></svg></span></button>
-                <div class="todo-label-wrap"><span class="todo-text">Morning meditation (repeats)</span></div>
-                <span class="pill habit"><svg class="icon xs" viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg> Habit</span>
-                <span class="pill today">Today</span>
+              <li class="todo-row checked" data-id="1">
+                <button type="button" class="m3-check-btn" aria-label="Toggle task">
+                  <div class="m3-shape-wrap">
+                    <svg class="m3-shape-svg" viewBox="0 0 24 24"><path d="M10.3198,0.9896C11.2214,0 12.7786,0 13.6802,0.9896C14.2783,1.646 15.2039,1.894 16.0501,1.6246C17.3257,1.2184 18.6743,1.997 18.9603,3.3048C19.1501,4.1723 19.8277,4.8499 20.6952,5.0397C22.003,5.3257 22.7816,6.6743 22.3754,7.9499C22.106,8.7961 22.354,9.7217 23.0104,10.3198C24,11.2214 24,12.7786 23.0104,13.6802C22.354,14.2783 22.106,15.2039 22.3754,16.0501C22.7816,17.3257 22.003,18.6743 20.6952,18.9603C19.8277,19.1501 19.1501,19.8277 18.9603,20.6952C18.6743,22.003 17.3257,22.7816 16.0501,22.3754C15.2039,22.106 14.2783,22.354 13.6802,23.0104C12.7786,24 11.2214,24 10.3198,23.0104C9.7217,22.354 8.7961,22.106 7.9499,22.3754C6.6743,22.7816 5.3257,22.003 5.0397,20.6952C4.8499,19.8277 4.1723,19.1501 3.3048,18.9603C1.997,18.6743 1.2184,17.3257 1.6246,16.0501C1.894,15.2039 1.646,14.2783 0.9896,13.6802C0,12.7786 0,11.2214 0.9896,10.3198C1.646,9.7217 1.894,8.7961 1.6246,7.9499C1.2184,6.6743 1.997,5.3257 3.3048,5.0397C4.1723,4.8499 4.8499,4.1723 5.0397,3.3048C5.3257,1.997 6.6743,1.2184 7.9499,1.6246C8.7961,1.894 9.7217,1.646 10.3198,0.9896Z"/></svg>
+                    <svg class="check-tick" viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5a.984.984 0 0 0-1.4 0 .984.984 0 0 0 0 1.4l4.19 4.19c.39.39 1.02.39 1.41 0L20.3 7.7a.984.984 0 0 0 0-1.4.984.984 0 0 0-1.4 0L9 16.2z"/></svg>
+                  </div>
+                </button>
+                <div class="todo-label-wrap">
+                  <span class="todo-text">install caelestia notes</span>
+                  <canvas class="wavy-canvas"></canvas>
+                </div>
+                <span class="pill trash"><svg class="icon xs" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg> Trashed</span>
               </li>
-              <li class="todo-row">
-                <button type="button" class="m3-check-btn"><span class="m3-check-shape"><svg class="icon" viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5a.984.984 0 0 0-1.4 0 .984.984 0 0 0 0 1.4l4.19 4.19c.39.39 1.02.39 1.41 0L20.3 7.7a.984.984 0 0 0 0-1.4.984.984 0 0 0-1.4 0L9 16.2z"/></svg></span></button>
-                <div class="todo-label-wrap"><span class="todo-text">Verify Caelestia Shell Wayland IPC</span></div>
+              <li class="todo-row" data-id="2">
+                <button type="button" class="m3-check-btn" aria-label="Toggle task">
+                  <div class="m3-shape-wrap">
+                    <svg class="m3-shape-svg" viewBox="0 0 24 24"><path d="M12,2.3551C12.1158,2.266 12.2317,2.177 12.3475,2.0879C15.063,0 18.9058,0.25 21.3279,2.6721C23.75,5.0942 24,8.937 21.9121,11.6525C21.823,11.7683 21.734,11.8842 21.6449,12C21.734,12.1158 21.823,12.2317 21.9121,12.3475C24,15.063 23.75,18.9058 21.3279,21.3279C18.9058,23.75 15.063,24 12.3475,21.9121C12.2317,21.823 12.1158,21.734 12,21.6449C11.8842,21.734 11.7683,21.823 11.6525,21.9121C8.937,24 5.0942,23.75 2.6721,21.3279C0.25,18.9058 0,15.063 2.0879,12.3475C2.177,12.2317 2.266,12.1158 2.3551,12C2.266,11.8842 2.177,11.7683 2.0879,11.6525C0,8.937 0.25,5.0942 2.6721,2.6721C5.0942,0.25 8.937,0 11.6525,2.0879C11.7683,2.177 11.8842,2.266 12,2.3551Z"/></svg>
+                    <svg class="check-tick" viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5a.984.984 0 0 0-1.4 0 .984.984 0 0 0 0 1.4l4.19 4.19c.39.39 1.02.39 1.41 0L20.3 7.7a.984.984 0 0 0 0-1.4.984.984 0 0 0-1.4 0L9 16.2z"/></svg>
+                  </div>
+                </button>
+                <div class="todo-label-wrap">
+                  <span class="todo-text">a date with soramane</span>
+                  <canvas class="wavy-canvas"></canvas>
+                </div>
                 <span class="pill today">Tomorrow</span>
               </li>
-              <li class="todo-row">
-                <button type="button" class="m3-check-btn"><span class="m3-check-shape"><svg class="icon" viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5a.984.984 0 0 0-1.4 0 .984.984 0 0 0 0 1.4l4.19 4.19c.39.39 1.02.39 1.41 0L20.3 7.7a.984.984 0 0 0 0-1.4.984.984 0 0 0-1.4 0L9 16.2z"/></svg></span></button>
-                <div class="todo-label-wrap"><span class="todo-text">Tune 4-leaf clover rotation speed</span></div>
-                <span class="pill today">Oct 04</span>
+              <li class="todo-row" data-id="3">
+                <button type="button" class="m3-check-btn" aria-label="Toggle task">
+                  <div class="m3-shape-wrap">
+                    <svg class="m3-shape-svg" viewBox="0 0 24 24"><path d="M23.4058,10.79C24,11.4872 24,12.5128 23.4058,13.21C22.7985,13.9227 22.1912,14.6353 21.5839,15.3479C21.3293,15.6467 21.1754,16.0182 21.1442,16.4095C21.0697,17.3429 20.9952,18.2762 20.9207,19.2095C20.8479,20.1227 20.1227,20.8479 19.2095,20.9207C18.2762,20.9952 17.3429,21.0697 16.4095,21.1442C16.0182,21.1754 15.6467,21.3293 15.3479,21.5839C14.6353,22.1912 13.9227,22.7985 13.21,23.4058C12.5128,24 11.4872,24 10.79,23.4058C10.0773,22.7985 9.3647,22.1912 8.6521,21.5839C8.3533,21.3293 7.9818,21.1754 7.5905,21.1442C6.6571,21.0697 5.7238,20.9952 4.7905,20.9207C3.8773,20.8479 3.1521,20.1227 3.0793,19.2095C3.0048,18.2762 2.9303,17.3429 2.8558,16.4095C2.8246,16.0182 2.6707,15.6467 2.4161,15.3479C1.8088,14.6353 1.2015,13.9227 0.5942,13.21C0,12.5128 0,11.4872 0.5942,10.79C1.2015,10.0773 1.8088,9.3647 2.4161,8.6521C2.6707,8.3533 2.8246,7.9818 2.8558,7.5905C2.9303,6.6571 3.0048,5.7238 3.0793,4.7905C3.1521,3.8773 3.8773,3.1521 4.7905,3.0793C5.7238,3.0048 6.6571,2.9303 7.5905,2.8558C7.9818,2.8246 8.3533,2.6707 8.6521,2.4161C9.3647,1.8088 10.0773,1.2015 10.79,0.5942C11.4872,0 12.5128,0 13.21,0.5942C13.9227,1.2015 14.6353,1.8088 15.3479,2.4161C15.6467,2.6707 16.0182,2.8246 16.4095,2.8558C17.3429,2.9303 18.2762,3.0048 19.2095,3.0793C20.1227,3.1521 20.8479,3.8773 20.9207,4.7905C20.9952,5.7238 21.0697,6.6571 21.1442,7.5905C21.1754,7.9818 21.3293,8.3533 21.5839,8.6521C22.1912,9.3647 22.7985,10.0773 23.4058,10.79Z"/></svg>
+                    <svg class="check-tick" viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5a.984.984 0 0 0-1.4 0 .984.984 0 0 0 0 1.4l4.19 4.19c.39.39 1.02.39 1.41 0L20.3 7.7a.984.984 0 0 0 0-1.4.984.984 0 0 0-1.4 0L9 16.2z"/></svg>
+                  </div>
+                </button>
+                <div class="todo-label-wrap">
+                  <span class="todo-text">Praise goatiro</span>
+                  <canvas class="wavy-canvas"></canvas>
+                </div>
+                <span class="pill habit"><svg class="icon xs" viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg> Habit</span>
+              </li>
+              <li class="todo-row" data-id="4">
+                <button type="button" class="m3-check-btn" aria-label="Toggle task">
+                  <div class="m3-shape-wrap">
+                    <svg class="m3-shape-svg" viewBox="0 0 24 24"><path d="M9.555,1.4408C10.9421,0.1823 13.0579,0.1823 14.445,1.4408C15.1504,2.0808 16.0788,2.4187 17.0307,2.3819C18.9021,2.3094 20.5229,3.6694 20.7766,5.5251C20.9056,6.4689 21.3995,7.3244 22.1524,7.9081C23.6326,9.0555 24,11.1392 23.0015,12.7237C22.4937,13.5296 22.3221,14.5025 22.5237,15.4336C22.92,17.264 21.8621,19.0963 20.0787,19.6684C19.1717,19.9593 18.4149,20.5943 17.9709,21.4371C17.0979,23.0941 15.1097,23.8177 13.3758,23.1095C12.494,22.7494 11.506,22.7494 10.6242,23.1095C8.8903,23.8177 6.9021,23.0941 6.0291,21.4371C5.5851,20.5943 4.8283,19.9593 3.9213,19.6684C2.1379,19.0963 1.08,17.264 1.4763,15.4336C1.6779,14.5025 1.5063,13.5296 0.9985,12.7237C0,11.1392 0.3674,9.0555 1.8476,7.9081C2.6005,7.3244 3.0944,6.4689 3.2234,5.5251C3.4771,3.6694 5.0979,2.3094 6.9693,2.3819C7.9212,2.4187 8.8496,2.0808 9.555,1.4408Z"/></svg>
+                    <svg class="check-tick" viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5a.984.984 0 0 0-1.4 0 .984.984 0 0 0 0 1.4l4.19 4.19c.39.39 1.02.39 1.41 0L20.3 7.7a.984.984 0 0 0 0-1.4.984.984 0 0 0-1.4 0L9 16.2z"/></svg>
+                  </div>
+                </button>
+                <div class="todo-label-wrap">
+                  <span class="todo-text">Say thank you to karin</span>
+                  <canvas class="wavy-canvas"></canvas>
+                </div>
+              </li>
+              <li class="todo-row" data-id="5">
+                <button type="button" class="m3-check-btn" aria-label="Toggle task">
+                  <div class="m3-shape-wrap">
+                    <svg class="m3-shape-svg" viewBox="0 0 24 24"><path d="M16.2594,22.6245C14.4334,23.4529 13.5204,23.8672 12.5706,23.9615C12.1829,24 11.7924,23.9993 11.4048,23.9593C10.4553,23.8613 9.544,23.4436 7.7212,22.6082C6.243,21.9306 4.7647,21.2531 3.2865,20.5756C1.2701,19.6514 0.1048,17.5082 0.4254,15.3134C0.7573,13.0412 1.0892,10.7691 1.4211,8.4969C1.636,7.0254 2.4404,5.7046 3.6492,4.8383C5.4579,3.542 7.2667,2.2457 9.0754,0.9494C9.9378,0.3314 10.9726,0 12.0335,0.002C13.0945,0.0041 14.128,0.3394 14.9879,0.9607C16.7917,2.2639 18.5955,3.5671 20.3993,4.8703C21.6048,5.7412 22.4041,7.0651 22.6134,8.5374C22.9366,10.8109 23.2598,13.0843 23.583,15.3577C23.8952,17.5537 22.7217,19.6924 20.7018,20.6089C19.221,21.2808 17.7402,21.9526 16.2594,22.6245Z"/></svg>
+                    <svg class="check-tick" viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5a.984.984 0 0 0-1.4 0 .984.984 0 0 0 0 1.4l4.19 4.19c.39.39 1.02.39 1.41 0L20.3 7.7a.984.984 0 0 0 0-1.4.984.984 0 0 0-1.4 0L9 16.2z"/></svg>
+                  </div>
+                </button>
+                <div class="todo-label-wrap">
+                  <span class="todo-text">steal dim's dot files</span>
+                  <canvas class="wavy-canvas"></canvas>
+                </div>
+              </li>
+              <li class="todo-row" data-id="6">
+                <button type="button" class="m3-check-btn" aria-label="Toggle task">
+                  <div class="m3-shape-wrap">
+                    <svg class="m3-shape-svg" viewBox="0 0 24 24"><path d="M18.488,20.4028C17.5823,20.6616 16.754,21.1388 16.0759,21.7926C16.0639,21.8042 16.0519,21.8157 16.0399,21.8273C13.7864,24 10.2167,23.9969 7.9669,21.8202C7.29,21.1652 6.4625,20.6865 5.5573,20.4261C5.5413,20.4215 5.5253,20.4169 5.5093,20.4123C2.5009,19.547 0.7187,16.454 1.4789,13.4174C1.7077,12.5036 1.7085,11.5477 1.4814,10.6335C1.4774,10.6174 1.4734,10.6012 1.4693,10.585C0.7145,7.547 2.5021,4.4572 5.512,3.5972C6.4177,3.3384 7.246,2.8612 7.9241,2.2074C7.9361,2.1958 7.9481,2.1843 7.9601,2.1727C10.2136,0 13.7833,0.0031 16.0331,2.1798C16.71,2.8348 17.5375,3.3135 18.4427,3.5739C18.4587,3.5785 18.4747,3.5831 18.4907,3.5877C21.4991,4.453 23.2813,7.546 22.5211,10.5826C22.2923,11.4964 22.2915,12.4523 22.5186,13.3665C22.5226,13.3826 22.5266,13.3988 22.5307,13.415C23.2855,16.453 21.4979,19.5428 18.488,20.4028Z"/></svg>
+                    <svg class="check-tick" viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5a.984.984 0 0 0-1.4 0 .984.984 0 0 0 0 1.4l4.19 4.19c.39.39 1.02.39 1.41 0L20.3 7.7a.984.984 0 0 0 0-1.4.984.984 0 0 0-1.4 0L9 16.2z"/></svg>
+                  </div>
+                </button>
+                <div class="todo-label-wrap">
+                  <span class="todo-text">Leave to get milk</span>
+                  <canvas class="wavy-canvas"></canvas>
+                </div>
+                <span class="pill today">In 2 days</span>
               </li>
             </ul>
           </div>
@@ -436,6 +516,7 @@ function setTheme(theme){
     ? '<svg class="icon sm" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>'
     : '<svg class="icon sm" viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>';
   try { localStorage.setItem('caelestia-theme', theme); } catch(e){}
+  if (typeof refreshAllWavyLines === 'function') refreshAllWavyLines();
 }
 
 themeBtn.onclick = () => {
@@ -445,10 +526,123 @@ themeBtn.onclick = () => {
 segDark.onclick = () => setTheme('dark');
 segLight.onclick = () => setTheme('light');
 
-// Interactive Sample To-dos
+// Interactive Sample To-dos with Sinusoidal Wavy Scratch Animation
+function getAccentColor() {
+  return getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#72E1E1';
+}
+
+function drawWavyLine(canvas, textEl, progress) {
+  if (!canvas || !textEl) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const rect = textEl.getBoundingClientRect();
+  const w = Math.max(10, Math.ceil(rect.width) + 8);
+  const h = 24;
+
+  const targetW = Math.round(w * dpr);
+  const targetH = Math.round(h * dpr);
+  if (canvas.width !== targetW || canvas.height !== targetH) {
+    canvas.width = targetW;
+    canvas.height = targetH;
+    canvas.style.width = w + 'px';
+    canvas.style.height = h + 'px';
+  }
+
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, w, h);
+
+  if (progress <= 0) return;
+
+  const currentW = w * progress;
+  const cy = h / 2;
+  const amp = 2.4;
+  const lambda = 14;
+
+  ctx.beginPath();
+  ctx.lineWidth = 2.2;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.strokeStyle = getAccentColor();
+
+  for (let x = 0; x <= currentW; x += 0.8) {
+    const y = cy + amp * Math.sin((x / lambda) * 2 * Math.PI);
+    if (x === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+}
+
+function animateScratch(row, toChecked) {
+  const canvas = row.querySelector('.wavy-canvas');
+  const textEl = row.querySelector('.todo-text');
+  if (!canvas || !textEl) return;
+
+  if (row._animId) cancelAnimationFrame(row._animId);
+
+  const startProgress = row._progress !== undefined ? row._progress : (toChecked ? 0 : 1);
+  const targetProgress = toChecked ? 1 : 0;
+  const duration = toChecked ? 360 : 250;
+  const startTime = performance.now();
+
+  function step(now) {
+    const elapsed = now - startTime;
+    const rawT = Math.min(1, elapsed / duration);
+    const easeT = toChecked
+      ? 1 - Math.pow(1 - rawT, 3)
+      : Math.pow(rawT, 2);
+    const curP = startProgress + (targetProgress - startProgress) * easeT;
+    row._progress = curP;
+    drawWavyLine(canvas, textEl, curP);
+
+    if (rawT < 1) {
+      row._animId = requestAnimationFrame(step);
+    } else {
+      row._progress = targetProgress;
+      drawWavyLine(canvas, textEl, targetProgress);
+      row._animId = null;
+    }
+  }
+
+  row._animId = requestAnimationFrame(step);
+}
+
+function refreshAllWavyLines() {
+  document.querySelectorAll('#sampleTodos .todo-row').forEach(row => {
+    const canvas = row.querySelector('.wavy-canvas');
+    const textEl = row.querySelector('.todo-text');
+    if (row._progress > 0) {
+      drawWavyLine(canvas, textEl, row._progress);
+    }
+  });
+}
+
 document.querySelectorAll('#sampleTodos .todo-row').forEach(row => {
-  row.onclick = () => row.classList.toggle('checked');
+  const isInitiallyChecked = row.classList.contains('checked');
+  row._progress = isInitiallyChecked ? 1 : 0;
+
+  row.onclick = (e) => {
+    e.preventDefault();
+    const willCheck = !row.classList.contains('checked');
+    row.classList.toggle('checked', willCheck);
+    animateScratch(row, willCheck);
+  };
 });
+
+requestAnimationFrame(() => {
+  document.querySelectorAll('#sampleTodos .todo-row').forEach(row => {
+    if (row.classList.contains('checked')) {
+      const canvas = row.querySelector('.wavy-canvas');
+      const textEl = row.querySelector('.todo-text');
+      drawWavyLine(canvas, textEl, 1);
+    }
+  });
+});
+
+window.addEventListener('resize', refreshAllWavyLines);
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(refreshAllWavyLines);
+}
 
 // Interactive Note Color Swatches
 const sampleNoteCard = document.getElementById('sampleNoteCard');
