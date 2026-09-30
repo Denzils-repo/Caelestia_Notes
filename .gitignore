@@ -1,2 +1,13 @@
+# Antigravity skill caches
 .skills-cache/
 .skills-loaded.json
+
+# Backup & temporary files
+*.bak*
+*.tmp
+*~
+*.swp
+*.swo
+Backup_*
+.antigravity*
+.DS_Store
