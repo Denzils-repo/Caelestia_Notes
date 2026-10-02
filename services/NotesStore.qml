@@ -38,6 +38,11 @@ Singleton {
     readonly property FileView fallbackFile: FileView {
         path: `${Quickshell.env("HOME")}/.config/caelestia/notes.default.json`
         printErrors: false
+        onLoaded: {
+            if (root.notes.length === 0 && root.todos.length === 0) {
+                root.loadData();
+            }
+        }
     }
 
     readonly property FileView backupFile: FileView {
@@ -115,15 +120,15 @@ Singleton {
         }
 
         // Auto-heal / fallback from notes.default.json
-        if ((!loadedNotes || !loadedTodos) && fallbackFile) {
+        if ((!loadedNotes || !loadedTodos || (loadedNotes.length === 0 && loadedTodos.length === 0)) && fallbackFile) {
             try {
                 const fbText = fallbackFile.text();
                 if (fbText && fbText.trim().length > 0) {
                     const fbData = JSON.parse(fbText);
                     if (fbData && typeof fbData === "object") {
-                        if (!loadedNotes && Array.isArray(fbData.notes)) loadedNotes = fbData.notes;
-                        if (!loadedTodos && Array.isArray(fbData.todos)) loadedTodos = fbData.todos;
-                        if (!loadedTrash && Array.isArray(fbData.trashTodos)) loadedTrash = fbData.trashTodos;
+                        if ((!loadedNotes || loadedNotes.length === 0) && Array.isArray(fbData.notes)) loadedNotes = fbData.notes;
+                        if ((!loadedTodos || loadedTodos.length === 0) && Array.isArray(fbData.todos)) loadedTodos = fbData.todos;
+                        if ((!loadedTrash || loadedTrash.length === 0) && Array.isArray(fbData.trashTodos)) loadedTrash = fbData.trashTodos;
                         if (fbData.settings) {
                             if (fbData.settings.viewMode) loadedMode = fbData.settings.viewMode;
                             if (fbData.settings.todoSortMode) loadedSortMode = fbData.settings.todoSortMode;

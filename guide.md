@@ -6,7 +6,7 @@
 
 ## 📖 Overview
 
-The **Caelestia Notes Markdown Engine** (`MarkdownNoteView.qml`) translates plain-text Markdown into native, hardware-accelerated Material Design 3 UI components. Unlike heavy browser-based webviews or bulky AST parsers, it executes an ultra-fast, single-pass line parser that generates lightweight QML items with zero layout thrash and zero memory overhead.
+The **Caelestia Notes Markdown Engine** (`MarkdownNoteView.qml`) translates plain-text Markdown into native, hardware-accelerated Material Design 3 UI components. Unlike heavy browser-based webviews or bulky AST parsers, it runs a simple single-pass line parser that generates lightweight native QML items.
 
 ---
 
@@ -35,10 +35,10 @@ The **Caelestia Notes Markdown Engine** (`MarkdownNoteView.qml`) translates plai
 One of the unique signature features of Caelestia Notes is **dynamic M3 shape bullets**:
 - When you create an unordered list (`- `, `* `, `+ `), Caelestia does not render a boring round black dot.
 - Instead, each list item receives an expressive Material 3 Shape from the shape pool:
-  - `Cookie4Sided`, `Cookie6Sided`, `Cookie9Sided`, `Cookie12Sided`
+  - `Circle`, `Cookie4Sided`, `Cookie6Sided`, `Cookie7Sided`, `Cookie9Sided`, `Cookie12Sided`
   - `SoftBurst`, `Sunny`, `VerySunny`
   - `Pentagon`, `Gem`, `Arch`, `Fan`, `Oval`, `Ghostish`, `Slanted`, `Triangle`, `Diamond`, `ClamShell`
-- **Deterministic Hashing:** If no custom shape is chosen, each item's key is hashed deterministically. This guarantees that your shapes remain consistent every time you open the note!
+- **Deterministic Hashing:** Each item's key is hashed to pick its shape. The shape is assigned automatically (there is no shape picker) and stays the same every time you open the note.
 - **Accent Theming:** Bullets automatically adopt your note's custom accent color.
 
 ---
@@ -47,7 +47,7 @@ One of the unique signature features of Caelestia Notes is **dynamic M3 shape bu
 
 ### 1. Headings & Separators
 ```markdown
-# Project Antigravity
+# Project Aurora
 ---
 ## System Architecture
 ### Hardware & Performance
@@ -96,7 +96,6 @@ Check out the **[Caelestia Dotfiles](https://github.com/caelestia-dots)** reposi
 | **Save & Return** | Press <kbd>Esc</kbd> or click the back arrow in the top toolbar |
 | **Open Links** | Single-click any Markdown hyperlink (`Qt.openUrlExternally`) |
 | **Change Color** | Use the color palette pills in the editor header |
-| **Change Bullets** | Tap the shape selector in the header to customize list item shapes |
 | **Pin / Unpin** | Click the pin icon in the note toolbar or on the card |
 
 ---
@@ -112,6 +111,5 @@ Check out the **[Caelestia Dotfiles](https://github.com/caelestia-dots)** reposi
    - Renders each block using native QML `StyledText` components.
    - Uses Qt's built-in `Text.MarkdownText` formatting engine for inline bold, italic, links, and code, eliminating expensive HTML parsing.
    - Binds `linkColor` to the note's active accent color.
-3. **Zero Resource Overhead:**
-   - Does not use WebEngine, Chromium, or QWebEngineView.
-   - Memory footprint is strictly under **200 KB** for a typical note.
+3. **No web engine:**
+   - Does not use WebEngine, Chromium, or QWebEngineView; everything is native Qt Quick items.

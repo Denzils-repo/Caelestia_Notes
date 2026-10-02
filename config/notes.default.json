@@ -1,48 +1,101 @@
 {
   "notes": [
     {
-      "id": "note_1",
-      "title": "Welcome to Caelestia Notes",
-      "body": "This notes tab lives right inside your dashboard between Media and Performance.\n\n• Fixed height (380px) with smooth internal scrolling\n• Grid and list view toggle\n• Pinned and Others organization\n• Google Keep compatible data schema",
+      "id": "note_tut_1790920002816",
+      "title": "Caelestia Notes",
+      "body": "# Markdown in Caelestia Notes\n\nWelcome to your lightweight **Markdown** note renderer!\n\n> \ud83d\udca1 **Quick Navigation:**\n> \u2022 **Double-click** anywhere in this note to switch to **Edit Mode**.\n> \u2022 Press **Esc** or click the **eye icon** in the header to return to **View Mode**.\n\n---\n\n## \ud83d\udcdd Text Formatting\n\nYou can format text naturally using standard Markdown syntax:\n* **Bold text** using `**bold**`\n* *Italic text* using `*italic*`\n* ~~Strikethrough~~ using `~~strikethrough~~`\n* `Inline code` using backticks `code`\n* [Open GitHub in Browser](https://github.com/Denzils-repo/Caelestia_Notes) using `[text](url)`\n\n---\n\n## Persistent M3 Shape Lists\n\nEvery list item receives a persistent Material 3 shape that remains fixed across sessions:\n\n### Unordered Lists (M3 Bullets)\n- Star shape bullet item\n- Cookie shape bullet item\n- Sunny shape bullet item\n- Gem shape bullet item\n\n### Ordered Lists (Numbered Badges)\n1. Read the quick syntax guide\n2. Double-click to start writing your notes\n3. Enjoy clean, distraction-free markdown\n\n---\n\n## \ud83d\udcbb Code Blocks\n\n```\n// Press Esc or toggle the eye button to view rendered output\nconst app = {\n    name: \"Caelestia Notes\",\n    engine: \"QtQuick + Material 3\"\n};\n```\n\n---\n\n### \ud83c\udf10 External Links:\nClicking any external link like [Arch Linux](https://archlinux.org) or [DuckDuckGo](https://duckduckgo.com) will instantly launch your default web browser!",
       "pinned": true,
       "color": "primary",
-      "createdAt": 1727181000000,
-      "updatedAt": 1727181000000
+      "listShapes": {},
+      "type": "note",
+      "createdAt": 1790916402816,
+      "updatedAt": 1790916402816
     },
     {
-      "id": "note_2",
-      "title": "Quick Ideas & Scratchpad",
-      "body": "Jot down commands, snippets, or daily reminders here.",
+      "id": "note_clover_1790920002816",
+      "title": "Clover's Quick Notes",
+      "body": "CachyOS is basically **Arch with extra hype, marketing, and a \u201c2% faster\u201d sticker.**\n\n- **Binary packages:** Recompiled with AVX2/AVX-512, `-O3`, LTO, etc. \u2192 ~2% gains in CPU-heavy workloads, which rarely means noticeable FPS gains.\n- **Kernels/schedulers:** BORE, EEVDF, sched-ext, etc. mainly target frame-time consistency \u2192 usually <1% improvement, while potentially introducing regressions and driver quirks.\n- **Cachy repos:** Mostly rebuilds that can cause conflicts for little real benefit. Some are GPU-heavy/broken, and the included scripts solve problems you could easily handle yourself.\n- **AUR helper:** Comes preinstalled, which is questionable for beginners since the AUR isn't inherently safe.\n- **`-git` packages:** Can break software expecting stable/released versions.\n- **Custom kernels:** They *can* help, but can also introduce annoying issues that are difficult to debug\u2014probably not ideal as a default for a \u201cbeginner-friendly\u201d distro.\n\n**TL;DR:** Not necessarily bad, just a lot of **\u201ctrust me bro, 2% faster\u201d** with extra ways to break things.",
       "pinned": false,
-      "color": "secondary",
-      "createdAt": 1727181500000,
-      "updatedAt": 1727181500000
+      "color": "tertiary",
+      "listShapes": {},
+      "type": "note",
+      "createdAt": 1790920002816,
+      "updatedAt": 1790920002816
     }
   ],
   "todos": [
     {
-      "id": "todo_1",
-      "title": "Review Caelestia Shell Notes Tab",
+      "id": "todo_1_1790920002816",
+      "title": "a date with soramane",
       "done": false,
-      "due": "today",
-      "createdAt": 1727180000000
+      "due": "2026-10-03",
+      "repeating": false,
+      "streak": 0,
+      "lastCompletedDate": "",
+      "type": "task",
+      "createdAt": 1790919502816
     },
     {
-      "id": "todo_2",
-      "title": "Configure Google Keep sync preferences",
+      "id": "todo_2_1790920002816",
+      "title": "Praise goatiro",
       "done": false,
       "due": "",
-      "createdAt": 1727181000000
+      "repeating": true,
+      "streak": 0,
+      "lastCompletedDate": "",
+      "type": "task",
+      "createdAt": 1790919602816
     },
     {
-      "id": "todo_3",
-      "title": "Enjoy seamless desktop notes",
+      "id": "todo_3_1790920002816",
+      "title": "Say thank you to karin",
+      "done": false,
+      "due": "",
+      "repeating": false,
+      "streak": 0,
+      "lastCompletedDate": "",
+      "type": "task",
+      "createdAt": 1790919702816
+    },
+    {
+      "id": "todo_4_1790920002816",
+      "title": "steal dim's dot files",
+      "done": false,
+      "due": "",
+      "repeating": false,
+      "streak": 0,
+      "lastCompletedDate": "",
+      "type": "task",
+      "createdAt": 1790919802816
+    },
+    {
+      "id": "todo_5_1790920002816",
+      "title": "Leave to get milk",
+      "done": false,
+      "due": "2026-10-04",
+      "repeating": false,
+      "streak": 0,
+      "lastCompletedDate": "",
+      "type": "task",
+      "createdAt": 1790919902816
+    }
+  ],
+  "trashTodos": [
+    {
+      "id": "todo_trash_1_1790920002816",
+      "title": "install caelestia notes",
       "done": true,
       "due": "",
-      "createdAt": 1727179000000
+      "repeating": false,
+      "streak": 0,
+      "lastCompletedDate": "",
+      "type": "task",
+      "createdAt": 1790919002816,
+      "deletedAt": 1790919502816
     }
   ],
   "settings": {
-    "viewMode": "grid"
+    "viewMode": "grid",
+    "todoSortMode": "latest"
   }
 }

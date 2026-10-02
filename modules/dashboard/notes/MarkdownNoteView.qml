@@ -134,6 +134,33 @@ Item {
 
     readonly property var blocks: parseMarkdown(root.rawText, root.listShapes)
 
+    function resetScroll() {
+        if (scrollView) {
+            if (scrollView.contentItem) {
+                scrollView.contentItem.contentY = 0;
+                if (typeof scrollView.contentItem.returnToBounds === "function") {
+                    scrollView.contentItem.returnToBounds();
+                }
+                if (typeof scrollView.contentItem.cancelFlick === "function") {
+                    scrollView.contentItem.cancelFlick();
+                }
+            }
+            if (scrollView.ScrollBar && scrollView.ScrollBar.vertical) {
+                scrollView.ScrollBar.vertical.position = 0;
+            }
+        }
+    }
+
+    onRawTextChanged: {
+        resetScroll();
+        Qt.callLater(resetScroll);
+    }
+
+    Component.onCompleted: {
+        resetScroll();
+        Qt.callLater(resetScroll);
+    }
+
     MouseArea {
         anchors.fill: parent
         z: -1

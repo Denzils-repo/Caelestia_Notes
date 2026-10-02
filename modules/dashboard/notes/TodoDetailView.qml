@@ -68,6 +68,25 @@ Item {
 
     property string currentTodoId: ""
 
+    function resetScroll() {
+        if (textScrollView && textScrollView.contentItem) {
+            textScrollView.contentItem.contentY = 0;
+            if (typeof textScrollView.contentItem.returnToBounds === "function") {
+                textScrollView.contentItem.returnToBounds();
+            }
+        }
+        if (textScrollView && textScrollView.ScrollBar && textScrollView.ScrollBar.vertical) {
+            textScrollView.ScrollBar.vertical.position = 0;
+        }
+    }
+
+    onVisibleChanged: {
+        if (visible) {
+            root.resetScroll();
+            Qt.callLater(root.resetScroll);
+        }
+    }
+
     onActiveTodoChanged: {
         confirmDeleteTimer.stop();
         confirmDelete = false;
@@ -88,6 +107,8 @@ Item {
                 localDone = !!activeTodo.done;
                 localRepeating = !!activeTodo.repeating;
             }
+            root.resetScroll();
+            Qt.callLater(root.resetScroll);
         } else {
             currentTodoId = "";
         }

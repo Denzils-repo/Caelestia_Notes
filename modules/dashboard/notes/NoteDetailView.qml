@@ -49,6 +49,36 @@ StyledRect {
 
     property string currentNoteId: ""
 
+    function resetScroll() {
+        if (markdownLoader && markdownLoader.item && typeof markdownLoader.item.resetScroll === "function") {
+            markdownLoader.item.resetScroll();
+        }
+        if (bodyScrollView && bodyScrollView.contentItem) {
+            bodyScrollView.contentItem.contentY = 0;
+            if (typeof bodyScrollView.contentItem.returnToBounds === "function") {
+                bodyScrollView.contentItem.returnToBounds();
+            }
+        }
+        if (bodyScrollView && bodyScrollView.ScrollBar && bodyScrollView.ScrollBar.vertical) {
+            bodyScrollView.ScrollBar.vertical.position = 0;
+        }
+        if (bodyArea) {
+            bodyArea.cursorPosition = 0;
+        }
+    }
+
+    onVisibleChanged: {
+        if (visible) {
+            root.resetScroll();
+            Qt.callLater(root.resetScroll);
+        }
+    }
+
+    onIsEditingChanged: {
+        root.resetScroll();
+        Qt.callLater(root.resetScroll);
+    }
+
     onActiveNoteChanged: {
         confirmDeleteTimer.stop();
         confirmDelete = false;
@@ -67,8 +97,13 @@ StyledRect {
             localListShapes = Object.assign({}, activeNote.listShapes || {});
             isEditing = (!localTitle && !localBody);
             if (titleField) titleField.text = localTitle;
-            if (bodyArea) bodyArea.text = localBody;
+            if (bodyArea) {
+                bodyArea.text = localBody;
+                bodyArea.cursorPosition = 0;
+            }
         }
+        root.resetScroll();
+        Qt.callLater(root.resetScroll);
     }
 
     Component.onCompleted: {
@@ -83,7 +118,12 @@ StyledRect {
             localListShapes = Object.assign({}, activeNote.listShapes || {});
             isEditing = (!localTitle && !localBody);
             if (titleField) titleField.text = localTitle;
-            if (bodyArea) bodyArea.text = localBody;
+            if (bodyArea) {
+                bodyArea.text = localBody;
+                bodyArea.cursorPosition = 0;
+            }
+            root.resetScroll();
+            Qt.callLater(root.resetScroll);
         }
     }
 

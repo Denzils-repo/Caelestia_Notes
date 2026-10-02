@@ -5,12 +5,31 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Caelestia Notes — To-Dos and Notes for Caelestia Shell</title>
 <meta name="description" content="A lightweight, local-first productivity plugin for Caelestia Shell on Linux with repeating daily habits, rotating clover calendar picker, and zero-lag Markdown notes in Material 3.">
-<link rel="icon" type="image/png" href="logo.png">
+<link rel="icon" type="image/png" href="logo-256.png">
+
+<!-- Open Graph / Discord / Social Embeds -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Caelestia Notes">
+<meta property="og:title" content="Caelestia Notes — To-Dos & Markdown Notes for Caelestia Shell">
+<meta property="og:description" content="A lightweight, local-first productivity plugin for Caelestia Shell on Linux with repeating daily habits, rotating clover calendar picker, and zero-lag Markdown notes in Material 3.">
+<meta property="og:image" content="https://raw.githubusercontent.com/Denzils-repo/Caelestia_Notes/main/logo-256.png">
+<meta property="og:image:width" content="256">
+<meta property="og:image:height" content="256">
+<meta property="og:image:type" content="image/png">
+<meta name="theme-color" content="#72E1E1">
+
+<!-- Twitter / X Card -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Caelestia Notes — To-Dos & Markdown Notes for Caelestia Shell">
+<meta name="twitter:description" content="A lightweight, local-first productivity plugin for Caelestia Shell on Linux with repeating daily habits, rotating clover calendar picker, and zero-lag Markdown notes in Material 3.">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/Denzils-repo/Caelestia_Notes/main/logo-256.png">
 
 <!-- Google Material Symbols Rounded font -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+<!-- Font Awesome 6 -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 
 <style>
 :root{
@@ -77,8 +96,10 @@ header{display:flex;align-items:center;justify-content:space-between;padding:24p
 .brand{display:flex;align-items:center;gap:12px;text-decoration:none;font-family:var(--display);font-weight:700;font-size:1.2rem;letter-spacing:-.01em}
 .brand img{width:40px;height:40px;border-radius:12px;object-fit:cover;box-shadow:0 4px 12px rgba(0,0,0,.2)}
 nav{display:flex;align-items:center;gap:8px}
-nav a.link{padding:8px 16px;border-radius:999px;text-decoration:none;color:var(--muted);font-weight:500;font-size:.95rem;transition:background .2s,color .2s}
+nav a.link{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:999px;text-decoration:none;color:var(--muted);font-weight:500;font-size:.95rem;transition:background .2s,color .2s}
 nav a.link:hover{background:var(--btn-2);color:var(--text)}
+nav a.link i{font-size:.95rem;transition:transform .2s var(--spring)}
+nav a.link:hover i{transform:scale(1.15)}
 .icon-btn{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--btn-2);transition:transform .3s var(--spring),background .2s}
 .icon-btn:hover{transform:rotate(18deg) scale(1.06);background:var(--btn-hover)}
 
@@ -222,13 +243,7 @@ section.feat{padding:80px 0 0}
 }
 .sync-copy{flex:1;min-width:280px;z-index:2}
 .sync-copy h2{font-family:var(--display);font-size:clamp(1.7rem,3.2vw,2.3rem);letter-spacing:-.03em;line-height:1.15;margin-bottom:12px}
-.sync-copy p{color:var(--muted);max-width:46ch;line-height:1.6;margin-bottom:18px}
-.sync-hint{
-  display:inline-flex;align-items:center;gap:8px;font-size:.82rem;font-weight:600;
-  color:var(--accent);background:var(--btn-2);padding:6px 14px;border-radius:999px;
-  border:1px solid var(--line);
-}
-.sync-hint svg{width:14px;height:14px;fill:currentColor}
+.sync-copy p{color:var(--muted);max-width:46ch;line-height:1.6}
 
 /* Interactive Image Card Stack */
 .card-stack-wrap{
@@ -379,13 +394,20 @@ section.feat{padding:80px 0 0}
 .cta img{width:88px;height:88px;margin:0 auto 20px;border-radius:24px;object-fit:cover;box-shadow:0 16px 36px -10px rgba(0,0,0,.4)}
 .cta h2{font-family:var(--display);font-size:clamp(1.9rem,4vw,2.8rem);letter-spacing:-.03em;margin-bottom:12px}
 .cta p{color:var(--muted);margin:0 auto 26px;max-width:50ch}
+.cmd-tabs{display:inline-flex;gap:6px;background:var(--btn-2);padding:4px;border-radius:999px;border:1px solid var(--line);margin:0 auto 14px}
+.cmd-tab{padding:6px 16px;border-radius:999px;font-size:.88rem;font-weight:600;color:var(--muted);transition:background .2s,color .2s}
+.cmd-tab.active{background:var(--accent);color:var(--on-accent)}
+.cmd-tab:not(.active):hover{color:var(--text)}
 .cmd-box{
   background:var(--surface);border:1px solid var(--line);border-radius:18px;display:inline-flex;
   align-items:center;gap:14px;padding:12px 22px;font-family:var(--mono);font-size:.95rem;color:var(--accent);
-  margin-top:18px;cursor:pointer;transition:border-color .2s,background .2s;
+  margin-top:6px;cursor:pointer;transition:border-color .2s,background .2s;max-width:100%;overflow-x:auto;
 }
 .cmd-box:hover{border-color:var(--accent);background:var(--surface-2)}
-.cmd-box .copy-hint{font-size:.78rem;font-family:var(--body);color:var(--muted);margin-left:8px}
+.cmd-box .copy-hint{font-size:.78rem;font-family:var(--body);color:var(--muted);margin-left:8px;flex:none}
+.guarantees{display:flex;justify-content:center;gap:20px;flex-wrap:wrap;margin-top:24px;font-size:.84rem;color:var(--muted)}
+.guarantees span{display:inline-flex;align-items:center;gap:6px}
+.guarantees svg{fill:var(--accent);width:15px;height:15px}
 
 footer{margin-top:64px;padding:28px 0 44px;border-top:1px solid var(--line);color:var(--muted);font-size:.9rem;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 
@@ -409,15 +431,15 @@ footer{margin-top:64px;padding:28px 0 44px;border-top:1px solid var(--line);colo
   <!-- Minimal Header -->
   <header>
     <a class="brand" href="#top">
-      <img src="logo.png" alt="Caelestia Notes logo" width="40" height="40">
+      <img src="logo-256.png" alt="Caelestia Notes logo" width="40" height="40">
       <span>Caelestia Notes</span>
     </a>
     <nav>
-      <a class="link" href="#features">Features</a>
-      <a class="link" href="#theme">Theme</a>
-      <a class="link" href="#get">Install</a>
+      <a class="link" href="#features"><i class="fa-solid fa-layer-group"></i> Features</a>
+      <a class="link" href="#theme"><i class="fa-solid fa-palette"></i> Theme</a>
+      <a class="link" href="https://github.com/Denzils-repo/Caelestia_Notes" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i> GitHub</a>
       <button class="icon-btn" id="themeBtn" aria-label="Switch theme" title="Switch theme">
-        <svg class="icon sm" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
+        <i class="fa-solid fa-moon"></i>
       </button>
     </nav>
   </header>
@@ -429,16 +451,13 @@ footer{margin-top:64px;padding:28px 0 44px;border-top:1px solid var(--line);colo
         <h1>Notes and to-dos, one tab away in your shell.</h1>
         <p class="lead">Caelestia Notes is a lightweight, local-first productivity plugin for Caelestia Shell on Linux. It brings daily habit tracking, an animated clover date picker, and pinnable, zero-lag Markdown notes directly into your Material 3 desktop.</p>
         <div class="actions">
-          <a class="btn" href="https://github.com/Denzils-repo/Caelestia_Notes" target="_blank" rel="noopener" id="githubHeroBtn">
-            <svg class="icon sm" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> Get it on GitHub
-          </a>
-          <a class="btn ghost" href="#features">
-            Explore Features
+          <a class="btn" href="#get" id="installHeroBtn">
+            <i class="fa-solid fa-download"></i> Install Now
           </a>
         </div>
       </div>
       <div class="mark" aria-hidden="true">
-        <img src="logo.png" alt="Caelestia Notes Logo">
+        <img src="logo-256.png" alt="Caelestia Notes Logo">
         <span class="spark a"><svg viewBox="0 0 24 24"><path d="M12 0C13 8 16 11 24 12 16 13 13 16 12 24 11 16 8 13 0 12 8 11 11 8 12 0z"/></svg></span>
         <span class="spark b"><svg viewBox="0 0 24 24"><path d="M12 0C13 8 16 11 24 12 16 13 13 16 12 24 11 16 8 13 0 12 8 11 11 8 12 0z"/></svg></span>
       </div>
@@ -547,7 +566,7 @@ footer{margin-top:64px;padding:28px 0 44px;border-top:1px solid var(--line);colo
         <div class="feat-grid">
           <div class="feat-copy">
             <h2>Pin what matters, color-code the rest</h2>
-            <p>Pinned cards stay anchored to the top of your board. Choose from expressive Material 3 tonal palettes harmonized with your Caelestia desktop, with instant search across titles and notes.</p>
+            <p>Pinned cards stay anchored to the top of your board. Choose from 5 expressive Material 3 tonal color accents harmonized with your Caelestia desktop wallpaper theme.</p>
           </div>
           <div class="stage">
             <div class="swatches" id="swatches" role="radiogroup" aria-label="Try note colors">
@@ -577,11 +596,7 @@ footer{margin-top:64px;padding:28px 0 44px;border-top:1px solid var(--line);colo
         <div class="sync">
           <div class="sync-copy">
             <h2>Follows your Caelestia theme</h2>
-            <p>The plugin inherits your Material 3 system palette, shapes, and corner radius tokens in dark, transparent glass, and light modes. Hover to explore, click any view to inspect.</p>
-            <div class="sync-hint">
-              <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-              <span>Hover stack to expand · Click to inspect</span>
-            </div>
+            <p>The plugin inherits your Material 3 system palette, shapes, and corner radius tokens in dark, transparent glass, and light modes. Click any view to inspect in full resolution.</p>
           </div>
           <div class="card-stack-wrap">
             <div class="card-stack" id="themeCardStack" aria-label="Theme screenshot stack">
@@ -612,28 +627,45 @@ footer{margin-top:64px;padding:28px 0 44px;border-top:1px solid var(--line);colo
       </section>
     </div>
 
-    <!-- CTA & GitHub Clone -->
+    <!-- CTA & Install Section -->
     <section class="cta" id="get">
-      <img src="logo.png" alt="Caelestia Notes logo">
+      <img src="logo-256.png" alt="Caelestia Notes logo" width="88" height="88">
       <h2>Add Notes to Caelestia Shell</h2>
-      <p>Free, 100% local-first, and engineered for Linux Wayland desktops. Get the plugin and enjoy unified notes and habit tracking.</p>
-      <a class="btn" href="https://github.com/Denzils-repo/Caelestia_Notes" target="_blank" rel="noopener">
-        <svg class="icon sm" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> View on GitHub
-      </a>
-      <div>
-        <button type="button" class="cmd-box" id="copyCmdBtn" title="Click to copy clone command">
+      <p>Free, open-source (GPL-3.0), and 100% local-first. Engineered with safe-by-design failure isolation so shell updates remain completely uninterrupted.</p>
+      
+      <div class="cmd-tabs" role="tablist" aria-label="Installation commands">
+        <button type="button" class="cmd-tab active" data-cmd="curl -fsSL https://raw.githubusercontent.com/Denzils-repo/Caelestia_Notes/main/install.sh | bash -s -- --install">1-Line Install</button>
+        <button type="button" class="cmd-tab" data-cmd="curl -fsSL https://raw.githubusercontent.com/Denzils-repo/Caelestia_Notes/main/install.sh | bash">Dry Run Check</button>
+        <button type="button" class="cmd-tab" data-cmd="git clone https://github.com/Denzils-repo/Caelestia_Notes.git">Git Clone</button>
+      </div>
+
+      <div style="display:flex;justify-content:center;margin-top:12px">
+        <button type="button" class="cmd-box" id="copyCmdBtn" title="Click to copy command">
           <svg class="icon sm" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-          <span id="cmdText">git clone https://github.com/Denzils-repo/Caelestia_Notes.git</span>
+          <span id="cmdText">curl -fsSL https://raw.githubusercontent.com/Denzils-repo/Caelestia_Notes/main/install.sh | bash -s -- --install</span>
           <span class="copy-hint" id="copyHint">Click to copy</span>
         </button>
+      </div>
+
+      <div class="guarantees">
+        <span><svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg> Failure-Safe Loader</span>
+        <span><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg> Shell-Wins Protection</span>
+        <span><svg viewBox="0 0 24 24"><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg> Reversible (<code>--uninstall</code>)</span>
+        <span><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg> Local JSON Storage</span>
+      </div>
+
+      <div style="margin-top:28px">
+        <a class="btn ghost" href="https://github.com/Denzils-repo/Caelestia_Notes" target="_blank" rel="noopener">
+          <svg class="icon sm" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> View on GitHub
+        </a>
       </div>
     </section>
   </main>
 
   <!-- Clean Footer -->
   <footer>
-    <span>Caelestia Notes — Native Quickshell plugin for Caelestia Shell.</span>
-    <span>Local-first · Zero telemetry · Linux Wayland</span>
+    <span>Caelestia Notes — Unofficial native Quickshell plugin for Caelestia Shell.</span>
+    <span>Local-first · GPL-3.0 · Linux Wayland</span>
   </footer>
 </div>
 
@@ -670,8 +702,8 @@ function setTheme(theme){
   htmlEl.setAttribute('data-theme', theme);
   const isDark = theme === 'dark';
   themeBtn.innerHTML = isDark
-    ? '<svg class="icon sm" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>'
-    : '<svg class="icon sm" viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>';
+    ? '<i class="fa-solid fa-moon" style="font-size:1.1rem"></i>'
+    : '<i class="fa-solid fa-sun" style="font-size:1.1rem"></i>';
   try { localStorage.setItem('caelestia-theme', theme); } catch(e){}
   if (typeof refreshAllWavyLines === 'function') refreshAllWavyLines();
 }
@@ -869,11 +901,23 @@ dots.forEach(dot => {
   };
 });
 
-// Copy Command Box
+// Install Command Switcher & Copy Box
 const copyBtn = document.getElementById('copyCmdBtn');
 const copyHint = document.getElementById('copyHint');
+const cmdText = document.getElementById('cmdText');
+const cmdTabs = document.querySelectorAll('.cmd-tab');
+
+cmdTabs.forEach(tab => {
+  tab.onclick = () => {
+    cmdTabs.forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    cmdText.textContent = tab.getAttribute('data-cmd');
+  };
+});
+
 copyBtn.onclick = () => {
-  navigator.clipboard.writeText('git clone https://github.com/Denzils-repo/Caelestia_Notes.git').then(() => {
+  const text = cmdText.textContent.trim();
+  navigator.clipboard.writeText(text).then(() => {
     copyHint.textContent = 'Copied to clipboard!';
     copyHint.style.color = 'var(--accent)';
     setTimeout(() => {
