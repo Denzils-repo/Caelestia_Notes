@@ -62,9 +62,6 @@ StyledRect {
         if (bodyScrollView && bodyScrollView.ScrollBar && bodyScrollView.ScrollBar.vertical) {
             bodyScrollView.ScrollBar.vertical.position = 0;
         }
-        if (bodyArea) {
-            bodyArea.cursorPosition = 0;
-        }
     }
 
     onVisibleChanged: {
@@ -72,11 +69,6 @@ StyledRect {
             root.resetScroll();
             Qt.callLater(root.resetScroll);
         }
-    }
-
-    onIsEditingChanged: {
-        root.resetScroll();
-        Qt.callLater(root.resetScroll);
     }
 
     onActiveNoteChanged: {
@@ -97,13 +89,10 @@ StyledRect {
             localListShapes = Object.assign({}, activeNote.listShapes || {});
             isEditing = (!localTitle && !localBody);
             if (titleField) titleField.text = localTitle;
-            if (bodyArea) {
-                bodyArea.text = localBody;
-                bodyArea.cursorPosition = 0;
-            }
+            if (bodyArea) bodyArea.text = localBody;
+            root.resetScroll();
+            Qt.callLater(root.resetScroll);
         }
-        root.resetScroll();
-        Qt.callLater(root.resetScroll);
     }
 
     Component.onCompleted: {
@@ -118,10 +107,7 @@ StyledRect {
             localListShapes = Object.assign({}, activeNote.listShapes || {});
             isEditing = (!localTitle && !localBody);
             if (titleField) titleField.text = localTitle;
-            if (bodyArea) {
-                bodyArea.text = localBody;
-                bodyArea.cursorPosition = 0;
-            }
+            if (bodyArea) bodyArea.text = localBody;
             root.resetScroll();
             Qt.callLater(root.resetScroll);
         }

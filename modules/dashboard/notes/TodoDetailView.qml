@@ -102,13 +102,13 @@ Item {
                     todoTextArea.text = localTitle;
                     todoTextArea.cursorPosition = todoTextArea.length;
                 }
+                root.resetScroll();
+                Qt.callLater(root.resetScroll);
             } else {
                 localDue = activeTodo.due || "";
                 localDone = !!activeTodo.done;
                 localRepeating = !!activeTodo.repeating;
             }
-            root.resetScroll();
-            Qt.callLater(root.resetScroll);
         } else {
             currentTodoId = "";
         }
