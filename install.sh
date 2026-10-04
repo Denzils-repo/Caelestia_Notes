@@ -60,7 +60,7 @@ PLAN2=(); PLAN3=()
 REPO_EXPLICIT=0; MODE=check; ASSUME_YES=0; FORCE=0; NO_REGISTER=0; NO_KEYBOARD=0; QMLLINT=""
 USER_COPY=0; USER_COPY_DEST=""; SYS_FOUND=""; PKG_VER=""; OVERLAY_CREATED=0
 PRIV=""; BACKUP_DIR=""; NEWDIR_NOTES=0; CREATED=(); REPLACED=()
-MANIFEST="$CACHE/manifest.tsv"
+MANIFEST="$CACHE/manifest.tsv"; ORIG="$CACHE/originals"
 
 # ------------------------------------------------------------ 1. preflight ---
 step_preflight() {
@@ -452,8 +452,9 @@ confirm() {   # confirm "question"  -> 0 = yes
   fi
 }
 
-manifest_sha() {  # manifest_sha KIND PATH -> recorded sha256 or empty
+manifest_sha() {  # manifest_sha KIND PATH -> recorded sha256 or empty (only if the manifest is for THIS shell dir)
   [[ -f "$MANIFEST" ]] || return 0
+  [[ "$(sed -n 's/^# shell_dir=//p' "$MANIFEST")" == "$SHELL_DIR" ]] || return 0
   awk -F'\t' -v k="$1" -v p="$2" '$1==k && $3==p {print $2}' "$MANIFEST"
 }
 
@@ -563,6 +564,10 @@ stage2_install() {
   confirm "Install ${#to_write[@]} file(s) into $SHELL_DIR ?" || { info "Aborted. Nothing was changed."; return 1; }
 
   BACKUP_DIR="$CACHE/backups/$STAMP"; mkdir -p "$BACKUP_DIR/files" "$BACKUP_DIR/home" || { bad "Cannot create backup dir"; return 1; }
+  # Originals belong to one install of one shell. If nothing is recorded for THIS shell, start a fresh record.
+  if [[ -d "$ORIG" && -z "$(manifest_sha S services/NotesStore.qml)$(manifest_sha H "$HOME/.config/caelestia/notes.default.json")" ]]; then
+    mv -f "$ORIG" "$CACHE/originals.stale-$STAMP" 2>/dev/null || rm -rf "$ORIG"
+  fi
   CREATED=(); REPLACED=(); NEWDIR_NOTES=0
   [[ -d "$SHELL_DIR/modules/dashboard/notes" ]] || NEWDIR_NOTES=1
 
@@ -571,10 +576,21 @@ stage2_install() {
     if [[ -e "$SHELL_DIR/$f" ]]; then
       mkdir -p "$BACKUP_DIR/files/$(dirname "$f")" && cp -p "$SHELL_DIR/$f" "$BACKUP_DIR/files/$f" \
         || { bad "Backup of $f failed - nothing was changed"; return 1; }
+      # Remember the TRUE original (a file that was there before we ever installed) exactly once.
+      # An earlier version of OUR file is not an original, so updates never overwrite this record.
+      if [[ -z "$(manifest_sha S "$f")" && ! -e "$ORIG/files/$f" ]]; then
+        mkdir -p "$ORIG/files/$(dirname "$f")" && cp -p "$SHELL_DIR/$f" "$ORIG/files/$f" \
+          || { bad "Could not record the original of $f - nothing was changed"; return 1; }
+      fi
       REPLACED+=("$f")
     else CREATED+=("$f"); fi
   done
-  [[ -e "$tpl" ]] && cp -p "$tpl" "$BACKUP_DIR/home/notes.default.json"
+  if [[ -e "$tpl" ]]; then
+    cp -p "$tpl" "$BACKUP_DIR/home/notes.default.json"
+    if [[ -z "$(manifest_sha H "$tpl")" && ! -e "$ORIG/home/notes.default.json" ]]; then
+      mkdir -p "$ORIG/home" && cp -p "$tpl" "$ORIG/home/notes.default.json"
+    fi
+  fi
   (( ${#REPLACED[@]} )) && ok "Backed up ${#REPLACED[@]} existing file(s) to $BACKUP_DIR"
 
   # 2) write each file next to its destination, then rename into place (atomic per file)
@@ -608,7 +624,7 @@ write_manifest() {
   if (( OVERLAY_CREATED )); then ov="created"; base="$PKG_VER"
   elif [[ -f "$MANIFEST" ]]; then ov="$(sed -n 's/^# overlay=//p' "$MANIFEST")"; base="$(sed -n 's/^# base=//p' "$MANIFEST")"; fi
   {
-    printf '# caelestia-notes manifest\n# shell_dir=%s\n# mode=%s\n# commit=%s\n# installed=%s\n# backup=%s\n' \
+    printf '# caelestia-notes manifest\n# restore=2\n# shell_dir=%s\n# mode=%s\n# commit=%s\n# installed=%s\n# backup=%s\n' \
       "$SHELL_DIR" "$SHELL_MODE" "$PAYLOAD_ID" "$STAMP" "${BACKUP_DIR:-}"
     if [[ -n "$ov" ]]; then printf '# overlay=%s\n# base=%s\n' "$ov" "$base"; fi
     while IFS= read -r f; do
@@ -647,7 +663,8 @@ stage2_uninstall() {
     info "Run --install once to convert it to the managed block, or remove it by hand, or use --force."
     return 1
   fi
-  local removed=0 kept=0 restored=0 now
+  local removed=0 kept=0 restored=0 now V2=0
+  [[ "$(sed -n 's/^# restore=//p' "$MANIFEST")" == 2 ]] && V2=1
   while IFS=$'\t' read -r kind sha path; do
     [[ "$kind" == S || "$kind" == H ]] || continue
     local target="$path"; [[ "$kind" == S ]] && target="$dir/$path"
@@ -655,8 +672,19 @@ stage2_uninstall() {
     now="$(sha256sum "$target" | cut -d' ' -f1)"
     if [[ "$now" == "$sha" ]]; then
       if [[ "$kind" == S ]]; then $PRIV rm -f "$target"; else rm -f "$target"; fi; removed=$((removed+1))
-      if [[ "$kind" == S && -n "$bk" && -f "$bk/files/$path" ]]; then $PRIV cp -p "$bk/files/$path" "$target" && restored=$((restored+1)); fi
-      if [[ "$kind" == H && -n "$bk" && -f "$bk/home/notes.default.json" ]]; then cp -p "$bk/home/notes.default.json" "$target"; fi
+      if [[ "$kind" == S ]]; then
+        if (( V2 )); then
+          [[ -f "$ORIG/files/$path" ]] && $PRIV cp -p "$ORIG/files/$path" "$target" && restored=$((restored+1))
+        elif [[ -n "$bk" && -f "$bk/files/$path" ]] && is_upstream_owned "$path"; then
+          # manifest written by an older installer: only a file that belongs to the shell itself is a real original
+          $PRIV cp -p "$bk/files/$path" "$target" && restored=$((restored+1))
+        elif [[ -n "$bk" && -f "$bk/files/$path" ]]; then
+          info "An older copy of $path is kept in $bk/files (not restored: it may be a previous Notes version)"
+        fi
+      else
+        if (( V2 )); then [[ -f "$ORIG/home/notes.default.json" ]] && cp -p "$ORIG/home/notes.default.json" "$target"
+        elif [[ -n "$bk" && -f "$bk/home/notes.default.json" ]]; then info "An older notes.default.json is kept in $bk/home (not restored)"; fi
+      fi
     else
       kept=$((kept+1)); warn "Left in place (modified since install): $target"
     fi
@@ -664,6 +692,7 @@ stage2_uninstall() {
   $PRIV rmdir "$dir/modules/dashboard/notes" 2>/dev/null
   local ov; ov="$(sed -n 's/^# overlay=//p' "$MANIFEST")"
   mv -f "$MANIFEST" "$CACHE/manifest.uninstalled-$STAMP.tsv"
+  [[ -d "$ORIG" ]] && mv -f "$ORIG" "$CACHE/originals.restored-$STAMP" 2>/dev/null
   if [[ "$ov" == created ]]; then
     info "Your own copy of the shell at $dir was created by this installer. It now matches the package version it was copied from."
     info "To go back to the packaged shell completely, delete it:  rm -rf \"$dir\""
