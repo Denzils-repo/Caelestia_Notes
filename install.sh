@@ -15,6 +15,8 @@
 #    ./install.sh --uninstall      remove what --install put there
 #    options: --yes (no prompts)  --force (override "shell wins" protection)
 #             --no-register (copy files only)  --no-keyboard (skip the typing-focus edit)
+#             --user-copy (packaged/AUR installs only: make your own copy of the shell first;
+#                          the packaged files are NEVER edited and sudo is NEVER used)
 #             --repo URL  --branch NAME  --no-color  -h
 #
 #  Advanced / testing overrides (env): CN_REPO_URL CN_BRANCH CN_USER_DIR
@@ -30,7 +32,7 @@ SRC="$CACHE/repo"
 
 # Shell versions: "tested" = run by the author; MIN = oldest release whose
 # Tokens/components/M3Shapes surface was checked against the Notes code.
-TESTED_VERSIONS="2.4.0"
+TESTED_VERSIONS="2.4.0 2.5.0"
 MIN_VERSION="2.2.0"
 
 # Exact upstream lines/anchors the later (patching) stages rely on.
@@ -49,13 +51,14 @@ step() { printf '\n%s== %s ==%s\n' "$(c '1;35')" "$*" "$(r)"; }
 have() { command -v "$1" >/dev/null 2>&1; }
 ver_ge() { [[ "$(printf '%s\n%s\n' "$2" "$1" | sort -V | head -n1)" == "$2" ]]; }
 
-usage() { sed -n '2,26p' "$0" 2>/dev/null | sed 's/^# \{0,1\}//'; exit 0; }
+usage() { sed -n '2,28p' "$0" 2>/dev/null | sed 's/^# \{0,1\}//'; exit 0; }
 
 # ---------------------------------------------------------------- state ------
 SHELL_DIR=""; SHELL_MODE=""; SHELL_VER=""; SHELL_WRITABLE=0  # SHELL_WRITABLE / PAYLOAD_OK are consumed by later stages
 CONTENT=""; WIN=""; PAYLOAD_OK=0; PAYLOAD_ID=""
 PLAN2=(); PLAN3=()
-MODE=check; ASSUME_YES=0; FORCE=0; NO_REGISTER=0; NO_KEYBOARD=0; QMLLINT=""
+REPO_EXPLICIT=0; MODE=check; ASSUME_YES=0; FORCE=0; NO_REGISTER=0; NO_KEYBOARD=0; QMLLINT=""
+USER_COPY=0; USER_COPY_DEST=""; SYS_FOUND=""; PKG_VER=""; OVERLAY_CREATED=0
 PRIV=""; BACKUP_DIR=""; NEWDIR_NOTES=0; CREATED=(); REPLACED=()
 MANIFEST="$CACHE/manifest.tsv"
 
@@ -88,6 +91,7 @@ step_locate_shell() {
   step "2/7 Locating your Caelestia shell"
   local conf="${XDG_CONFIG_HOME:-$HOME/.config}"
   local user_dir="${CN_USER_DIR:-$conf/quickshell/caelestia}"
+  USER_COPY_DEST="$user_dir"
   local sys_dirs=()
   if [[ -n "${CN_SYS_DIR:-}" ]]; then sys_dirs=("$CN_SYS_DIR")
   else
@@ -99,6 +103,7 @@ step_locate_shell() {
   is_shell_dir "$user_dir" && have_user=1
   local d; for d in "${sys_dirs[@]}"; do is_shell_dir "$d" && { sys_found="$d"; break; }; done
 
+  SYS_FOUND="$sys_found"
   (( have_user )) && info "User copy   : $user_dir  (found)" || info "User copy   : $user_dir  (not present)"
   [[ -n "$sys_found" ]] && info "System copy : $sys_found  (found)" || info "System copy : none found in ${sys_dirs[*]}"
 
@@ -126,7 +131,21 @@ step_locate_shell() {
   else
     SHELL_WRITABLE=0
     if [[ "$SHELL_MODE" == "system" ]]; then
-      warn "System copy is root-owned: --install will use sudo, only to write the Notes files and the two marked edits."
+      info "Packaged (root-owned) install. Caelestia's maintainers say not to edit packaged files, so this installer never does and never uses sudo."
+      if (( USER_COPY )); then
+        info "--user-copy: your own copy will be made at $USER_COPY_DEST; the package itself stays untouched."
+        PLAN2+=("Create your own copy of the shell at $USER_COPY_DEST (the package is never edited)")
+      elif [[ "$MODE" == install ]]; then
+        if (( ASSUME_YES )) || ! have_tty; then
+          bad "Only the packaged shell was found, and there is no one to ask (--yes or no terminal). Re-run with --user-copy to create your own copy at $USER_COPY_DEST. Nothing was changed."
+        else
+          warn "Only the packaged shell was found. You will be asked whether to create your own copy at $USER_COPY_DEST (the package itself is never edited)."
+          PLAN2+=("Ask whether to create your own copy of the shell at $USER_COPY_DEST (the package is never edited)")
+        fi
+      else
+        warn "To install on a packaged shell you need your own copy: --install --user-copy creates one at $USER_COPY_DEST."
+        PLAN2+=("Create your own copy of the shell at $USER_COPY_DEST (needs --user-copy; the package is never edited)")
+      fi
     else
       bad "Shell directory is not writable: $SHELL_DIR"
     fi
@@ -156,8 +175,17 @@ step_shell_version() {
   if have git && git -C "$SHELL_DIR" rev-parse --git-dir >/dev/null 2>&1; then
     gitv="$(git -C "$SHELL_DIR" describe --tags 2>/dev/null)"
   fi
+  PKG_VER="$pkg"
   [[ -n "$pkg"  ]] && info "Installed package version : $pkg"
   [[ -n "$gitv" ]] && info "Git checkout describes as  : $gitv"
+
+  # Drift: the compiled Caelestia plugin comes from the package, the QML from your copy.
+  local cv=""
+  if [[ -f "$MANIFEST" && "$(sed -n 's/^# overlay=//p' "$MANIFEST")" == created ]]; then cv="$(sed -n 's/^# base=//p' "$MANIFEST")"
+  elif [[ -n "$gitv" ]]; then cv="${gitv%%-*}"; cv="${cv#v}"; fi
+  if [[ "$SHELL_MODE" == "user" && -n "$SYS_FOUND" && -n "$pkg" && -n "$cv" && "$cv" != "$pkg" ]]; then
+    warn "Your user copy is based on $cv but the installed package is $pkg. The compiled plugin comes from the package, so keep the two in step (update your copy, or recreate it - see README)."
+  fi
 
   if [[ "$SHELL_MODE" == "user" && -n "$gitv" ]]; then
     SHELL_VER="${gitv%%-*}"; SHELL_VER="${SHELL_VER#v}"
@@ -205,11 +233,17 @@ step_dependencies() {
 
 # ------------------------------------------------------- 5. fetch payload ---
 step_fetch_payload() {
-  local script_dir; script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" 2>/dev/null && pwd)"
-  if [[ -f "$script_dir/modules/dashboard/NotesTab.qml" && -f "$script_dir/services/NotesStore.qml" && -f "$script_dir/config/notes.default.json" ]]; then
-    SRC="$script_dir"
-    PAYLOAD_ID="$(git -C "$SRC" rev-parse --short HEAD 2>/dev/null || echo local)"
-    ok "Using local repository at $SRC ($PAYLOAD_ID)"
+  step "5/7 Fetching Notes files"
+  # Developer convenience: if this script is a real FILE sitting inside a Notes checkout, use that
+  # checkout. This never applies to `curl | bash` (there is no file), so a piped run always gets
+  # the current GitHub version and can never pick up files from whatever directory you are in.
+  local self="${BASH_SOURCE[0]:-}" sdir=""
+  if [[ -n "$self" && -f "$self" ]]; then sdir="$(cd "$(dirname "$self")" 2>/dev/null && pwd)"; fi
+  if [[ -n "$sdir" && -z "${CN_REPO_URL:-}" && "$REPO_EXPLICIT" -eq 0 \
+        && -f "$sdir/modules/dashboard/NotesTab.qml" && -f "$sdir/services/NotesStore.qml" && -f "$sdir/config/notes.default.json" ]]; then
+    SRC="$sdir"; PAYLOAD_ID="$(git -C "$SRC" rev-parse --short HEAD 2>/dev/null || echo local)"
+    ok "Using the local Notes checkout next to this script: $SRC ($PAYLOAD_ID) - not downloading"
+    info "Run it via curl | bash, or pass --repo, to use the GitHub version instead."
     return
   fi
   mkdir -p "$CACHE" || { bad "Cannot create cache dir $CACHE"; return; }
@@ -383,10 +417,11 @@ step_analyze_targets() {
   fi
 
   # --- user config / data (we never overwrite user data)
-  local cfg="${XDG_CONFIG_HOME:-$HOME/.config}/caelestia" st_dir="${XDG_STATE_HOME:-$HOME/.local/state}/caelestia"
+  # NotesStore.qml reads/writes these exact $HOME-based paths, so the installer must use the same ones.
+  local cfg="$HOME/.config/caelestia" st_dir="$HOME/.local/state/caelestia"
   [[ -d "$st_dir" ]] && ok "State dir exists: $st_dir" || { warn "State dir missing; it will be created"; PLAN2+=("Create $st_dir"); }
   if [[ -f "$st_dir/notes.json" ]]; then ok "Your notes data exists ($(wc -c <"$st_dir/notes.json") bytes) - will never be overwritten"
-  else info "No notes data yet (will initialise with starter notes and todos)"; PLAN2+=("Initialise starter notes data at $st_dir/notes.json"); fi
+  else info "No notes data yet (first run loads the starter notes)"; fi
   case "$(cmp_state "$cfg/notes.default.json" "$SRC/config/notes.default.json")" in
     absent) PLAN2+=("Copy starter template to $cfg/notes.default.json");;
     differs) info "Starter template differs from repo version (will be refreshed; it is not your data)";;
@@ -406,9 +441,11 @@ step_analyze_targets() {
 # =============================================================================
 STAMP="$(date +%Y%m%d-%H%M%S)"
 
+have_tty() { { : </dev/tty; } 2>/dev/null; }
+
 confirm() {   # confirm "question"  -> 0 = yes
   (( ASSUME_YES )) && return 0
-  if { : </dev/tty; } 2>/dev/null; then
+  if have_tty; then
     local a; read -r -p "  ? $1 [y/N] " a </dev/tty; [[ "$a" == [yY]* ]]
   else
     warn "No terminal available to ask: \"$1\"  -> re-run with --yes to accept."; return 1
@@ -439,16 +476,42 @@ rollback_files() {
 }
 
 pick_priv() {
-  PRIV=""
-  if [[ -w "$SHELL_DIR" ]]; then return 0; fi
-  if [[ "$SHELL_MODE" == "system" ]] && have sudo; then
-    PRIV="sudo"; info "Shell directory is root-owned: sudo will be used ONLY to write the Notes files and the marked edits"
-  else bad "Cannot write to $SHELL_DIR (and sudo is not an option here)"; return 1; fi
+  PRIV=""   # kept for the call sites; this installer never escalates privileges
+  [[ -w "$SHELL_DIR" ]] && return 0
+  bad "Cannot write to $SHELL_DIR. This installer never uses sudo and never edits packaged files (use --user-copy)."
+  return 1
+}
+
+create_user_copy() {
+  local dest="$USER_COPY_DEST" src="$SHELL_DIR"
+  if [[ -e "$dest" ]]; then bad "$dest already exists but is not a usable shell copy; refusing to overwrite it."; return 1; fi
+  confirm "Create your own copy of the shell ($src -> $dest)? The package itself is not touched." || { info "Aborted. Nothing was changed."; return 1; }
+  if ! { mkdir -p "$(dirname "$dest")" && cp -a "$src" "$dest" && chmod -R u+w "$dest"; } 2>/dev/null; then
+    rm -rf "$dest"; bad "Copying the shell failed; the partial copy was removed."; return 1
+  fi
+  if ! is_shell_dir "$dest"; then rm -rf "$dest"; bad "The copy looks incomplete; it was removed."; return 1; fi
+  OVERLAY_CREATED=1
+  SHELL_DIR="$dest"; SHELL_MODE="user"; CONTENT="$dest/modules/dashboard/Content.qml"; WIN="$dest/modules/drawers/ContentWindow.qml"
+  ok "Created your own copy of the shell at $dest"
 }
 
 stage2_install() {
   step "Stage 2 - installing Notes files"
   (( PAYLOAD_OK )) || { bad "Payload did not verify; refusing to install"; return 1; }
+  if [[ "$SHELL_MODE" == "system" ]]; then
+    if (( ! USER_COPY )); then
+      if (( ASSUME_YES )) || ! have_tty; then
+        bad "Only the packaged shell was found; nothing was changed. With --yes or no terminal you must pass --user-copy explicitly."; return 1
+      fi
+      printf '\n'
+      info "Your Caelestia came from a package: its files are in $SHELL_DIR, owned by root."
+      info "Caelestia's maintainers say those must not be edited, so Notes needs its own copy of the shell."
+      info "What changes: Quickshell will run YOUR copy instead of the package. Package updates then stop"
+      info "changing what runs, so after updating Caelestia you recreate the copy (README > Updating)."
+      info "Undo any time: install.sh --uninstall, then delete the copy."
+    fi
+    create_user_copy || return 1
+  fi
   pick_priv || return 1
   local list f dest st sha_now sha_man
   list="$(payload_files)"
@@ -481,7 +544,8 @@ stage2_install() {
   fi
 
   # Template + state dir (user-owned; never touches notes.json)
-  local cfg="${XDG_CONFIG_HOME:-$HOME/.config}/caelestia" st_dir="${XDG_STATE_HOME:-$HOME/.local/state}/caelestia"
+  # NotesStore.qml reads/writes these exact $HOME-based paths, so the installer must use the same ones.
+  local cfg="$HOME/.config/caelestia" st_dir="$HOME/.local/state/caelestia"
   local tpl="$cfg/notes.default.json" tpl_state; tpl_state="$(cmp_state "$tpl" "$SRC/config/notes.default.json")"
 
   if (( ${#to_write[@]} == 0 )) && [[ "$tpl_state" == identical ]]; then
@@ -530,12 +594,7 @@ stage2_install() {
   # 4) user-side files
   mkdir -p "$st_dir" "$cfg" && install -m 644 "$SRC/config/notes.default.json" "$tpl" \
     && ok "Starter template placed at $tpl" || warn "Could not write $tpl (Notes still works; it just starts empty)"
-  if [[ -f "$st_dir/notes.json" ]]; then
-    ok "Your existing notes data was left untouched"
-  else
-    install -m 644 "$SRC/config/notes.default.json" "$st_dir/notes.json" \
-      && ok "Initialised notes data with starter content at $st_dir/notes.json"
-  fi
+  if [[ -f "$st_dir/notes.json" ]]; then ok "Your existing notes data was left untouched"; fi
 
   write_manifest || return 1
   return 0
@@ -545,13 +604,17 @@ write_manifest() {
   local tmp="$MANIFEST.tmp" f
   # keep the pointer to the last real backup if this run made none
   [[ -z "$BACKUP_DIR" && -f "$MANIFEST" ]] && BACKUP_DIR="$(sed -n 's/^# backup=//p' "$MANIFEST")"
+  local ov="" base=""
+  if (( OVERLAY_CREATED )); then ov="created"; base="$PKG_VER"
+  elif [[ -f "$MANIFEST" ]]; then ov="$(sed -n 's/^# overlay=//p' "$MANIFEST")"; base="$(sed -n 's/^# base=//p' "$MANIFEST")"; fi
   {
     printf '# caelestia-notes manifest\n# shell_dir=%s\n# mode=%s\n# commit=%s\n# installed=%s\n# backup=%s\n' \
       "$SHELL_DIR" "$SHELL_MODE" "$PAYLOAD_ID" "$STAMP" "${BACKUP_DIR:-}"
+    if [[ -n "$ov" ]]; then printf '# overlay=%s\n# base=%s\n' "$ov" "$base"; fi
     while IFS= read -r f; do
       [[ -n "$f" ]] && printf 'S\t%s\t%s\n' "$(sha256sum "$SHELL_DIR/$f" | cut -d' ' -f1)" "$f"
     done <<<"$(payload_files)"
-    local tpl="${XDG_CONFIG_HOME:-$HOME/.config}/caelestia/notes.default.json"
+    local tpl="$HOME/.config/caelestia/notes.default.json"
     if [[ -f "$tpl" ]]; then printf 'H\t%s\t%s\n' "$(sha256sum "$tpl" | cut -d' ' -f1)" "$tpl"; fi
     for f in modules/dashboard/Content.qml modules/drawers/ContentWindow.qml; do
       if grep -q '>>> caelestia-notes' "$SHELL_DIR/$f" 2>/dev/null; then
@@ -599,7 +662,12 @@ stage2_uninstall() {
     fi
   done < <(grep -v '^#' "$MANIFEST")
   $PRIV rmdir "$dir/modules/dashboard/notes" 2>/dev/null
+  local ov; ov="$(sed -n 's/^# overlay=//p' "$MANIFEST")"
   mv -f "$MANIFEST" "$CACHE/manifest.uninstalled-$STAMP.tsv"
+  if [[ "$ov" == created ]]; then
+    info "Your own copy of the shell at $dir was created by this installer. It now matches the package version it was copied from."
+    info "To go back to the packaged shell completely, delete it:  rm -rf \"$dir\""
+  fi
   ok "Removed $removed file(s), restored $restored original(s) from backup, left $kept modified file(s)"
   ok "Your notes data (~/.local/state/caelestia/notes.json) was NOT touched"
 }
@@ -933,8 +1001,8 @@ stage3_register() {
   rm -rf "$tmp"
   write_manifest || return 1
   printf '\n'
-  info "Quickshell reloads on file changes, so the tab should appear within a moment."
-  info "Quickshell keeps the previous working config if a reload fails. Undo anytime: install.sh --uninstall"
+  info "Quickshell normally reloads when its files change, so the tab should appear within a moment."
+  info "If it does not, restart the shell (caelestia shell -d). Undo anytime: install.sh --uninstall"
 }
 
 stage3_unregister() {   # remove our marked blocks (used by --uninstall)
@@ -987,9 +1055,10 @@ main() {
       -y|--yes) ASSUME_YES=1; shift;;
       --force) FORCE=1; shift;;
       --no-register) NO_REGISTER=1; shift;;
+      --user-copy) USER_COPY=1; shift;;
       --no-keyboard) NO_KEYBOARD=1; shift;;
-      --repo) REPO_URL="$2"; shift 2;;
-      --branch) BRANCH="$2"; shift 2;;
+      --repo) REPO_URL="$2"; REPO_EXPLICIT=1; shift 2;;
+      --branch) BRANCH="$2"; REPO_EXPLICIT=1; shift 2;;
       --no-color) USE_COLOR=0; shift;;
       -h|--help) usage;;
       *) printf 'Unknown option: %s\n' "$1" >&2; exit 2;;
