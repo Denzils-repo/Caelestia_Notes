@@ -680,7 +680,7 @@ footer{margin-top:64px;padding:28px 0 44px;border-top:1px solid var(--line);colo
       <p>Free, open-source (GPL-3.0), and 100% local-first. Engineered with safe-by-design failure isolation so shell updates remain completely uninterrupted.</p>
       
       <div class="cmd-tabs" role="tablist" aria-label="Installation commands">
-        <button type="button" class="cmd-tab active" data-cmd="curl -fsSL https://raw.githubusercontent.com/Denzils-repo/Caelestia_Notes/main/install.sh | bash -s -- --install" data-desc="Standard 1-line install for user git checkouts. Automatically backs up existing files and verifies QML syntax.">1-Line Install</button>
+        <button type="button" class="cmd-tab active" data-cmd="curl -fsSL https://raw.githubusercontent.com/Denzils-repo/Caelestia_Notes/main/install.sh | bash -s -- --install" data-desc="Standard 1-line install for a shell you own (for example <code>~/.config/quickshell/caelestia</code>). Backs up anything it changes and checks QML syntax first.">1-Line Install</button>
         <button type="button" class="cmd-tab" data-cmd="curl -fsSL https://raw.githubusercontent.com/Denzils-repo/Caelestia_Notes/main/install.sh | bash -s -- --install --user-copy" data-desc="For Arch / AUR (<code>caelestia-shell</code>). Root-owned package files are never touched; safely creates your user copy at <code>~/.config/quickshell/caelestia</code> and installs there.">AUR / Packaged</button>
         <button type="button" class="cmd-tab" data-cmd="curl -fsSL https://raw.githubusercontent.com/Denzils-repo/Caelestia_Notes/main/install.sh | bash" data-desc="Read-only preflight check. Scans compatibility, shell versions, and dependency surface without modifying any files.">Dry Run Check</button>
         <button type="button" class="cmd-tab" data-cmd="git clone https://github.com/Denzils-repo/Caelestia_Notes.git &amp;&amp; cd Caelestia_Notes &amp;&amp; ./install.sh --install" data-desc="Clones the source code locally. Run <code>./install.sh --install</code>, or follow the step-by-step <a href='https://github.com/Denzils-repo/Caelestia_Notes#do-it-by-hand' target='_blank' rel='noopener'>Manual Setup Guide on GitHub &rarr;</a> if you prefer to register the tab entirely by hand.">Git Clone / Manual</button>
@@ -694,7 +694,7 @@ footer{margin-top:64px;padding:28px 0 44px;border-top:1px solid var(--line);colo
         </button>
       </div>
 
-      <p class="cmd-desc" id="cmdDesc">Standard 1-line install for user git checkouts. Automatically backs up existing files and verifies QML syntax.</p>
+      <p class="cmd-desc" id="cmdDesc">Standard 1-line install for a shell you own (for example <code>~/.config/quickshell/caelestia</code>). Backs up anything it changes and checks QML syntax first.</p>
 
       <div class="guarantees">
         <span><svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg> Failure-Safe Loader</span>
@@ -720,7 +720,7 @@ footer{margin-top:64px;padding:28px 0 44px;border-top:1px solid var(--line);colo
           <h3><i class="fa-solid fa-list-check"></i> System Requirements</h3>
           <ul class="req-list">
             <li><i class="fa-solid fa-circle-check"></i> <div><strong>Caelestia Shell:</strong> 2.2.0 or newer (tested on 2.4.0 and 2.5.0)</div></li>
-            <li><i class="fa-solid fa-circle-check"></i> <div><strong>Quickshell:</strong> 0.3.0+ &amp; Qt 6 runtime environment</div></li>
+            <li><i class="fa-solid fa-circle-check"></i> <div><strong>Quickshell:</strong> with Qt 6 (tested on Quickshell 0.3.1)</div></li>
             <li><i class="fa-solid fa-circle-check"></i> <div><strong>M3Shapes:</strong> <code>qt6-m3shapes-git</code> (already a core Caelestia dependency)</div></li>
             <li><i class="fa-solid fa-circle-check"></i> <div><strong>Python 3:</strong> <code>python3</code> (required for safe, non-destructive file patching)</div></li>
             <li><i class="fa-solid fa-circle-check"></i> <div><strong>Tools:</strong> <code>git</code> or <code>curl</code> + <code>tar</code></div></li>
@@ -742,11 +742,11 @@ footer{margin-top:64px;padding:28px 0 44px;border-top:1px solid var(--line);colo
     <!-- Uninstall & Troubleshooting Section -->
     <section class="info-section" id="troubleshooting">
       <h2>Troubleshooting &amp; Safe Uninstall</h2>
-      <p class="sub">100% reversible by design. Your notes data is always preserved.</p>
+      <p class="sub">Built to be reversible. Your notes data is always preserved.</p>
 
       <div class="callout-box" style="margin-bottom:24px">
         <h4><i class="fa-solid fa-rotate-left"></i> Clean One-Command Uninstall</h4>
-        <p>Want to revert? The uninstaller completely removes added QML files and restores your original shell files from backup. Your actual notes data (<code>~/.local/state/caelestia/notes.json</code>) is <strong>never touched</strong>.</p>
+        <p>Want to revert? The uninstaller removes the Notes files it added, takes out the marked blocks it inserted, and restores backed-up originals. If you used <code>--user-copy</code>, it also tells you how to delete that copy to go back to the package. Your actual notes data (<code>~/.local/state/caelestia/notes.json</code>) is <strong>never touched</strong>.</p>
         <div style="background:var(--surface);padding:8px 12px;border-radius:12px;font-family:var(--mono);font-size:.85rem;color:var(--accent);word-break:break-all;border:1px solid var(--line);margin:4px 0">
           curl -fsSL https://raw.githubusercontent.com/Denzils-repo/Caelestia_Notes/main/install.sh | bash -s -- --uninstall
         </div>
