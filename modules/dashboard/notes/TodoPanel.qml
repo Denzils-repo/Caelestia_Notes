@@ -67,7 +67,17 @@ StyledRect {
     property bool calendarPickerOpen: false
     property string selectedNewDue: ""
     property bool newTodoRepeating: false
-    readonly property bool isDatePicking: root.calendarPickerOpen || (detailView && detailView.calendarOpen)
+    readonly property bool isDatePicking: (root.isAdding && root.calendarPickerOpen) || (NotesStore.isEditingTodo && detailView && detailView.calendarOpen)
+
+    Connections {
+        target: NotesStore
+        function onIsEditingTodoChanged() {
+            if (NotesStore.isEditingTodo) {
+                root.isAdding = false;
+                root.calendarPickerOpen = false;
+            }
+        }
+    }
 
     Timer {
         id: confirmEmptyTimer

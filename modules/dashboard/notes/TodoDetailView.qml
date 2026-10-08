@@ -84,6 +84,10 @@ Item {
         if (visible) {
             root.resetScroll();
             Qt.callLater(root.resetScroll);
+        } else {
+            root.calendarOpen = false;
+            root.confirmDelete = false;
+            confirmDeleteTimer.stop();
         }
     }
 
@@ -94,6 +98,7 @@ Item {
             const newId = activeTodo.id || "";
             if (newId !== currentTodoId) {
                 currentTodoId = newId;
+                calendarOpen = false;
                 localTitle = activeTodo.title || "";
                 localDue = activeTodo.due || "";
                 localDone = !!activeTodo.done;
@@ -111,6 +116,7 @@ Item {
             }
         } else {
             currentTodoId = "";
+            calendarOpen = false;
         }
     }
 
@@ -256,6 +262,7 @@ Item {
                     } else {
                         confirmDeleteTimer.stop();
                         root.confirmDelete = false;
+                        root.calendarOpen = false;
                         if (root.activeTodo) {
                             NotesStore.deleteTodo(root.activeTodo.id);
                         }
