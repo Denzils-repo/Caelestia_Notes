@@ -108,6 +108,7 @@ bash install.sh --install
 | `--yes` | Don't ask questions. |
 | `--no-register` | Copy the files but don't edit any Caelestia file. |
 | `--no-keyboard` | Skip the keyboard-focus edit. Typing in Notes may not work. |
+| `--shortcut` | Optional. Also add a global "new note" shortcut to the shell's `Shortcuts.qml` (see [New-note shortcut](#new-note-shortcut-optional)). |
 | `--force` | Overwrite files that belong to the shell itself. For your own fork only. |
 | `--repo URL`, `--branch NAME` | Install from a different source. |
 
@@ -119,6 +120,7 @@ bash install.sh --install
 | `services/NotesStore.qml` | New file (state and saving). |
 | `modules/dashboard/Content.qml` | **Edited.** One marked block adds the tab entry, one adds a loader. |
 | `modules/drawers/ContentWindow.qml` | **Edited.** One marked line lets the dashboard take keyboard focus, which typing needs. |
+| `modules/Shortcuts.qml` (`daemons/Shortcuts.qml` on newer shells) | **Edited only with `--shortcut`.** Marked blocks add a `newNote` shortcut and a one-line import. |
 | `~/.config/caelestia/notes.default.json` | Starter notes, used only when you have no notes file. |
 | `~/.local/share/caelestia-notes/` | The installer's own cache, backups and manifest. |
 
@@ -291,6 +293,23 @@ Caelestia_Notes/
 ---
 
 ## ⌨️ Keyboard Shortcuts & Quick Tips
+
+### New-note shortcut (optional)
+
+Install with `--shortcut` to get a global "new note" action that opens the dashboard on the Notes tab with a fresh note ready to type in:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Denzils-repo/Caelestia_Notes/main/install.sh | bash -s -- --install --shortcut
+```
+
+The installer adds the shortcut to the shell, but it never edits your Hyprland files. Add one line to your Hyprland config yourself (use any keys you like):
+
+```
+bind = CTRL SUPER, N, global, caelestia:newNote
+```
+
+If you don't use Hyprland, `qs -c caelestia ipc call notes newNote` does the same thing. If your shell already defines its own `newNote` shortcut, the installer leaves it alone. `--uninstall` removes the block it added.
+
 
 | Action | Shortcut / Gesture |
 | :--- | :--- |
