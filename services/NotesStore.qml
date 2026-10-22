@@ -15,6 +15,8 @@ Singleton {
     property string todoSortMode: "latest" // "latest" | "date"
     property bool breakStreaks: true
     property bool loaded: false
+    property bool stateMissing: false
+    property bool fallbackSettled: false
     property int version: 0
 
     // Takeover / editing state for Notes detail view
@@ -37,11 +39,21 @@ Singleton {
         watchChanges: true
         printErrors: false
         onLoaded: root.loadData(text())
+        onLoadFailed: err => {
+            // No notes file yet = first run. Any other failure (e.g. permissions) is NOT
+            // treated as first run, so the store stays unloaded and never overwrites data.
+            if (err === FileViewError.FileNotFound) {
+                root.stateMissing = true;
+                root.tryFirstRun();
+            }
+        }
     }
 
     readonly property FileView fallbackFile: FileView {
         path: `${Quickshell.env("HOME")}/.config/caelestia/notes.default.json`
         printErrors: false
+        onLoaded: { root.fallbackSettled = true; root.tryFirstRun(); }
+        onLoadFailed: { root.fallbackSettled = true; root.tryFirstRun(); }
     }
 
     readonly property FileView backupFile: FileView {
@@ -67,6 +79,13 @@ Singleton {
             root.checkRepeatingRollover();
             root.minuteTick++;
         }
+    }
+
+    // First run: notes.json does not exist yet. Wait until the starter template has also
+    // finished loading (or failed), then seed once. Never runs if the file exists.
+    function tryFirstRun() {
+        if (root.loaded || !root.stateMissing || !root.fallbackSettled) return;
+        root.loadData("");
     }
 
     function loadData(content) {
