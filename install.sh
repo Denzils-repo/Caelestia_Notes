@@ -15,6 +15,8 @@
 #    ./install.sh --uninstall      remove what --install put there
 #    options: --yes (no prompts)  --force (override "shell wins" protection)
 #             --no-register (copy files only)  --no-keyboard (skip the typing-focus edit)
+#             --shortcut (opt-in: also add a global "new note" shortcut to Shortcuts.qml;
+#                         you then bind a key to it in Hyprland - the installer prints the line)
 #             --user-copy (packaged/AUR installs only: make your own copy of the shell first;
 #                          the packaged files are NEVER edited and sudo is NEVER used)
 #             --repo URL  --branch NAME  --no-color  -h
@@ -58,6 +60,7 @@ SHELL_DIR=""; SHELL_MODE=""; SHELL_VER=""; SHELL_WRITABLE=0  # SHELL_WRITABLE / 
 CONTENT=""; WIN=""; PAYLOAD_OK=0; PAYLOAD_ID=""
 PLAN2=(); PLAN3=()
 REPO_EXPLICIT=0; MODE=check; ASSUME_YES=0; FORCE=0; NO_REGISTER=0; NO_KEYBOARD=0; QMLLINT=""
+SHORTCUT=0; SC=""; SC_REL=""
 USER_COPY=0; USER_COPY_DEST=""; SYS_FOUND=""; PKG_VER=""; OVERLAY_CREATED=0
 PRIV=""; BACKUP_DIR=""; NEWDIR_NOTES=0; CREATED=(); REPLACED=()
 MANIFEST="$CACHE/manifest.tsv"; ORIG="$CACHE/originals"
@@ -85,6 +88,13 @@ step_preflight() {
 }
 
 # --------------------------------------------------------- 2. locate shell ---
+find_shortcuts_file() {   # upstream moved Shortcuts.qml between releases: modules/ (<= 2.5.0) -> daemons/ (newer)
+  SC=""; SC_REL=""; local p
+  for p in modules/Shortcuts.qml daemons/Shortcuts.qml; do
+    [[ -f "$SHELL_DIR/$p" ]] && { SC="$SHELL_DIR/$p"; SC_REL="$p"; break; }
+  done
+}
+
 is_shell_dir() { [[ -f "$1/shell.qml" && -f "$1/modules/dashboard/Content.qml" ]]; }
 
 step_locate_shell() {
@@ -407,6 +417,19 @@ step_analyze_targets() {
     fi
   fi
 
+  # --- Shortcuts.qml : optional global "new note" shortcut (--shortcut only)
+  if (( SHORTCUT )); then
+    find_shortcuts_file
+    if [[ -z "$SC" ]]; then warn "--shortcut: no Shortcuts.qml found in this shell; the shortcut will not be added"
+    elif grep -q '>>> caelestia-notes' "$SC"; then ok "Shortcut block in $SC_REL is managed by this installer"
+    elif grep -q 'name: "newNote"' "$SC"; then ok "$SC_REL already defines a newNote shortcut - left alone"
+    elif ! grep -q 'hasFullscreen' "$SC"; then warn "$SC_REL has an unexpected layout; the shortcut will not be added"
+    else
+      ok "Shortcut anchor found in $SC_REL"
+      PLAN3+=("$SC_REL: add a global 'newNote' shortcut (opt-in --shortcut; marked block; backup first)")
+    fi
+  fi
+
   # --- do our files already exist in the shell?
   local f st absent=0 ident=0 diff=0 list
   list="$(payload_files 2>/dev/null)"
@@ -637,7 +660,7 @@ write_manifest() {
     done <<<"$(payload_files)"
     local tpl="$HOME/.config/caelestia/notes.default.json"
     if [[ -f "$tpl" ]]; then printf 'H\t%s\t%s\n' "$(sha256sum "$tpl" | cut -d' ' -f1)" "$tpl"; fi
-    for f in modules/dashboard/Content.qml modules/drawers/ContentWindow.qml; do
+    for f in modules/dashboard/Content.qml modules/drawers/ContentWindow.qml modules/Shortcuts.qml daemons/Shortcuts.qml; do
       if grep -q '>>> caelestia-notes' "$SHELL_DIR/$f" 2>/dev/null; then
         printf 'P\t%s\t%s\n' "$(sha256sum "$SHELL_DIR/$f" | cut -d' ' -f1)" "$f"
       fi
@@ -720,7 +743,14 @@ PRISTINE_KBD = "screenState.launcher || screenState.session ? WlrKeyboardFocus.O
 NEW_KBD = "screenState.launcher || screenState.session || screenState.dashboard ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None"
 
 
+SC_IMPORT = "import Caelestia.Config"
+
+
 class Err(Exception):
+    pass
+
+
+class Skip(Exception):   # nothing safe/needed to change: not an error (exit 3)
     pass
 
 
@@ -925,6 +955,99 @@ def window_remove(ls):
     return ls, "removed"
 
 
+# ----------------------------------------------------------------- Shortcuts.qml
+def notes_tab_index_expr(content_text):
+    """Expression for the Notes tab's position among the ENABLED dashboard tabs,
+    built from the tabs that come before it in Content.qml's tab list."""
+    m = re.search(r"dashboardTabs\s*:\s*\{(.*?)allTabs\.filter", content_text, re.S)
+    if not m:
+        raise Skip("tab list not found in Content.qml")
+    entries = re.findall(r"component:\s*(\w+)\s*,.*?enabled:\s*([^\n]*?)\s*(?:\n|$)", m.group(1), re.S)
+    terms = []
+    for comp, en in entries:
+        if comp == "notesComponent":
+            return " + ".join(terms) if terms else "0"
+        en = en.rstrip(",").strip()
+        if en == "true":
+            terms.append("1")
+        elif re.fullmatch(r"Config\.dashboard\.show\w+", en):
+            terms.append(f"({en} ? 1 : 0)")
+        else:
+            raise Skip("unrecognised tab condition in Content.qml: " + en)
+    raise Skip("Notes tab is not in Content.qml's tab list")
+
+
+def sc_block(idx_expr):
+    i = "    "
+    return [
+        f"{i}// {BEG}: managed block - do not edit; `install.sh --uninstall` removes it >>>",
+        f"{i}function openNewNote(): void {{",
+        f"{i}    if (hasFullscreen)",
+        f"{i}        return;",
+        f"{i}    const screenState = ShellState.forActive();",
+        f"{i}    screenState.dashboard = true;",
+        f"{i}    screenState.dashboardTab = {idx_expr};",
+        f"{i}    try {{",
+        f"{i}        NotesStore.createAndOpenNewNote();",
+        f"{i}    }} catch (e) {{",
+        f"{i}        console.warn(\"[Notes] could not create a note:\", e);",
+        f"{i}    }}",
+        f"{i}}}",
+        "",
+        f"{i}// qmllint disable unresolved-type",
+        f"{i}CustomShortcut {{",
+        f"{i}    // qmllint enable unresolved-type",
+        f"{i}    name: \"newNote\"",
+        f"{i}    description: \"Create a new note in the Notes tab\"",
+        f"{i}    onPressed: root.openNewNote()",
+        f"{i}}}",
+        "",
+        f"{i}IpcHandler {{",
+        f"{i}    function newNote(): void {{",
+        f"{i}        root.openNewNote();",
+        f"{i}    }}",
+        "",
+        f"{i}    target: \"notes\"",
+        f"{i}}}",
+        f"{i}// {END} <<<",
+    ]
+
+
+def sc_install(ls, content_path):
+    mr = managed_ranges(ls)
+    status = "inserted"
+    if mr:
+        drop_ranges(ls, mr)
+        status = "refreshed"
+    joined = "\n".join(ls)
+    if re.search(r'name:\s*"newNote"', joined):
+        raise Skip("already-has-newnote")
+    if "hasFullscreen" not in joined or "ShellState" not in joined:
+        raise Skip("unexpected-layout")
+    idx = notes_tab_index_expr(open(content_path, encoding="utf-8").read())
+    ends = [i for i, l in enumerate(ls) if l.rstrip() == "}"]
+    if not ends or not re.search(r"^\s*Scope\s*\{", joined, re.M):
+        raise Skip("unexpected-layout")
+    ls[ends[-1]:ends[-1]] = sc_block(idx)
+    if not any(re.match(r"^import\s+Caelestia\.Config\s*$", l) for l in ls):
+        imps = [i for i, l in enumerate(ls) if l.startswith("import ")]
+        if not imps:
+            raise Skip("unexpected-layout")
+        ls[imps[-1] + 1:imps[-1] + 1] = [
+            f"// {BEG}: managed block - do not edit; `install.sh --uninstall` removes it >>>",
+            SC_IMPORT,
+            f"// {END} <<<",
+        ]
+    return ls, status
+
+
+def sc_remove(ls):
+    mr = managed_ranges(ls)
+    if not mr:
+        return ls, "nothing-to-remove"
+    return drop_ranges(ls, mr), "removed"
+
+
 # ------------------------------------------------------------------------ main
 def main():
     kind, mode, src, dst = sys.argv[1:5]
@@ -941,6 +1064,10 @@ def main():
             ls, status, code = window_install(ls)
         elif kind == "window" and mode == "remove":
             ls, status = window_remove(ls)
+        elif kind == "shortcut" and mode == "install":
+            ls, status = sc_install(ls, sys.argv[5])
+        elif kind == "shortcut" and mode == "remove":
+            ls, status = sc_remove(ls)
         else:
             raise Err("bad arguments")
         new = "\n".join(ls)
@@ -956,6 +1083,9 @@ def main():
         else:
             print(f"STATUS {status} unchanged")
         sys.exit(code)
+    except Skip as e:
+        print(f"STATUS {e} unchanged")
+        sys.exit(3)
     except Err as e:
         print(f"ERROR {e}")
         sys.exit(2)
@@ -1039,13 +1169,61 @@ stage3_register() {
   info "If it does not, restart the shell (caelestia shell -d). Undo anytime: install.sh --uninstall"
 }
 
+stage3_shortcut() {   # opt-in (--shortcut): global "new note" shortcut in Shortcuts.qml
+  step "Stage 3b - global new-note shortcut (--shortcut)"
+  have python3 || { warn "python3 not found: the shortcut cannot be added safely. Nothing was changed."; return 0; }
+  find_shortcuts_file
+  [[ -n "$SC" ]] || { warn "No Shortcuts.qml found in this shell: the shortcut was not added."; return 0; }
+  grep -q '>>> caelestia-notes' "$CONTENT" 2>/dev/null || { info "The Notes tab is not registered by this installer, so the shortcut was skipped."; return 0; }
+  pick_priv || return 1
+  find_qmllint
+  local tmp out code; tmp="$(mktemp -d)"
+  out="$(cn_patch shortcut install "$SC" "$tmp/Shortcuts.qml" "$CONTENT")"; code=$?
+  if (( code == 3 )); then
+    case "$out" in
+      *already-has-newnote*) info "$SC_REL already defines its own 'newNote' shortcut - left alone.";;
+      *) warn "Could not find a safe place in $SC_REL (${out#STATUS }): the shortcut was not added. Nothing was changed.";;
+    esac
+    rm -rf "$tmp"; return 0
+  elif (( code != 0 )); then
+    bad "Cannot safely edit $SC_REL: ${out#ERROR }"; rm -rf "$tmp"; return 1
+  fi
+  if [[ "$out" == *" unchanged" ]]; then
+    ok "Shortcut is already up to date - no file changed"; rm -rf "$tmp"; print_shortcut_help; return 0
+  fi
+  lint_ok "$tmp/Shortcuts.qml" || { bad "Patched $SC_REL failed the syntax check - NOT written"; rm -rf "$tmp"; return 1; }
+  [[ -n "$QMLLINT" ]] && ok "Patched $SC_REL passes the QML syntax check" || info "No Qt 6 qmllint: $SC_REL not syntax-checked"
+  printf '\n  The following edit will be made (inside marked blocks):\n  --- %s\n' "$SC_REL"
+  diff -u "$SC" "$tmp/Shortcuts.qml" | sed -n '3,70p' | sed 's/^/      /'
+  confirm "Apply this edit to $SC_REL?" || { info "Aborted. $SC_REL was not changed."; rm -rf "$tmp"; return 0; }
+  [[ -n "$BACKUP_DIR" ]] || BACKUP_DIR="$CACHE/backups/$STAMP"
+  mkdir -p "$BACKUP_DIR/files/$(dirname "$SC_REL")" && cp -p "$SC" "$BACKUP_DIR/files/$SC_REL" || { bad "Cannot create backup"; rm -rf "$tmp"; return 1; }
+  ok "Original $SC_REL backed up to $BACKUP_DIR"
+  if ! { write_priv "$tmp/Shortcuts.qml" "$SC"; } 2>/dev/null || ! cmp -s "$tmp/Shortcuts.qml" "$SC"; then
+    bad "Could not write $SC_REL - restoring the original"; $PRIV cp -p "$BACKUP_DIR/files/$SC_REL" "$SC"; $PRIV rm -f "$SC.cn-tmp" 2>/dev/null
+    rm -rf "$tmp"; return 1
+  fi
+  ok "$SC_REL: 'newNote' shortcut added"
+  rm -rf "$tmp"
+  write_manifest || return 1
+  print_shortcut_help
+}
+
+print_shortcut_help() {
+  printf '\n'
+  info "To use it, add ONE line to your Hyprland config (the installer never edits Hyprland files):"
+  info "    bind = CTRL SUPER, N, global, caelestia:newNote"
+  info "(Lua-style Hyprland configs: bind CTRL+SUPER+N to the global shortcut caelestia:newNote.)"
+  info "Without Hyprland you can also run:  qs -c caelestia ipc call notes newNote"
+}
+
 stage3_unregister() {   # remove our marked blocks (used by --uninstall)
   local f kind out tmp bk
   tmp="$(mktemp -d)"; bk="$CACHE/backups/$STAMP-uninstall/files"
-  for f in modules/dashboard/Content.qml modules/drawers/ContentWindow.qml; do
+  for f in modules/dashboard/Content.qml modules/drawers/ContentWindow.qml modules/Shortcuts.qml daemons/Shortcuts.qml; do
     [[ -f "$SHELL_DIR/$f" ]] && grep -q '>>> caelestia-notes' "$SHELL_DIR/$f" || continue
     have python3 || { bad "python3 is needed to unregister the tab safely; nothing was removed"; rm -rf "$tmp"; return 1; }
-    kind=content; [[ "$f" == *ContentWindow.qml ]] && kind=window
+    kind=content; [[ "$f" == *ContentWindow.qml ]] && kind=window; [[ "$f" == *Shortcuts.qml ]] && kind=shortcut
     out="$(cn_patch "$kind" remove "$SHELL_DIR/$f" "$tmp/$(basename "$f")")" || { bad "Cannot remove the managed block from $f: ${out#ERROR }"; rm -rf "$tmp"; return 1; }
     find_qmllint
     lint_ok "$tmp/$(basename "$f")" || { bad "Result for $f failed the syntax check - not written"; rm -rf "$tmp"; return 1; }
@@ -1091,6 +1269,7 @@ main() {
       --no-register) NO_REGISTER=1; shift;;
       --user-copy) USER_COPY=1; shift;;
       --no-keyboard) NO_KEYBOARD=1; shift;;
+      --shortcut) SHORTCUT=1; shift;;
       --repo) REPO_URL="$2"; REPO_EXPLICIT=1; shift 2;;
       --branch) BRANCH="$2"; REPO_EXPLICIT=1; shift 2;;
       --no-color) USE_COLOR=0; shift;;
@@ -1115,6 +1294,7 @@ main() {
   if [[ "$MODE" == install ]]; then
     stage2_install || exit 1
     stage3_register || exit 1
+    (( SHORTCUT )) && { stage3_shortcut || exit 1; }
   fi
 }
 
