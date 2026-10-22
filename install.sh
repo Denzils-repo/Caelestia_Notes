@@ -1294,7 +1294,7 @@ main() {
   if [[ "$MODE" == install ]]; then
     stage2_install || exit 1
     stage3_register || exit 1
-    (( SHORTCUT )) && { stage3_shortcut || exit 1; }
+    if (( SHORTCUT )); then stage3_shortcut || exit 1; fi
   fi
 }
 
