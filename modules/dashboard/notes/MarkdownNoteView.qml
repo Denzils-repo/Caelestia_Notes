@@ -668,8 +668,9 @@ Item {
                         }
 
                         // Code Block
-                        StyledClippingRect {
+                        StyledRect {
                             id: codeBlockRect
+                            clip: true
                             visible: !!(blockItem.modelData && blockItem.modelData.type === "code")
                             Layout.fillWidth: true
                             implicitHeight: codeBlockCol.implicitHeight
@@ -837,8 +838,9 @@ Item {
                         }
 
                         // Table Block
-                        StyledClippingRect {
+                        StyledRect {
                             id: tableCard
+                            clip: true
                             visible: !!(blockItem.modelData && blockItem.modelData.type === "table")
                             Layout.fillWidth: true
                             implicitHeight: tableCol.implicitHeight
