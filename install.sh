@@ -306,9 +306,9 @@ step_verify_payload() {
   local n; n="$(grep -c . <<<"$files")"
   (( p == 0 )) && ok "All required files present ($n files to install under modules/ and services/)"
 
-  # only .qml files may be installed into the shell
-  local odd; odd="$(grep -vE '\.qml$' <<<"$files" || true)"
-  [[ -n "$odd" ]] && { bad "Non-QML files under modules/ or services/ (refusing): $(tr '\n' ' ' <<<"$odd")"; p=1; }
+  # only .qml (code) and .json (data) files may be installed into the shell
+  local odd; odd="$(grep -vE '\.(qml|json)$' <<<"$files" || true)"
+  [[ -n "$odd" ]] && { bad "Files other than .qml/.json under modules/ or services/ (refusing): $(tr '\n' ' ' <<<"$odd")"; p=1; }
   # nothing may try to escape its directory
   if grep -qE '(^|/)\.\.(/|$)' <<<"$files"; then bad "Path traversal in payload file list"; p=1; fi
   # symlinks are never allowed in the payload
@@ -321,12 +321,17 @@ step_verify_payload() {
   local links; links="$(cd "$SRC" && grep -rc 'Qt.openUrlExternally' modules services 2>/dev/null | awk -F: '{s+=$2} END{print s+0}')"
   (( links > 0 )) && info "Note: $links link handler(s) open URLs in your browser, only when you click a link in a note"
 
-  # JSON sanity
+  # JSON sanity: the starter template and every .json file that will be installed
+  local jf jbad=0 jlist; jlist="config/notes.default.json"
+  while IFS= read -r jf; do [[ "$jf" == *.json ]] && jlist+=$'\n'"$jf"; done <<<"$files"
   if have python3; then
-    python3 -c 'import json,sys;json.load(open(sys.argv[1]))' "$SRC/config/notes.default.json" 2>/dev/null \
-      && ok "notes.default.json is valid JSON" || { bad "notes.default.json is not valid JSON"; p=1; }
+    while IFS= read -r jf; do
+      python3 -c 'import json,sys;json.load(open(sys.argv[1]))' "$SRC/$jf" 2>/dev/null || { bad "$jf is not valid JSON"; jbad=1; }
+    done <<<"$jlist"
+    (( jbad == 0 )) && ok "JSON files are valid ($(grep -c . <<<"$jlist") checked)" || p=1
   elif have jq; then
-    jq empty "$SRC/config/notes.default.json" 2>/dev/null && ok "notes.default.json is valid JSON" || { bad "notes.default.json invalid"; p=1; }
+    while IFS= read -r jf; do jq empty "$SRC/$jf" 2>/dev/null || { bad "$jf is not valid JSON"; jbad=1; }; done <<<"$jlist"
+    (( jbad == 0 )) && ok "JSON files are valid ($(grep -c . <<<"$jlist") checked)" || p=1
   else info "No python3/jq: skipped JSON validation"; fi
 
   # QML syntax (best effort; only genuine parse errors count)
@@ -336,7 +341,7 @@ step_verify_payload() {
     while IFS= read -r f; do
       out="$("$ql" "$SRC/$f" 2>&1 | grep -iE 'syntax error|unexpected token|expected token|parse error' || true)"
       [[ -n "$out" ]] && { errs=1; bad "QML syntax problem in $f: $(head -n1 <<<"$out")"; }
-    done <<<"$files"
+    done <<<"$(grep -E '\.qml$' <<<"$files")"
     (( errs == 0 )) && ok "qmllint: no syntax errors" || p=1
   else info "No Qt 6 qmllint found (a Qt 5 one is ignored): skipped QML syntax check"; fi
 

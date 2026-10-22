@@ -3,9 +3,14 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import Quickshell
+import Quickshell.Io
+import M3Shapes
+import Caelestia
 import Caelestia.Config
 import qs.components
 import qs.components.controls
+import qs.components.effects
 import qs.services
 
 StyledRect {
@@ -24,6 +29,14 @@ StyledRect {
     property bool isEditing: false
     property var localListShapes: ({})
 
+    readonly property bool isNoteEmpty: {
+        const title = (root.localTitle || "").trim();
+        const body = (root.localBody || "").trim();
+        const hasTitle = title.length > 0 && title !== "Untitled";
+        const hasBody = body.length > 0;
+        return !hasTitle && !hasBody;
+    }
+
     readonly property bool hasCustomColor: !!(localColor && localColor !== "none")
 
     readonly property color accentColor: {
@@ -39,6 +52,78 @@ StyledRect {
 
     radius: Tokens.rounding.large
     color: "transparent"
+
+    readonly property FileView customPromptsFile: FileView {
+        path: `${Quickshell.env("HOME")}/.config/caelestia/note_prompts.json`
+        watchChanges: true
+        printErrors: false
+        onLoaded: root.reloadPrompts()
+    }
+
+    readonly property FileView defaultPromptsFile: FileView {
+        path: Qt.resolvedUrl("note_prompts.json").toString().replace(/^file:\/\//, "")
+        watchChanges: true
+        printErrors: false
+        onLoaded: root.reloadPrompts()
+    }
+
+    property var cachedPrompts: [
+        qsTr("Capture a fleeting thought…"),
+        qsTr("Write something worth remembering…"),
+        qsTr("What's on your mind today?"),
+        qsTr("Ideas are fragile — write them down…"),
+        qsTr("Draft a masterpiece or just a quick reminder…"),
+        qsTr("Start writing… (Markdown supported)"),
+        qsTr("Every great journey begins with a single note…"),
+        qsTr("Got a sudden spark of inspiration?"),
+        qsTr("Turn chaos into clarity…"),
+        qsTr("Jot down your daily reflections…"),
+        qsTr("Clear your mind, one line at a time…")
+    ]
+
+    property string currentPlaceholder: qsTr("Take a note… (Markdown supported)")
+
+    function reloadPrompts() {
+        let loaded = null;
+        if (customPromptsFile) {
+            try {
+                const txt = customPromptsFile.text();
+                if (txt && txt.trim().length > 0) {
+                    const parsed = JSON.parse(txt);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        loaded = parsed.map(item => (typeof item === "string" ? item : (item.text || item.prompt || ""))).filter(s => s && s.trim().length > 0);
+                    }
+                }
+            } catch (e) {
+                // Ignore parse errors
+            }
+        }
+        if ((!loaded || loaded.length === 0) && defaultPromptsFile) {
+            try {
+                const txt = defaultPromptsFile.text();
+                if (txt && txt.trim().length > 0) {
+                    const parsed = JSON.parse(txt);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        loaded = parsed.map(item => (typeof item === "string" ? item : (item.text || item.prompt || ""))).filter(s => s && s.trim().length > 0);
+                    }
+                }
+            } catch (e) {
+                // Ignore parse errors
+            }
+        }
+        if (loaded && loaded.length > 0) {
+            root.cachedPrompts = loaded;
+        }
+    }
+
+    function pickRandomPlaceholder() {
+        if (!cachedPrompts || cachedPrompts.length === 0) {
+            root.reloadPrompts();
+        }
+        const list = (cachedPrompts && cachedPrompts.length > 0) ? cachedPrompts : [qsTr("Take a note… (Markdown supported)")];
+        const idx = Math.floor(Math.random() * list.length);
+        root.currentPlaceholder = list[idx];
+    }
 
     Timer {
         id: confirmDeleteTimer
@@ -64,10 +149,121 @@ StyledRect {
         }
     }
 
+    function getCompleteNoteText(): string {
+        const title = (root.localTitle || "").trim();
+        const body = (root.localBody || "").trim();
+        if (title.length > 0 && title !== "Untitled") {
+            if (body.length > 0) {
+                return title + "\n\n" + body;
+            }
+            return title;
+        }
+        return body;
+    }
+
+    function focusBody() {
+        if (bodyArea && root.isEditing) {
+            if (!bodyArea.activeFocus) {
+                bodyArea.forceActiveFocus();
+            }
+        }
+    }
+
+    property int pendingCursorIndex: -1
+
+    Timer {
+        id: editCursorTimer
+        interval: 35
+        repeat: false
+        onTriggered: {
+            root.applyCursorPosition();
+            root.pendingCursorIndex = -1;
+        }
+    }
+
+    function applyCursorPosition(): void {
+        if (!bodyArea || root.pendingCursorIndex < 0) return;
+        bodyArea.forceActiveFocus();
+        const maxLen = root.localBody ? root.localBody.length : (bodyArea ? bodyArea.length : 0);
+        const targetPos = Math.max(0, Math.min(maxLen, root.pendingCursorIndex));
+        bodyArea.deselect();
+        bodyArea.cursorPosition = targetPos;
+        if (bodyScrollView && bodyScrollView.flickable) {
+            const flick = bodyScrollView.flickable;
+            const curY = bodyArea.cursorRectangle.y;
+            if (curY < flick.contentY || curY + bodyArea.cursorRectangle.height > flick.contentY + flick.height) {
+                flick.contentY = Math.max(0, Math.min(Math.max(0, flick.contentHeight - flick.height), curY - flick.height / 3));
+            }
+        }
+    }
+
+    function switchToEditAt(targetIndex: int): void {
+        const maxLen = root.localBody ? root.localBody.length : (bodyArea ? bodyArea.length : 0);
+        root.pendingCursorIndex = Math.max(0, Math.min(maxLen, targetIndex));
+        root.isEditing = true;
+        if (bodyArea) {
+            bodyArea.cursorPosition = root.pendingCursorIndex;
+        }
+        Qt.callLater(root.applyCursorPosition);
+        editCursorTimer.restart();
+    }
+
+    Timer {
+        id: focusBodyTimer
+        interval: 60
+        repeat: true
+        property int attempts: 0
+        onTriggered: {
+            attempts++;
+            if (bodyArea && root.isEditing) {
+                if (!bodyArea.activeFocus) {
+                    bodyArea.forceActiveFocus();
+                }
+                if (bodyArea.activeFocus || attempts >= 10) {
+                    attempts = 0;
+                    stop();
+                }
+            } else if (attempts >= 10) {
+                attempts = 0;
+                stop();
+            }
+        }
+    }
+
+    function triggerFocusBody() {
+        focusBodyTimer.attempts = 0;
+        focusBodyTimer.restart();
+        Qt.callLater(root.focusBody);
+    }
+
+    Connections {
+        target: NotesStore
+        function onRequestFocusBody(): void {
+            root.triggerFocusBody();
+        }
+        function onNoteOpened(noteId: string): void {
+            if (markdownLoader && markdownLoader.item && typeof markdownLoader.item.triggerPopIn === "function") {
+                markdownLoader.item.triggerPopIn();
+            }
+        }
+    }
+
     onVisibleChanged: {
         if (visible) {
             root.resetScroll();
             Qt.callLater(root.resetScroll);
+            if (!localTitle && !localBody) {
+                root.triggerFocusBody();
+            }
+        } else {
+            root.syncNow();
+            if (root.activeNote) {
+                const curTitle = titleField ? titleField.text.trim() : (root.localTitle || "").trim();
+                const curBody = bodyArea ? bodyArea.text.trim() : (root.localBody || "").trim();
+                if (curTitle.length === 0 && curBody.length === 0) {
+                    NotesStore.closeNote(false);
+                }
+            }
         }
     }
 
@@ -92,12 +288,17 @@ StyledRect {
             if (bodyArea) bodyArea.text = localBody;
             root.resetScroll();
             Qt.callLater(root.resetScroll);
+            if (!localTitle && !localBody) {
+                root.pickRandomPlaceholder();
+                root.triggerFocusBody();
+            }
         }
     }
 
     Component.onCompleted: {
         confirmDeleteTimer.stop();
         confirmDelete = false;
+        root.reloadPrompts();
         if (activeNote) {
             currentNoteId = activeNote.id || "";
             localTitle = activeNote.title || "";
@@ -110,6 +311,12 @@ StyledRect {
             if (bodyArea) bodyArea.text = localBody;
             root.resetScroll();
             Qt.callLater(root.resetScroll);
+            if (!localTitle && !localBody) {
+                root.pickRandomPlaceholder();
+                root.triggerFocusBody();
+            }
+        } else {
+            root.pickRandomPlaceholder();
         }
     }
 
@@ -227,6 +434,38 @@ StyledRect {
                     }
 
                     IconButton {
+                        id: copyBtn
+                        icon: copyFeedbackTimer.running ? "check" : "content_copy"
+                        type: copyFeedbackTimer.running ? ButtonBase.Filled : ButtonBase.Tonal
+                        disabled: root.isNoteEmpty
+                        opacity: root.isNoteEmpty ? 0.38 : 1.0
+                        activeColour: Colours.palette.m3primary
+                        activeOnColour: Colours.palette.m3onPrimary
+
+                        Behavior on opacity {
+                            Anim { type: Anim.FastEffects }
+                        }
+
+                        onClicked: {
+                            if (root.isNoteEmpty)
+                                return;
+                            root.syncNow();
+                            const textToCopy = root.getCompleteNoteText();
+                            if (textToCopy.length === 0)
+                                return;
+                            Quickshell.clipboardText = textToCopy;
+                            Toaster.toast(qsTr("Copied to clipboard"), (root.localTitle && root.localTitle.trim() !== "Untitled" ? root.localTitle : qsTr("Note")), "content_copy");
+                            copyFeedbackTimer.restart();
+                        }
+
+                        Timer {
+                            id: copyFeedbackTimer
+                            interval: 1500
+                            repeat: false
+                        }
+                    }
+
+                    IconButton {
                         icon: "push_pin"
                         type: root.localPinned ? ButtonBase.Filled : ButtonBase.Tonal
                         onClicked: {
@@ -279,35 +518,48 @@ StyledRect {
                             readonly property bool isSelected: (root.localColor === modelData.id) ||
                                                                (modelData.id === "none" && (!root.localColor || root.localColor === "none"))
 
-                            implicitWidth: 16
-                            implicitHeight: 16
+                            implicitWidth: 18
+                            implicitHeight: 18
                             cursorShape: Qt.PointingHandCursor
 
-                            StyledRect {
-                                anchors.fill: parent
-                                radius: Tokens.rounding.full
+                            // Unified M3 Shape morphing (Circle <-> Gem) for all items including default
+                            MaterialShape {
+                                id: colorShape
+                                anchors.centerIn: parent
+                                implicitSize: 16
+
+                                shape: colorDot.isSelected ? MaterialShape.Gem : MaterialShape.Circle
+
                                 color: colorDot.modelData.color
-                                border.width: colorDot.isSelected ? 2 : 1
-                                border.color: colorDot.isSelected ? Colours.palette.m3onSurface : Qt.alpha(Colours.palette.m3outlineVariant, 0.5)
+                                strokeColor: colorDot.isSelected ? Colours.palette.m3onSurface : Qt.alpha(Colours.palette.m3outlineVariant, 0.4)
+                                strokeWidth: colorDot.isSelected ? 1.5 : 1
 
                                 scale: colorDot.containsMouse ? 1.18 : 1.0
 
-                                Behavior on border.width {
-                                    Anim {}
-                                }
+                                animationEasing: Tokens.anim.expressiveDefaultSpatial
+                                animationDuration: Tokens.anim.durations.expressiveDefaultSpatial * Tokens.anim.durations.scale
 
                                 Behavior on scale {
-                                    Anim {
-                                        type: Anim.DefaultSpatial
-                                    }
+                                    Anim { type: Anim.DefaultSpatial }
+                                }
+                                Behavior on strokeWidth {
+                                    Anim { type: Anim.FastEffects }
+                                }
+                                Behavior on strokeColor {
+                                    CAnim {}
                                 }
 
+                                // Centered subtle X mark for the default "none" button
                                 MaterialIcon {
                                     visible: colorDot.modelData.id === "none"
                                     anchors.centerIn: parent
-                                    text: "block"
+                                    text: "close"
                                     font: Tokens.font.icon.size(9).build()
-                                    color: Colours.palette.m3onSurfaceVariant
+                                    color: colorDot.isSelected ? Colours.palette.m3onSurface : Colours.palette.m3onSurfaceVariant
+
+                                    Behavior on color {
+                                        CAnim {}
+                                    }
                                 }
                             }
 
@@ -352,7 +604,15 @@ StyledRect {
                 anchors.fill: parent
                 anchors.margins: Tokens.padding.large
                 active: !root.isEditing
-                visible: !root.isEditing
+                visible: opacity > 0.001
+                opacity: !root.isEditing ? 1.0 : 0.0
+
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: 200
+                        easing.type: Easing.OutCubic
+                    }
+                }
 
                 sourceComponent: MarkdownNoteView {
                     rawText: root.localBody
@@ -365,9 +625,8 @@ StyledRect {
                             NotesStore.updateNote(root.activeNote.id, root.localTitle, root.localBody, root.localPinned, root.localColor, root.localListShapes);
                         }
                     }
-                    onDoubleClicked: {
-                        root.isEditing = true;
-                        bodyArea.forceActiveFocus();
+                    onEditRequested: (targetIndex) => {
+                        root.switchToEditAt(targetIndex);
                     }
                 }
             }
@@ -377,14 +636,86 @@ StyledRect {
                 id: bodyScrollView
                 anchors.fill: parent
                 anchors.margins: Tokens.padding.large
-                visible: root.isEditing
+                visible: opacity > 0.001
+                opacity: root.isEditing ? 1.0 : 0.0
+
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: 180
+                        easing.type: Easing.OutCubic
+                    }
+                }
                 clip: true
+
+                readonly property real fadeAmount: 0.08
+                readonly property Flickable flickable: contentItem as Flickable
+
+                property real topFadeOpacity: fadeShouldBeActive(true) ? 0 : 1
+                property real bottomFadeOpacity: fadeShouldBeActive(false) ? 0 : 1
+
+                function fadeShouldBeActive(isStart: bool): bool {
+                    if (!flickable || !flickable.visibleArea)
+                        return false;
+
+                    if (flickable.contentHeight <= flickable.height)
+                        return false;
+
+                    if (isStart)
+                        return flickable.visibleArea.yPosition > 0.001;
+                    return flickable.visibleArea.yPosition + flickable.visibleArea.heightRatio < 0.999;
+                }
+
+                Behavior on topFadeOpacity {
+                    Anim {
+                        type: Anim.SlowEffects
+                    }
+                }
+
+                Behavior on bottomFadeOpacity {
+                    Anim {
+                        type: Anim.SlowEffects
+                    }
+                }
+
+                layer.enabled: true
+                layer.effect: Mask {
+                    maskSource: bodyScrollMask
+
+                    Rectangle {
+                        id: bodyScrollMask
+
+                        anchors.fill: parent
+                        visible: false
+                        layer.enabled: true
+
+                        gradient: Gradient {
+                            orientation: Gradient.Vertical
+
+                            GradientStop {
+                                position: 0
+                                color: Qt.rgba(0, 0, 0, bodyScrollView.topFadeOpacity)
+                            }
+                            GradientStop {
+                                position: bodyScrollView.fadeAmount
+                                color: Qt.rgba(0, 0, 0, 1)
+                            }
+                            GradientStop {
+                                position: 1 - bodyScrollView.fadeAmount
+                                color: Qt.rgba(0, 0, 0, 1)
+                            }
+                            GradientStop {
+                                position: 1
+                                color: Qt.rgba(0, 0, 0, bodyScrollView.bottomFadeOpacity)
+                            }
+                        }
+                    }
+                }
 
                 TextArea {
                     id: bodyArea
                     width: bodyScrollView.availableWidth
                     text: root.localBody
-                    placeholderText: qsTr("Take a note… (Markdown supported)")
+                    placeholderText: root.currentPlaceholder
                     placeholderTextColor: Colours.palette.m3onSurfaceVariant
                     font: Tokens.font.body.medium
                     color: Colours.palette.m3onSurface
@@ -399,6 +730,7 @@ StyledRect {
                     }
 
                     onTextChanged: {
+                        root.localBody = text;
                         autoSyncTimer.restart();
                     }
                 }

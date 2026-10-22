@@ -7,7 +7,9 @@ import M3Shapes
 import Caelestia.Config
 import qs.components
 import qs.components.controls
+import qs.components.effects
 import qs.services
+import Quickshell
 
 Item {
     id: root
@@ -50,6 +52,7 @@ Item {
     readonly property int taskShape: getTaskShape(root.activeTodo)
 
     readonly property var activeTodo: NotesStore.activeTodo
+    readonly property bool isTrashed: NotesStore.isTodoTrashed(root.activeTodo ? root.activeTodo.id : "")
     readonly property int maxTitleLength: 300
 
     property string localTitle: ""
@@ -176,6 +179,8 @@ Item {
             IconButton {
                 icon: "arrow_back"
                 type: ButtonBase.Tonal
+                Layout.preferredWidth: 32
+                Layout.preferredHeight: 32
                 onClicked: root.handleBack()
             }
 
@@ -187,8 +192,13 @@ Item {
                 cursorShape: Qt.PointingHandCursor
                 onClicked: {
                     if (root.activeTodo) {
-                        root.localDone = !root.localDone;
-                        NotesStore.toggleTodo(root.activeTodo.id);
+                        if (root.isTrashed) {
+                            NotesStore.restoreTodo(root.activeTodo.id);
+                            NotesStore.closeTodo(false);
+                        } else {
+                            root.localDone = !root.localDone;
+                            NotesStore.toggleTodo(root.activeTodo.id);
+                        }
                     }
                 }
 
@@ -197,11 +207,13 @@ Item {
                     anchors.centerIn: parent
                     implicitSize: 18
 
-                    shape: root.localDone ? root.taskShape : MaterialShape.Square
+                    readonly property bool isChecked: root.localDone || root.isTrashed
 
-                    color: root.localDone ? Colours.palette.m3primary : "transparent"
-                    strokeColor: root.localDone ? Colours.palette.m3primary : (detailCheckMouse.containsMouse ? Colours.palette.m3primary : Colours.palette.m3outline)
-                    strokeWidth: root.localDone ? 0 : 1.5
+                    shape: isChecked ? root.taskShape : MaterialShape.Square
+
+                    color: isChecked ? Colours.palette.m3primary : "transparent"
+                    strokeColor: isChecked ? Colours.palette.m3primary : (detailCheckMouse.containsMouse ? Colours.palette.m3primary : Colours.palette.m3outline)
+                    strokeWidth: isChecked ? 0 : 1.5
 
                     scale: detailCheckMouse.pressed ? 0.88 : (detailCheckMouse.containsMouse ? 1.08 : 1.0)
 
@@ -226,8 +238,8 @@ Item {
                         fontStyle: Tokens.font.icon.small
                         color: Colours.palette.m3onPrimary
                         visible: opacity > 0
-                        opacity: root.localDone ? 1 : 0
-                        scale: root.localDone ? 1.0 : 0.4
+                        opacity: detailCheckShape.isChecked ? 1 : 0
+                        scale: detailCheckShape.isChecked ? 1.0 : 0.4
 
                         Behavior on opacity {
                             Anim { type: Anim.FastEffects }
@@ -241,16 +253,40 @@ Item {
             }
 
             StyledText {
-                text: root.localDone ? qsTr("Completed") : qsTr("Task Details")
+                Layout.fillWidth: true
+                Layout.minimumWidth: 0
+                elide: Text.ElideRight
+                text: root.isTrashed
+                      ? (root.localRepeating ? NotesStore.getResettingTimeText() : qsTr("Trash Item"))
+                      : (root.localDone ? qsTr("Completed") : qsTr("Task Details"))
                 font: Tokens.font.title.small
-                color: root.localDone ? Colours.palette.m3onSurfaceVariant : Colours.palette.m3onSurface
+                color: (root.isTrashed || root.localDone) ? Colours.palette.m3onSurfaceVariant : Colours.palette.m3onSurface
             }
 
-            Item { Layout.fillWidth: true }
+            // Restore button (visible when viewing an item from trash)
+            IconButton {
+                visible: root.isTrashed
+                icon: "restore"
+                type: ButtonBase.Tonal
+                Layout.preferredWidth: 32
+                Layout.preferredHeight: 32
+                activeColour: Colours.palette.m3secondary
+                inactiveColour: Colours.palette.m3secondaryContainer
+                activeOnColour: Colours.palette.m3onSecondary
+                inactiveOnColour: Colours.palette.m3onSecondaryContainer
+                onClicked: {
+                    if (root.activeTodo) {
+                        NotesStore.restoreTodo(root.activeTodo.id);
+                        NotesStore.closeTodo(false);
+                    }
+                }
+            }
 
             IconButton {
                 icon: root.confirmDelete ? "check" : "delete"
                 type: root.confirmDelete ? ButtonBase.Filled : ButtonBase.Tonal
+                Layout.preferredWidth: 32
+                Layout.preferredHeight: 32
                 activeColour: root.confirmDelete ? Colours.palette.m3error : Colours.palette.m3secondary
                 inactiveColour: root.confirmDelete ? Colours.palette.m3error : Colours.palette.m3secondaryContainer
                 activeOnColour: root.confirmDelete ? Colours.palette.m3onError : Colours.palette.m3onSecondary
@@ -264,7 +300,7 @@ Item {
                         root.confirmDelete = false;
                         root.calendarOpen = false;
                         if (root.activeTodo) {
-                            NotesStore.deleteTodo(root.activeTodo.id);
+                            NotesStore.permanentlyDeleteTodo(root.activeTodo.id);
                         }
                     }
                 }
@@ -304,11 +340,11 @@ Item {
                 implicitHeight: 20
                 implicitWidth: currentDueText.implicitWidth + 12
                 color: {
-                    if (!root.currentDuePill) return Colours.palette.m3surfaceContainerHigh;
+                    if (!root.currentDuePill) return Colours.palette.m3surfaceContainerHighest;
                     switch (root.currentDuePill.status) {
                         case "overdue": return Colours.palette.m3error;
                         case "today": return Colours.palette.m3tertiary;
-                        case "tomorrow": return Colours.palette.m3secondaryContainer;
+                        case "tomorrow": return Colours.palette.m3secondary;
                         default: return Colours.palette.m3surfaceContainerHighest;
                     }
                 }
@@ -323,8 +359,8 @@ Item {
                         switch (root.currentDuePill.status) {
                             case "overdue": return Colours.palette.m3onError;
                             case "today": return Colours.palette.m3onTertiary;
-                            case "tomorrow": return Colours.palette.m3onSecondaryContainer;
-                            default: return Colours.palette.m3onSurface;
+                            case "tomorrow": return Colours.palette.m3onSecondary;
+                            default: return Colours.palette.m3onSurfaceVariant;
                         }
                     }
                 }
@@ -366,6 +402,42 @@ Item {
 
                 Behavior on opacity {
                     Anim { type: Anim.FastEffects }
+                }
+            }
+
+            // Streak Display
+            StyledRect {
+                visible: root.localRepeating && NotesStore.getStreak(root.activeTodo ? root.activeTodo.id : "") > 0
+                Layout.alignment: Qt.AlignVCenter
+                radius: Tokens.rounding.full
+                implicitHeight: 20
+                implicitWidth: streakDetailRow.implicitWidth + 12
+                color: Colours.palette.m3tertiaryContainer
+
+                HoverHandler {
+                    id: streakDetailHover
+                }
+
+                RowLayout {
+                    id: streakDetailRow
+                    anchors.centerIn: parent
+                    spacing: 3
+
+                    StreakFlame {
+                        id: streakDetailFireAnim
+                        Layout.alignment: Qt.AlignVCenter
+                        implicitWidth: 18
+                        implicitHeight: 18
+                        outerColor: Colours.palette.m3onTertiaryContainer
+                        innerColor: Colours.palette.m3tertiaryContainer
+                        autoplay: streakDetailHover.hovered
+                    }
+
+                    StyledText {
+                        text: String(NotesStore.getStreak(root.activeTodo ? root.activeTodo.id : ""))
+                        font: Tokens.font.label.small
+                        color: Colours.palette.m3onTertiaryContainer
+                    }
                 }
             }
 
@@ -440,6 +512,70 @@ Item {
                 anchors.fill: parent
                 visible: !root.calendarOpen
                 clip: true
+
+                readonly property real fadeAmount: 0.08
+                readonly property Flickable flickable: contentItem as Flickable
+
+                property real topFadeOpacity: fadeShouldBeActive(true) ? 0 : 1
+                property real bottomFadeOpacity: fadeShouldBeActive(false) ? 0 : 1
+
+                function fadeShouldBeActive(isStart: bool): bool {
+                    if (!flickable || !flickable.visibleArea)
+                        return false;
+
+                    if (flickable.contentHeight <= flickable.height)
+                        return false;
+
+                    if (isStart)
+                        return flickable.visibleArea.yPosition > 0.001;
+                    return flickable.visibleArea.yPosition + flickable.visibleArea.heightRatio < 0.999;
+                }
+
+                Behavior on topFadeOpacity {
+                    Anim {
+                        type: Anim.SlowEffects
+                    }
+                }
+
+                Behavior on bottomFadeOpacity {
+                    Anim {
+                        type: Anim.SlowEffects
+                    }
+                }
+
+                layer.enabled: true
+                layer.effect: Mask {
+                    maskSource: todoTextScrollMask
+
+                    Rectangle {
+                        id: todoTextScrollMask
+
+                        anchors.fill: parent
+                        visible: false
+                        layer.enabled: true
+
+                        gradient: Gradient {
+                            orientation: Gradient.Vertical
+
+                            GradientStop {
+                                position: 0
+                                color: Qt.rgba(0, 0, 0, textScrollView.topFadeOpacity)
+                            }
+                            GradientStop {
+                                position: textScrollView.fadeAmount
+                                color: Qt.rgba(0, 0, 0, 1)
+                            }
+                            GradientStop {
+                                position: 1 - textScrollView.fadeAmount
+                                color: Qt.rgba(0, 0, 0, 1)
+                            }
+                            GradientStop {
+                                position: 1
+                                color: Qt.rgba(0, 0, 0, textScrollView.bottomFadeOpacity)
+                            }
+                        }
+                    }
+                }
 
                 TextArea {
                     id: todoTextArea

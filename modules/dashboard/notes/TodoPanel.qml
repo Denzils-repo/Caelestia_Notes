@@ -8,7 +8,9 @@ import Caelestia.Components
 import Caelestia.Config
 import qs.components
 import qs.components.controls
+import qs.components.effects
 import qs.services
+import Quickshell
 
 StyledRect {
     id: root
@@ -241,7 +243,6 @@ StyledRect {
                                 id: newTodoInput
                                 Layout.fillWidth: true
                                 maximumLength: 300
-                                enabled: !root.calendarPickerOpen
                                 placeholderText: qsTr("Add a new to-do…")
                                 placeholderTextColor: Colours.palette.m3onSurfaceVariant
                                 font: Tokens.font.body.medium
@@ -415,6 +416,9 @@ StyledRect {
                             onDateSelected: (dateStr) => {
                                 root.selectedNewDue = (root.selectedNewDue === dateStr ? "" : dateStr);
                                 root.newTodoRepeating = false;
+                                Qt.callLater(() => {
+                                    newTodoInput.forceActiveFocus();
+                                });
                             }
                             onCancelled: {
                                 root.calendarPickerOpen = false;
@@ -433,6 +437,70 @@ StyledRect {
                     Layout.fillHeight: !root.calendarPickerOpen
                     visible: !root.calendarPickerOpen
                     clip: true
+
+                    readonly property real fadeAmount: 0.08
+                    readonly property Flickable flickable: contentItem as Flickable
+
+                    property real topFadeOpacity: fadeShouldBeActive(true) ? 0 : 1
+                    property real bottomFadeOpacity: fadeShouldBeActive(false) ? 0 : 1
+
+                    function fadeShouldBeActive(isStart: bool): bool {
+                        if (!flickable || !flickable.visibleArea)
+                            return false;
+
+                        if (flickable.contentHeight <= flickable.height)
+                            return false;
+
+                        if (isStart)
+                            return flickable.visibleArea.yPosition > 0.001;
+                        return flickable.visibleArea.yPosition + flickable.visibleArea.heightRatio < 0.999;
+                    }
+
+                    Behavior on topFadeOpacity {
+                        Anim {
+                            type: Anim.SlowEffects
+                        }
+                    }
+
+                    Behavior on bottomFadeOpacity {
+                        Anim {
+                            type: Anim.SlowEffects
+                        }
+                    }
+
+                    layer.enabled: true
+                    layer.effect: Mask {
+                        maskSource: scrollMask
+
+                        Rectangle {
+                            id: scrollMask
+
+                            anchors.fill: parent
+                            visible: false
+                            layer.enabled: true
+
+                            gradient: Gradient {
+                                orientation: Gradient.Vertical
+
+                                GradientStop {
+                                    position: 0
+                                    color: Qt.rgba(0, 0, 0, todoScrollView.topFadeOpacity)
+                                }
+                                GradientStop {
+                                    position: todoScrollView.fadeAmount
+                                    color: Qt.rgba(0, 0, 0, 1)
+                                }
+                                GradientStop {
+                                    position: 1 - todoScrollView.fadeAmount
+                                    color: Qt.rgba(0, 0, 0, 1)
+                                }
+                                GradientStop {
+                                    position: 1
+                                    color: Qt.rgba(0, 0, 0, todoScrollView.bottomFadeOpacity)
+                                }
+                            }
+                        }
+                    }
 
                     ColumnLayout {
                         width: todoScrollView.availableWidth
@@ -671,12 +739,13 @@ StyledRect {
                                     spacing: Tokens.spacing.small
 
                                     // Custom Checkbox with M3Shapes Morphing Animation
-                                    CustomMouseArea {
+                                    MouseArea {
                                         id: checkMouseArea
                                         Layout.alignment: Qt.AlignVCenter
                                         implicitWidth: 22
                                         implicitHeight: 22
                                         cursorShape: Qt.PointingHandCursor
+                                        hoverEnabled: true
                                         onClicked: {
                                             if (root.showTrash) {
                                                 NotesStore.restoreTodo(todoRow.todoId);
@@ -738,7 +807,7 @@ StyledRect {
                                     }
 
                                     // Label text with click to open view mode & strikethrough / scratching overlay
-                                    CustomMouseArea {
+                                    MouseArea {
                                         Layout.fillWidth: true
                                         Layout.alignment: Qt.AlignVCenter
                                         implicitHeight: Math.max(22, todoLabel.implicitHeight)
@@ -750,74 +819,178 @@ StyledRect {
                                         }
 
                                         Item {
+                                            id: textContainer
                                             anchors.fill: parent
                                             clip: true
 
-                                            StyledText {
-                                                id: todoLabel
-                                                anchors.left: parent.left
-                                                anchors.right: parent.right
-                                                anchors.verticalCenter: parent.verticalCenter
-                                                text: todoRow.modelData ? (todoRow.modelData.title || "") : ""
-                                                font: Tokens.font.body.medium
-                                                color: (todoRow.isDone || root.showTrash || todoRow.isScratching) ? Colours.palette.m3onSurfaceVariant : Colours.palette.m3onSurface
-                                                opacity: (todoRow.isDone || root.showTrash) ? 0.7 : 1.0
-                                                elide: Text.ElideRight
-                                                maximumLineCount: 1
+                                            readonly property bool isOverflowing: textContainer.width > 0 && todoLabel.implicitWidth > textContainer.width
+                                            readonly property bool isMarqueeActive: todoRow.isRowHovered && isOverflowing && !todoRow.isScratching && !todoRow.isDeleting
 
-                                                Behavior on opacity {
-                                                    Anim {}
+                                            property real marqueeFade: 1.0
+
+                                            Item {
+                                                id: textFadeWrapper
+                                                anchors.fill: parent
+                                                opacity: textContainer.marqueeFade
+
+                                                StyledText {
+                                                    id: todoLabel
+                                                    anchors.verticalCenter: parent.verticalCenter
+                                                    x: 0
+                                                    width: textContainer.isMarqueeActive ? implicitWidth : parent.width
+                                                    text: todoRow.modelData ? (todoRow.modelData.title || "") : ""
+                                                    font: Tokens.font.body.medium
+                                                    color: (todoRow.isDone || root.showTrash || todoRow.isScratching) ? Colours.palette.m3onSurfaceVariant : Colours.palette.m3onSurface
+                                                    opacity: (todoRow.isDone || root.showTrash) ? 0.7 : 1.0
+                                                    elide: textContainer.isMarqueeActive ? Text.ElideNone : Text.ElideRight
+                                                    maximumLineCount: 1
+
+                                                    Behavior on opacity {
+                                                        Anim {}
+                                                    }
+
+                                                    onTextChanged: {
+                                                        marqueeAnim.stop();
+                                                        textContainer.marqueeFade = 1.0;
+                                                        x = 0;
+                                                    }
+                                                }
+
+                                                // Subtle Wavy Strike-through & Living Worm Scratch Animation
+                                                WavyLine {
+                                                    id: scratchWavyLine
+
+                                                    readonly property bool isActionActive: todoRow.isScratching || todoRow.isDeleting
+                                                    readonly property bool isResting: (todoRow.isDone || root.showTrash) && !isActionActive
+
+                                                    visible: isActionActive || isResting
+                                                    anchors.left: todoLabel.left
+                                                    anchors.verticalCenter: todoLabel.verticalCenter
+                                                    width: Math.max(1, Math.min(todoLabel.implicitWidth, todoLabel.width))
+                                                    height: 12
+
+                                                    lineWidth: 2
+                                                    amplitudeMultiplier: isActionActive ? 0.75 : 0.55
+                                                    frequency: Math.max(2, Math.round(width / 24))
+                                                    fullLength: width
+                                                    value: isActionActive ? todoRow.scratchProgress : 1.0
+                                                    color: todoRow.isDeleting ? Colours.palette.m3error : (isActionActive ? Colours.palette.m3primary : Colours.palette.m3onSurfaceVariant)
+                                                    opacity: isActionActive ? 1.0 : 0.7
+
+                                                    Anim on waveProgress {
+                                                        running: scratchWavyLine.isActionActive
+                                                        from: 0
+                                                        to: 1
+                                                        duration: 500
+                                                        easing.type: Easing.Linear
+                                                        loops: Animation.Infinite
+                                                    }
                                                 }
                                             }
 
-                                            // Subtle Wavy Strike-through & Living Worm Scratch Animation
-                                            WavyLine {
-                                                id: scratchWavyLine
+                                            SequentialAnimation {
+                                                id: marqueeAnim
+                                                running: textContainer.isMarqueeActive
+                                                loops: Animation.Infinite
 
-                                                readonly property bool isActionActive: todoRow.isScratching || todoRow.isDeleting
-                                                readonly property bool isResting: (todoRow.isDone || root.showTrash) && !isActionActive
-
-                                                visible: isActionActive || isResting
-                                                anchors.left: todoLabel.left
-                                                anchors.verticalCenter: todoLabel.verticalCenter
-                                                width: Math.max(1, Math.min(todoLabel.implicitWidth, todoLabel.width))
-                                                height: 12
-
-                                                lineWidth: 2
-                                                amplitudeMultiplier: isActionActive ? 0.75 : 0.55
-                                                frequency: Math.max(2, Math.round(width / 24))
-                                                fullLength: width
-                                                value: isActionActive ? todoRow.scratchProgress : 1.0
-                                                color: todoRow.isDeleting ? Colours.palette.m3error : (isActionActive ? Colours.palette.m3primary : Colours.palette.m3onSurfaceVariant)
-                                                opacity: isActionActive ? 1.0 : 0.7
-
-                                                Anim on waveProgress {
-                                                    running: scratchWavyLine.isActionActive
+                                                PauseAnimation { duration: 500 }
+                                                NumberAnimation {
+                                                    target: todoLabel
+                                                    property: "x"
                                                     from: 0
-                                                    to: 1
-                                                    duration: 500
+                                                    to: -(todoLabel.implicitWidth - textContainer.width + 12)
+                                                    duration: Math.max(1200, (todoLabel.implicitWidth - textContainer.width + 12) * 25)
                                                     easing.type: Easing.Linear
-                                                    loops: Animation.Infinite
+                                                }
+                                                PauseAnimation { duration: 600 }
+                                                NumberAnimation {
+                                                    target: textContainer
+                                                    property: "marqueeFade"
+                                                    from: 1.0
+                                                    to: 0.0
+                                                    duration: 160
+                                                    easing.type: Easing.InOutQuad
+                                                }
+                                                ScriptAction {
+                                                    script: {
+                                                        todoLabel.x = 0;
+                                                    }
+                                                }
+                                                NumberAnimation {
+                                                    target: textContainer
+                                                    property: "marqueeFade"
+                                                    from: 0.0
+                                                    to: 1.0
+                                                    duration: 160
+                                                    easing.type: Easing.InOutQuad
+                                                }
+                                            }
+
+                                            Connections {
+                                                target: todoRow
+                                                function onIsRowHoveredChanged() {
+                                                    if (!todoRow.isRowHovered) {
+                                                        marqueeAnim.stop();
+                                                        textContainer.marqueeFade = 1.0;
+                                                        todoLabel.x = 0;
+                                                    }
                                                 }
                                             }
                                         }
                                     }
 
-                                    // Repeating Pill (Active view)
+                                    // Streak Display (Active view)
                                     StyledRect {
-                                        visible: !root.showTrash && !!(todoRow.modelData && todoRow.modelData.repeating)
+                                        id: streakPill
+                                        visible: !root.showTrash && !!(todoRow.modelData && todoRow.modelData.repeating) && (todoRow.modelData.streak || 0) > 0
                                         Layout.alignment: Qt.AlignVCenter
                                         radius: Tokens.rounding.full
-                                        implicitHeight: 18
-                                        implicitWidth: repeatingPillText.implicitWidth + 10
-                                        color: Qt.alpha(Colours.palette.m3tertiary, 0.22)
+                                        implicitHeight: 20
+                                        implicitWidth: streakDetailRow.implicitWidth + 12
+                                        color: Colours.palette.m3tertiaryContainer
+
+                                        HoverHandler {
+                                            id: streakPillHover
+                                        }
+
+                                        RowLayout {
+                                            id: streakDetailRow
+                                            anchors.centerIn: parent
+                                            spacing: 3
+
+                                            StreakFlame {
+                                                id: streakFireAnim
+                                                Layout.alignment: Qt.AlignVCenter
+                                                implicitWidth: 18
+                                                implicitHeight: 18
+                                                outerColor: Colours.palette.m3onTertiaryContainer
+                                                innerColor: Colours.palette.m3tertiaryContainer
+                                                autoplay: todoRow.isRowHovered || streakPillHover.hovered
+                                            }
+
+                                            StyledText {
+                                                text: todoRow.modelData ? String(todoRow.modelData.streak || 0) : "0"
+                                                font: Tokens.font.label.small
+                                                color: Colours.palette.m3onTertiaryContainer
+                                            }
+                                        }
+                                    }
+
+                                    // Repeating Pill (Active view - shown when streak is 0 or unstreaked)
+                                    StyledRect {
+                                        visible: !root.showTrash && !!(todoRow.modelData && todoRow.modelData.repeating) && (todoRow.modelData.streak || 0) === 0
+                                        Layout.alignment: Qt.AlignVCenter
+                                        radius: Tokens.rounding.full
+                                        implicitHeight: 20
+                                        implicitWidth: repeatingPillText.implicitWidth + 12
+                                        color: Colours.palette.m3tertiaryContainer
 
                                         StyledText {
                                             id: repeatingPillText
                                             anchors.centerIn: parent
                                             text: qsTr("Repeating")
                                             font: Tokens.font.label.small
-                                            color: Colours.palette.m3tertiary
+                                            color: Colours.palette.m3onTertiaryContainer
                                         }
                                     }
 
@@ -826,8 +999,8 @@ StyledRect {
                                         visible: root.showTrash && !!(todoRow.modelData && todoRow.modelData.repeating)
                                         Layout.alignment: Qt.AlignVCenter
                                         radius: Tokens.rounding.full
-                                        implicitHeight: 18
-                                        implicitWidth: resettingText.implicitWidth + 10
+                                        implicitHeight: 20
+                                        implicitWidth: resettingText.implicitWidth + 12
                                         color: Qt.alpha(Colours.palette.m3secondary, 0.22)
 
                                         StyledText {
@@ -841,18 +1014,18 @@ StyledRect {
 
                                     // Smart Due Pill (Today, Tomorrow, in X days, Overdue)
                                     StyledRect {
-                                        visible: !root.showTrash && todoRow.duePillInfo !== null
+                                        visible: !root.showTrash && todoRow.duePillInfo !== null && !(todoRow.modelData && todoRow.modelData.repeating)
                                         Layout.alignment: Qt.AlignVCenter
                                         radius: Tokens.rounding.full
-                                        implicitHeight: 18
-                                        implicitWidth: dueText.implicitWidth + 10
+                                        implicitHeight: 20
+                                        implicitWidth: dueText.implicitWidth + 12
                                         color: {
-                                            if (!todoRow.duePillInfo) return Colours.palette.m3surfaceContainerHigh;
+                                            if (!todoRow.duePillInfo) return Colours.palette.m3surfaceContainerHighest;
                                             switch (todoRow.duePillInfo.status) {
                                                 case "overdue": return Colours.palette.m3error;
                                                 case "today": return Colours.palette.m3tertiary;
-                                                case "tomorrow": return Colours.palette.m3secondaryContainer;
-                                                default: return Colours.palette.m3surfaceContainerHigh;
+                                                case "tomorrow": return Colours.palette.m3secondary;
+                                                default: return Colours.palette.m3surfaceContainerHighest;
                                             }
                                         }
 
@@ -866,7 +1039,7 @@ StyledRect {
                                                 switch (todoRow.duePillInfo.status) {
                                                     case "overdue": return Colours.palette.m3onError;
                                                     case "today": return Colours.palette.m3onTertiary;
-                                                    case "tomorrow": return Colours.palette.m3onSecondaryContainer;
+                                                    case "tomorrow": return Colours.palette.m3onSecondary;
                                                     default: return Colours.palette.m3onSurfaceVariant;
                                                 }
                                             }

@@ -18,8 +18,9 @@ Item {
         spacing: NotesStore.isEditingNote ? 0 : Tokens.spacing.medium
 
         Behavior on spacing {
-            Anim {
-                type: Anim.DefaultSpatial
+            NumberAnimation {
+                duration: 240
+                easing.type: Easing.OutCubic
             }
         }
 
@@ -35,14 +36,16 @@ Item {
             enabled: !NotesStore.isEditingNote
 
             Behavior on Layout.preferredWidth {
-                Anim {
-                    type: Anim.DefaultSpatial
+                NumberAnimation {
+                    duration: 240
+                    easing.type: Easing.OutCubic
                 }
             }
 
             Behavior on opacity {
-                Anim {
-                    type: Anim.DefaultSpatial
+                NumberAnimation {
+                    duration: 200
+                    easing.type: Easing.OutCubic
                 }
             }
         }
